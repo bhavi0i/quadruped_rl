@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.DS_Store
+runs/
+logs/
+videos/
+results/
+*.pkl
+checkpoints/
