@@ -166,7 +166,7 @@ class QuadrupedCourseEnv(gym.Env):
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
-                 spawn_offset=0.8):
+                 spawn_offset=0.8, friction_model="pyramidal"):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -190,6 +190,7 @@ class QuadrupedCourseEnv(gym.Env):
         #   23.5 m at the natural 0.6 m/s takes ~40 s - a 30 s episode could never reach the goal.
         self.max_steps = max_steps
         self.spawn_offset = spawn_offset     # course section spawns: section start + this (m)
+        self.friction_model = friction_model # "pyramidal" (E1-E13, C1-C4: slippery) or "elliptic" (C5+)
         self.difficulty = float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
@@ -211,7 +212,8 @@ class QuadrupedCourseEnv(gym.Env):
 
     # ---------------------------------------------------------------- model building
     def _build(self, difficulty):
-        self.model = course.build_model(difficulty, seed=self.course_seed, robot=self.robot)
+        self.model = course.build_model(difficulty, seed=self.course_seed, robot=self.robot,
+                                        friction_model=getattr(self, "friction_model", "pyramidal"))
         self.data = mujoco.MjData(self.model)
         m, c = self.model, self.cfg
         self.default_q = c["default_q"].astype(float)

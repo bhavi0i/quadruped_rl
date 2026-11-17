@@ -409,6 +409,24 @@ independent runs, not 3. It was left running (no-restart rule).
 ### C4: Course gait for obstacles. RUNNING (Amarel job 63986196, from C3 seed 0 at 111M → 170M)
 - **Changes:** `--swing-height 0.10` (8 → 10 cm) and `collision` −2 → −4. Ent 0.002 kept, no reset.
 - **Note:** the curriculum restarted at 0 (job default); `DIFF` was added for future continuations.
+- **At 115–124M:**
+  - C4 re-climbed to difficulty 0.4. Evaluation stalls at the rubble end, the upper ramp or the
+    first stair; random actions stall too (10.4–10.9 m).
+  - Trace: the dog slides backwards on the 9° ramp (speed +0.45 / −0.65 m/s).
+
+### BUG: Contact friction (affects E1–E13 and C1–C4)
+- **Cause:** the E4 merge copied the course's pyramidal cone / impratio 1 into the Go1 spec,
+  overriding the Menagerie elliptic / impratio 100.
+- **Measured:** a Go1 standing on the 9° ramp slides 56 cm in 3 s (pyramidal) vs 3.5 cm then
+  stable (elliptic). Same sim speed.
+- **Fix:** `friction_model` option (course.py, env, train, evaluate); `elliptic` from C5 on.
+  The default is kept as `pyramidal` so running jobs stay consistent. The old line is kept with a
+  `[FAILED]` note in `course.py`.
+- **Impact:** walking results are on flat ground and effectively unaffected. Course climbing was
+  blocked by it.
+
+### C5: Realistic friction. RUNNING (Amarel job 63987102, from C4 seed 1 at 124M → 190M)
+- **Changes:** `--friction-model elliptic`, curriculum starting at `DIFF=0.4`. Otherwise as C4.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

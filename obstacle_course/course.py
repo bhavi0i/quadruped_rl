@@ -230,7 +230,7 @@ def build_mjcf(difficulty=1.0, seed=0, kp=45.0):
 </mujoco>"""
 
 
-def build_model(difficulty=1.0, seed=0, robot="go1"):
+def build_model(difficulty=1.0, seed=0, robot="go1", friction_model="pyramidal"):
     """Compile the course with the chosen robot.
 
     robot="go1":    Unitree Go1 from MuJoCo Menagerie (robots/unitree_go1), attached into the course.
@@ -260,6 +260,15 @@ def build_model(difficulty=1.0, seed=0, robot="go1"):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         go1 = mujoco.MjSpec.from_file(GO1_XML)
+        # [FAILED, used for E1-E13 and C1-C4] copy the course's pyramidal cone / impratio 1 into the Go1
+        #   spec to avoid a merge warning. Contacts became slippery: a Go1 standing on the 9 deg ramp
+        #   slid 56 cm in 3 s (1 cm/s even at rest). Flat-ground training was barely affected, but the
+        #   course policies could not climb the ramp.
+        # [NEW, friction_model="elliptic"] use the Menagerie Go1 settings (elliptic cone, impratio 100):
+        #   3.5 cm settle, then stable, at the same simulation speed.
+        if friction_model == "elliptic":
+            spec.option.cone = mujoco.mjtCone.mjCONE_ELLIPTIC
+            spec.option.impratio = 100.0
         go1.option.impratio, go1.option.cone = spec.option.impratio, spec.option.cone  # no merge conflict
         spec.worldbody.add_frame().attach_body(go1.body("trunk"), "go1/", "")
         return spec.compile()

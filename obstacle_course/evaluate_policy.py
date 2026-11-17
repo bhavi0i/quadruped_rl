@@ -251,11 +251,17 @@ def main():
     p.add_argument("--out", default="eval/latest")
     p.add_argument("--arena", choices=["ring", "course"], default="ring")
     p.add_argument("--difficulty", type=float, default=0.0, help="course obstacle size 0..1")
+    p.add_argument("--friction-model", choices=["pyramidal", "elliptic"], default=None,
+                   help="default: the model's training config (pyramidal if unknown)")
     a = p.parse_args()
     os.makedirs(a.out, exist_ok=True)
 
     model, stats = load(a.model)
-    env, norm = make(dict(arena=a.arena, difficulty=a.difficulty), stats)
+    fm = a.friction_model
+    if fm is None:
+        cfg_f = os.path.join(os.path.dirname(a.model), "config.json")
+        fm = json.load(open(cfg_f)).get("friction_model", "pyramidal") if os.path.exists(cfg_f) else "pyramidal"
+    env, norm = make(dict(arena=a.arena, difficulty=a.difficulty, friction_model=fm), stats)
     walk, f_walk, v_walk = walk_test(model, norm, env)
     metrics = dict(walk)
     f_wall, v_wall = [], []

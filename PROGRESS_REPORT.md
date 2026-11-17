@@ -74,6 +74,45 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 26: 2026-11-17, 🐞 physics bug found: the ramp was nearly frictionless → C5 with realistic friction
+
+### What the reviews showed
+At difficulty 0.4, C3 and C4 policies stalled on the upper ramp (10.4–10.9 m) in every
+deterministic *and* random-action run. Training made progress section by section, but no policy
+climbed the steeper ramp from the start.
+
+### Investigation
+A step-by-step trace on the 9° ramp showed the dog **sliding backwards**: forward speed swung
+between +0.45 and −0.65 m/s while it trotted in place, regaining and losing the same 0.5 m. A
+9° slope should be trivial for a Go1 (needs a friction coefficient > 0.16; the feet have 0.8).
+
+**Cause:** when the Go1 was merged into the course (E4), its contact settings were overwritten to
+the course's defaults to silence a merge warning: a *pyramidal* friction cone with `impratio = 1`.
+The Menagerie Go1 specifies an *elliptic* cone with `impratio = 100` for firm grip.
+
+**Proof** (Go1 standing still on the ramp, zero action, 3 s + 6 s):
+
+| Friction model | 9° ramp | 15° ramp | Sim speed |
+|---|---|---|---|
+| pyramidal, impratio 1 (used E1–C4) | **slid 56 cm, then 39 cm more** | slid 80 cm | 1,438 steps/s |
+| elliptic, impratio 100 (Menagerie) | settles 3.5 cm, then **0.2 cm** | 5.5 cm, then 0.1 cm | 1,479 steps/s |
+
+On flat ground the effect was small, so the stage-1 walking results stand. On slopes the dog was
+effectively on ice.
+
+### Change: C5 (Amarel job 63987102, 3 seeds, from C4 seed 1 at 124M → 190M, no restart)
+- **`--friction-model elliptic`**: realistic grip (Menagerie settings). No speed cost.
+- Curriculum starts at **0.4** (C4's level) via the new `DIFF` option.
+- C4 rewards kept: 10 cm foot lift, collision −4, entropy 0.002, run-up spawns.
+- The friction model is an explicit option (`course.build_model(friction_model=...)`). The old
+  setting stays the default so the running C1–C4 jobs keep consistent physics. Evaluation uses
+  each run's own setting from its config.
+
+Quick check: C4 seed 1, trained on slippery physics, with real friction gets past the ramp in 1 of 3
+runs (15.2 m) but isn't adapted. C5 trains it on the real physics.
+
+---
+
 ## Report 25: 2026-11-17, stairs and shin scraping not improving → C4 (higher steps, stronger shin penalty)
 
 Course from the start at each run's curriculum difficulty (C3 now at 0.3–0.4):
