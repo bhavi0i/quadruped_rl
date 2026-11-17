@@ -45,6 +45,8 @@ def main():
     p.add_argument("--random", action="store_true")
     p.add_argument("--injury", default=None, help='e.g. "FR=0.0", "FL_calf=0.3" or "random_leg"')
     p.add_argument("--episodes", type=int, default=1, help="episodes to play (0 = keep going)")
+    p.add_argument("--layout", type=int, default=None,
+                   help="replay benchmark layout L exactly (rubble seed L, start seed 300+L), as in evaluate_policy")
     p.add_argument("--fast", action="store_true", help="don't slow the viewer down to real time")
     p.add_argument("--wall-test", action="store_true",
                    help="ring only: start 1 m from the wall facing it (0, +-30, +-60 deg), 10 s each")
@@ -79,7 +81,16 @@ def main():
 
     frames, ep = [], 0
     while a.episodes == 0 or ep < a.episodes:
-        obs, _ = env.reset(seed=ep)
+        # [NEW 2026-11-17] --layout: same rubble layout and start as the benchmark / validation runs
+        if a.layout is not None and a.arena == "course":
+            lay = a.layout
+            if ep == 0:                                  # rebuild once (before the viewer opens);
+                env.course_seed = lay                    # replays reuse the model and viewer
+                env.set_difficulty(env.difficulty)
+            obs, _ = env.reset(seed=300 + lay)
+            print(f"layout {lay}, difficulty {env.difficulty}", flush=True)
+        else:
+            obs, _ = env.reset(seed=ep)
         if a.wall_test:
             off = [0, 30, -30, 60, -60][ep % 5]
             obs = place_facing_wall(env, ang=np.deg2rad(45 * ep), off_deg=off)
