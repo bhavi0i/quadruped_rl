@@ -44,11 +44,10 @@ def wait_for_milestone(poll_min=3):
     state = json.load(open(STATE)) if os.path.exists(STATE) else {}
     while True:
         running, steps = remote_status()
-        if running is not None:
-            due = [r for r, s in steps.items() if s // MILESTONE > state.get(r, 0)]
-            if due or running == 0:
-                for r, s in steps.items():
-                    state[r] = s // MILESTONE
+        if running is not None and steps:
+            low = min(steps.values()) // MILESTONE     # review when the slowest run passes a milestone
+            if low > state.get("_min", 0) or running == 0:
+                state["_min"] = low
                 os.makedirs(os.path.dirname(STATE), exist_ok=True)
                 json.dump(state, open(STATE, "w"))
                 return steps, running

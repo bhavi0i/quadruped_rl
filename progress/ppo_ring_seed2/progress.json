@@ -385,6 +385,78 @@
    "speed": 0.5989086742643502,
    "trot_match": 0.7502562125107112,
    "body_contact_rate": 0.14368466152527848
+  },
+  {
+   "timesteps": 5506110,
+   "time": "2026-11-16 20:11",
+   "difficulty": 0.0,
+   "distance": 19.013349214400076,
+   "fall_rate": 0.085,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.5043447520340295,
+   "speed": 0.5983728484518352,
+   "trot_match": 0.7621236643346907,
+   "body_contact_rate": 0.13717239218962096
+  },
+  {
+   "timesteps": 5795280,
+   "time": "2026-11-16 20:12",
+   "difficulty": 0.0,
+   "distance": 19.121459092870232,
+   "fall_rate": 0.04,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.5072124556266278,
+   "speed": 0.5908121627989973,
+   "trot_match": 0.7770723104056437,
+   "body_contact_rate": 0.12716741017394612
+  },
+  {
+   "timesteps": 6092160,
+   "time": "2026-11-16 20:12",
+   "difficulty": 0.0,
+   "distance": 18.93534201522844,
+   "fall_rate": 0.035,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.5022755468098762,
+   "speed": 0.5887367671925531,
+   "trot_match": 0.7965558474804635,
+   "body_contact_rate": 0.11373618970627863
+  },
+  {
+   "timesteps": 6377040,
+   "time": "2026-11-16 20:13",
+   "difficulty": 0.0,
+   "distance": 18.515342048723536,
+   "fall_rate": 0.055,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.4911347016819285,
+   "speed": 0.5814145921452107,
+   "trot_match": 0.807526853411963,
+   "body_contact_rate": 0.10656767761864645
+  },
+  {
+   "timesteps": 6674040,
+   "time": "2026-11-16 20:13",
+   "difficulty": 0.0,
+   "distance": 18.898256613448464,
+   "fall_rate": 0.03,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.5012918259749042,
+   "speed": 0.5892177120951592,
+   "trot_match": 0.8213863636363636,
+   "body_contact_rate": 0.09548148148148149
+  },
+  {
+   "timesteps": 6962040,
+   "time": "2026-11-16 20:14",
+   "difficulty": 0.0,
+   "distance": 19.445955409729155,
+   "fall_rate": 0.045,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.515819987767163,
+   "speed": 0.602150897216061,
+   "trot_match": 0.8285069444444444,
+   "body_contact_rate": 0.08235763888888889
   }
  ]
 }

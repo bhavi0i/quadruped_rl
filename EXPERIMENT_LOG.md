@@ -161,16 +161,24 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
   - Seed 0 is behind (0.12 m/s).
   - Details: PROGRESS_REPORT.md, report 1.
 
-### H1: Hardware for RL training (CPU vs GPU on Amarel). IN PROGRESS
+### H1: Hardware for RL training (CPU vs GPU on Amarel). DECIDED: keep 32 CPU cores
 - **Date:** 2026-11-16
 - **Question:** which Amarel node type trains fastest?
-- **Setup:** the same 2M-step ring PPO run (`amarel/bench.slurm`) on 32 CPU cores, 64 CPU cores,
-  and 1 GPU + 32 cores.
-- **Expectation:** the physics (MuJoCo) runs on the CPU, one simulation per core, and the policy
-  network is small (256-256-128). So the GPU should help only the short network-update phase.
-  More cores should help more. A big GPU speed-up would need a GPU simulator (MuJoCo MJX), which
-  would be a rewrite.
-- **Result:** pending.
+- **Setup:** the same 2M-step ring PPO run (`amarel/bench.slurm`) on different nodes.
+- **Result:**
+
+  | Setup | Speed | Time for 2M steps |
+  |---|---|---|
+  | 32 CPU cores, 2 update threads (current) | 8,924 steps/s | 227 s |
+  | 64 CPU cores, 2 update threads | 8,905 steps/s | 228 s |
+
+- **Finding:** doubling the cores gave no gain. The bottleneck is the PPO network-update phase
+  (2 torch threads), not the physics simulation.
+- **Not tested:** more update threads (16 or 32) and 1 GPU + 32 cores. These were cancelled and
+  the setup left as is, at the group's request. The GPU environment `rlq-gpu` exists on Amarel
+  if this is revisited.
+- **Decision:** keep 32-core CPU nodes (`amarel/ring_ppo.slurm`). Training takes about 75–90 min
+  per 40M-step run.
 
 ---
 

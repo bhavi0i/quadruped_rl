@@ -21,11 +21,14 @@ to the obstacle course.
 | walls | wall test: start 1 m from the wall facing it (6 trials); pass = no prolonged contact and walks ≥ 1.5 m away | ≥ 80 % of trials |
 
 **Decision rules for unattended tweaking:**
-- **Walls:** if wall pass rate is still < 50 % at 15M steps, add a "turn toward the route"
-  reward (yaw rate toward the waypoint when it is > 45° off-heading) and raise turn-practice
-  spawns from 25 % to 40 %.
-- **Shin contact:** if body contact is still > 5 % at 20M steps, raise the `collision`
-  penalty, or check the calf collision geometry at the standing pose.
+- **No restarts (2026-11-16, group decision).** Running jobs are never stopped or restarted
+  from scratch. Reward or setting changes are applied after a run finishes, by **continuing
+  training from its final policy** (`train.py --init-from`), so learned walking is kept.
+- **Walls:** if wall pass rate is still < 50 % when the current runs finish (40M steps), continue
+  from the best final policy with a "turn toward the route" reward (yaw rate toward the waypoint
+  when it is > 45° off-heading) and turn-practice spawns raised from 25 % to 40 % (E8).
+- **Shin contact:** if body contact is still > 5 % at the end of a run, raise the `collision`
+  penalty in the continuation run, or check the calf collision geometry at the standing pose.
 - **Pace or trot:** if they regress below goal for 2 seeds, raise the `trot` or
   `velocity_tracking` weight.
 - **Falls:** if falls rise above 10 % after 10M steps, investigate before changing anything.
@@ -69,6 +72,6 @@ Evidence: `progress/ppo_ring_seed*/eval/` holds `metrics.json`, `frames_walk.png
 - **Seed 0** is behind: it stands and trots in place (0.12 m/s). It may catch up; seeds vary.
 
 **Next**
-- Let E7 continue to the 15M checkpoint, then apply the decision rules above (walls first).
-- **Hardware benchmark** (in progress): the same training on 32 CPU cores, 64 CPU cores, and
-  1 GPU + 32 cores. The fastest becomes the default.
+- Let E7 run to 40M steps (no restart), then apply the decision rules above (walls first).
+- **Hardware:** benchmarked 32 vs 64 CPU cores: same speed (about 8,900 steps/s), because the
+  network update is the bottleneck. Decision: keep 32-core CPU nodes (EXPERIMENT_LOG H1).
