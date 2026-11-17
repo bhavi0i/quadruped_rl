@@ -328,6 +328,13 @@ independent runs, not 3. It was left running (no-restart rule).
   - `hip_abduction` −2
   - `swing_shape` 1.0 (shared lift curve 8 cm × sin(π × swing progress))
 
+- **E11 at 55–57M (4–6M in):** WEAK. fore-aft 8.2–10.2 cm, spread 66–78 %, FR still lifts
+  14–15 cm. Walls 67–100 %, crab ≤ 0.7°. The terms are too small relative to the total reward.
+
+### E12: Stronger leg-posture weights. RUNNING (Amarel job 63984516, milestone 3 at 51M → 66M, parallel to E11)
+- **Change vs E11:** `foot_placement` −40, `hip_abduction` −6, `swing_shape` 3.0. Everything
+  else is identical, so this is a clean comparison of the weights.
+
 ### C1: Stage 2, obstacle course (healthy robot). PREPARED (starts from the best E11 policy)
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.

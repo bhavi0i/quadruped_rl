@@ -1,25 +1,34 @@
 {
-  "speed": 0.6038698259601143,
-  "trot_match": 0.9848,
-  "feet_down": 1.9608,
-  "body_contact_rate": 0.0036,
-  "swing_lift_cm": 7.952178432902183,
+  "speed": 0.6044049348753342,
+  "trot_match": 0.9801,
+  "feet_down": 1.958,
+  "body_contact_rate": 0.0082,
+  "swing_lift_cm": 8.000954985667972,
   "fall_rate": 0.0,
-  "track_error_m": 0.05458503056826249,
-  "speed_err": 0.003869825960114315,
-  "crab_angle_signed_deg": -0.5495408843032681,
-  "crab_angle_deg": 0.5495408843032681,
-  "roll_deg": 0.5155052685072761,
-  "pitch_deg": 1.8924878384648456,
-  "sideways_speed": -0.006398446671906675,
+  "track_error_m": 0.11247913233030549,
+  "speed_err": 0.004404934875334221,
+  "foot_splay_cm": 4.924007635365584,
+  "foot_fore_aft_cm": 11.327837364810204,
+  "step_height_spread": 0.7999083835633536,
+  "step_height_per_leg_cm": [
+    13.7,
+    8.6,
+    9.6,
+    6.1
+  ],
+  "crab_angle_signed_deg": -0.1710923702595019,
+  "crab_angle_deg": 0.1710923702595019,
+  "roll_deg": 0.43595570874036077,
+  "pitch_deg": 1.6323629201355156,
+  "sideways_speed": -0.0019061345658483056,
   "wall_pass_rate": 1.0,
   "wall_trials": [
     {
       "offset_deg": 0,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.977,
-      "metres_along_track": 5.69,
+      "min_wall_dist": 0.984,
+      "metres_along_track": 5.73,
       "fell": false,
       "passed": true
     },
@@ -27,8 +36,8 @@
       "offset_deg": 30,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.96,
-      "metres_along_track": 5.74,
+      "min_wall_dist": 0.984,
+      "metres_along_track": 5.85,
       "fell": false,
       "passed": true
     },
@@ -36,8 +45,8 @@
       "offset_deg": -30,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 1.012,
-      "metres_along_track": 5.86,
+      "min_wall_dist": 1.008,
+      "metres_along_track": 6.0,
       "fell": false,
       "passed": true
     },
@@ -45,8 +54,8 @@
       "offset_deg": 60,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.977,
-      "metres_along_track": 5.78,
+      "min_wall_dist": 0.994,
+      "metres_along_track": 5.93,
       "fell": false,
       "passed": true
     },
@@ -54,8 +63,8 @@
       "offset_deg": -60,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.674,
-      "metres_along_track": 4.61,
+      "min_wall_dist": 1.0,
+      "metres_along_track": 5.91,
       "fell": false,
       "passed": true
     },
@@ -64,7 +73,7 @@
       "wall_touches": 0,
       "steps_touching": 0,
       "min_wall_dist": 0.998,
-      "metres_along_track": 5.72,
+      "metres_along_track": 5.86,
       "fell": false,
       "passed": true
     }
@@ -76,17 +85,17 @@
       "passed": true
     },
     "trot_match": {
-      "value": 0.985,
+      "value": 0.98,
       "goal": ">= 0.75",
       "passed": true
     },
     "feet_down": {
-      "value": 1.961,
+      "value": 1.958,
       "goal": "between (1.6, 2.6)",
       "passed": true
     },
     "body_contact_rate": {
-      "value": 0.004,
+      "value": 0.008,
       "goal": "<= 0.05",
       "passed": true
     },
@@ -101,20 +110,35 @@
       "passed": true
     },
     "crab_angle_deg": {
-      "value": 0.55,
+      "value": 0.171,
       "goal": "<= 10.0",
       "passed": true
     },
     "roll_deg": {
-      "value": 0.516,
+      "value": 0.436,
       "goal": "<= 3.0",
       "passed": true
     },
     "pitch_deg": {
-      "value": 1.892,
+      "value": 1.632,
       "goal": "<= 4.0",
       "passed": true
+    },
+    "foot_splay_cm": {
+      "value": 4.924,
+      "goal": "<= 5.0",
+      "passed": true
+    },
+    "foot_fore_aft_cm": {
+      "value": 11.328,
+      "goal": "<= 8.0",
+      "passed": false
+    },
+    "step_height_spread": {
+      "value": 0.8,
+      "goal": "<= 0.2",
+      "passed": false
     }
   },
-  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_e10_seed1/ckpt_57999420_steps.zip"
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_e10_seed1/final.zip"
 }

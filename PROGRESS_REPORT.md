@@ -74,6 +74,31 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 15: 2026-11-16, E11 too weak on leg posture → E12 (3–4× stronger) launched in parallel
+
+| | Milestone 3 | E11 seeds (55–57M) | Goal |
+|---|---|---|---|
+| fore-aft foot offset | 11.3 cm | 8.2 / 10.2 / 10.1 cm | ≤ 8 |
+| sideways foot offset | 5.0 cm | 5.2 / 4.4 / 4.5 cm | ≤ 5 |
+| step-height spread | 87 % | 78 / 76 / 66 % | ≤ 20 % |
+| step heights FR/FL/RR/RL | 15.5/10.0/9.3/6.5 | e.g. 15.4/8.1/9.0/7.8 cm | equal |
+| walls / crab | 100 % / 0.1° | 100 / 83 / 67 % · 0.2–0.7° | ≥ 80 % / ≤ 10° |
+
+- **Small improvement only.** The front-right leg still lifts about 14–15 cm while the others
+  lift 7–9 cm. It is probably the outside leg on the counter-clockwise ring.
+- **Why so slow:** the new terms are small next to the rest of the reward. A front leg at 15 cm
+  instead of 8 costs only about 0.5 of about 8 reward per second.
+- **Change: E12** (Amarel job 63984516, milestone 3 at 51M → 66M, in parallel with E11):
+  - `foot_placement` −10 → −40
+  - `hip_abduction` −2 → −6
+  - `swing_shape` 1 → 3
+
+  E11 keeps running untouched. The two runs together show the effect of the weight.
+
+Media: `docs/media/review_55M_20261116_2343/`.
+
+---
+
 ## Report 14: 2026-11-16, legs slanted and steps uneven → E11 launched; stage 2 prepared
 
 ### What the group noticed
