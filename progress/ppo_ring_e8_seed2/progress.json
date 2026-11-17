@@ -397,6 +397,102 @@
    "speed": 0.48222799098337893,
    "trot_match": 0.9058170223927084,
    "body_contact_rate": 0.0023048424641815024
+  },
+  {
+   "timesteps": 50424420,
+   "time": "2026-11-16 21:49",
+   "difficulty": 0.0,
+   "distance": 14.781306248037122,
+   "fall_rate": 0.0,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.392086325788371,
+   "speed": 0.47155150563521386,
+   "trot_match": 0.8994210907177159,
+   "body_contact_rate": 0.001759752647852115
+  },
+  {
+   "timesteps": 50711340,
+   "time": "2026-11-16 21:49",
+   "difficulty": 0.0,
+   "distance": 15.481273304502274,
+   "fall_rate": 0.01,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.41065352862802307,
+   "speed": 0.5026720510176294,
+   "trot_match": 0.9234176774013663,
+   "body_contact_rate": 0.002735954272968075
+  },
+  {
+   "timesteps": 51013710,
+   "time": "2026-11-16 21:50",
+   "difficulty": 0.0,
+   "distance": 15.915907021299502,
+   "fall_rate": 0.0,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.42218254603846994,
+   "speed": 0.5166169866007416,
+   "trot_match": 0.9280054238185005,
+   "body_contact_rate": 0.0020405463504977344
+  },
+  {
+   "timesteps": 51323160,
+   "time": "2026-11-16 21:50",
+   "difficulty": 0.0,
+   "distance": 14.907011057779542,
+   "fall_rate": 0.0,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.39542074942852623,
+   "speed": 0.4767692354383818,
+   "trot_match": 0.8997947972208757,
+   "body_contact_rate": 0.004491840361932461
+  },
+  {
+   "timesteps": 51611340,
+   "time": "2026-11-16 21:51",
+   "difficulty": 0.0,
+   "distance": 15.594199981151773,
+   "fall_rate": 0.0,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.41364900176064096,
+   "speed": 0.4973779807569513,
+   "trot_match": 0.9148336109376084,
+   "body_contact_rate": 0.0038031785689499617
+  },
+  {
+   "timesteps": 51913710,
+   "time": "2026-11-16 21:51",
+   "difficulty": 0.0,
+   "distance": 15.491888711261694,
+   "fall_rate": 0.0,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.41093511103780517,
+   "speed": 0.501991841882931,
+   "trot_match": 0.9252405992658002,
+   "body_contact_rate": 0.0031782253530442833
+  },
+  {
+   "timesteps": 52219170,
+   "time": "2026-11-16 21:52",
+   "difficulty": 0.0,
+   "distance": 16.04308054006167,
+   "fall_rate": 0.01,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.42555592839536804,
+   "speed": 0.5178681068051872,
+   "trot_match": 0.9425759510246841,
+   "body_contact_rate": 0.0032704773129051267
+  },
+  {
+   "timesteps": 52510110,
+   "time": "2026-11-16 21:53",
+   "difficulty": 0.0,
+   "distance": 15.309511575136453,
+   "fall_rate": 0.01,
+   "goal_rate": 0.0,
+   "sections_or_laps": 0.4060974072509258,
+   "speed": 0.49857405624255113,
+   "trot_match": 0.9245067711555647,
+   "body_contact_rate": 0.001972915377741115
   }
  ]
 }

@@ -47,14 +47,23 @@ def wait_for_milestone(poll_min=3):
     while True:
         running, steps = remote_status()
         # [FAILED] min over all runs: finished runs never advance, so reviews stopped once any run ended
-        # [NEW] min over runs still training (remote_status skips runs with final.zip)
+        # [FAILED] min over runs still training: runs that continue from a later policy (E8 at 50M)
+        #   hide runs at lower step counts (E9 at 34M), and runs without a progress file yet are
+        #   invisible, so reviews fired on the wrong runs
+        # [NEW] per-run milestones: review when every active run has passed a new 5M mark of its
+        #   own since its last review (new runs get a baseline when first seen)
         if running is not None and (steps or running == 0):
-            low = min(steps.values()) // MILESTONE if steps else 10 ** 6
-            if low > state.get("_min", 0) or running == 0:
-                state["_min"] = low
-                os.makedirs(os.path.dirname(STATE), exist_ok=True)
+            per_run = state.setdefault("runs", {})
+            for r, s in steps.items():
+                per_run.setdefault(r, s // MILESTONE)
+            due = steps and all(s // MILESTONE > per_run[r] for r, s in steps.items())
+            os.makedirs(os.path.dirname(STATE), exist_ok=True)
+            if due or running == 0:
+                for r, s in steps.items():
+                    per_run[r] = s // MILESTONE
                 json.dump(state, open(STATE, "w"))
                 return steps, running
+            json.dump(state, open(STATE, "w"))
         time.sleep(poll_min * 60)
 
 
