@@ -1,25 +1,25 @@
 {
-  "speed": 0.6153685004605419,
-  "trot_match": 0.9726,
-  "feet_down": 1.9872,
-  "body_contact_rate": 0.0066,
-  "swing_lift_cm": 7.659151931601384,
+  "speed": 0.6026756946890139,
+  "trot_match": 0.9852,
+  "feet_down": 1.9552,
+  "body_contact_rate": 0.0052,
+  "swing_lift_cm": 7.482905508102716,
   "fall_rate": 0.0,
-  "track_error_m": 0.2765475634505685,
-  "speed_err": 0.015368500460541945,
-  "crab_angle_signed_deg": 0.45253592286331445,
-  "crab_angle_deg": 0.45253592286331445,
-  "roll_deg": 0.4123992881370351,
-  "pitch_deg": 3.277656539875601,
-  "sideways_speed": 0.004761398708984044,
-  "wall_pass_rate": 0.8333333333333334,
+  "track_error_m": 0.20438304993143455,
+  "speed_err": 0.0026756946890139632,
+  "crab_angle_signed_deg": -0.2795766438723898,
+  "crab_angle_deg": 0.2795766438723898,
+  "roll_deg": 0.1896249374334833,
+  "pitch_deg": 3.331029304716024,
+  "sideways_speed": -0.004118445640026619,
+  "wall_pass_rate": 1.0,
   "wall_trials": [
     {
       "offset_deg": 0,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.956,
-      "metres_along_track": 5.43,
+      "min_wall_dist": 0.951,
+      "metres_along_track": 5.09,
       "fell": false,
       "passed": true
     },
@@ -27,8 +27,8 @@
       "offset_deg": 30,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.955,
-      "metres_along_track": 5.17,
+      "min_wall_dist": 0.952,
+      "metres_along_track": 5.42,
       "fell": false,
       "passed": true
     },
@@ -36,8 +36,8 @@
       "offset_deg": -30,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.968,
-      "metres_along_track": 4.96,
+      "min_wall_dist": 0.787,
+      "metres_along_track": 4.03,
       "fell": false,
       "passed": true
     },
@@ -45,8 +45,8 @@
       "offset_deg": 60,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.935,
-      "metres_along_track": 5.58,
+      "min_wall_dist": 0.979,
+      "metres_along_track": 5.54,
       "fell": false,
       "passed": true
     },
@@ -54,39 +54,39 @@
       "offset_deg": -60,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.975,
-      "metres_along_track": 0.07,
+      "min_wall_dist": 0.735,
+      "metres_along_track": 2.52,
       "fell": false,
-      "passed": false
+      "passed": true
     },
     {
       "offset_deg": 0,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.978,
-      "metres_along_track": 5.49,
+      "min_wall_dist": 0.86,
+      "metres_along_track": 4.34,
       "fell": false,
       "passed": true
     }
   ],
   "goals": {
     "speed_err": {
-      "value": 0.015,
+      "value": 0.003,
       "goal": "<= 0.15",
       "passed": true
     },
     "trot_match": {
-      "value": 0.973,
+      "value": 0.985,
       "goal": ">= 0.75",
       "passed": true
     },
     "feet_down": {
-      "value": 1.987,
+      "value": 1.955,
       "goal": "between (1.6, 2.6)",
       "passed": true
     },
     "body_contact_rate": {
-      "value": 0.007,
+      "value": 0.005,
       "goal": "<= 0.05",
       "passed": true
     },
@@ -96,25 +96,25 @@
       "passed": true
     },
     "wall_pass_rate": {
-      "value": 0.833,
+      "value": 1.0,
       "goal": ">= 0.8",
       "passed": true
     },
     "crab_angle_deg": {
-      "value": 0.453,
+      "value": 0.28,
       "goal": "<= 10.0",
       "passed": true
     },
     "roll_deg": {
-      "value": 0.412,
+      "value": 0.19,
       "goal": "<= 3.0",
       "passed": true
     },
     "pitch_deg": {
-      "value": 3.278,
+      "value": 3.331,
       "goal": "<= 4.0",
       "passed": true
     }
   },
-  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_e9_seed1/ckpt_38999610_steps.zip"
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_e9_seed1/ckpt_42999570_steps.zip"
 }

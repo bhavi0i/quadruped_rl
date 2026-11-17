@@ -62,6 +62,38 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 9: 2026-11-16, E9 at 41–44M: posture fix holds; wall skill drifts between checkpoints again
+
+| Run | Walls (39M → now) | Crab | Pitch | Track error | Pace |
+|---|---|---|---|---|---|
+| E9 seed 0 (41M) | 100 % → **67 %** | ✅ 0.3° | ✅ 2.8° | 0.50 m | ✅ 0.53 m/s |
+| E9 seed 1 (43M) | 83 % → ✅ **100 %** | ✅ 0.3° | ✅ 3.3° | ✅ 0.20 m | ✅ 0.60 m/s |
+| E9 seed 2 (43M) | 100 % → ❌ **0 %** | ✅ 0.2° | ✅ 3.0° | ✅ 0.09 m | ✅ 0.61 m/s |
+
+**What's working:** the anti-crab fix is stable. Crab is 0.2–0.3° on every seed, the body is
+level, and the trot is clean.
+
+**What's not:** wall turning drifts between checkpoints, just as in E7. Seed 2 now turns about
+90° away from the wall and then **stands still** facing along the ring (it fell in 1 of 6
+trials). Seed 0 fails at −30° and −60° (one turn direction again).
+![](docs/media/review_41M_20261116_2215/ring_e9_seed2/frames_wall.png)
+
+Best this review: seed 1 (walls 100 %, crab 0.3°, track 0.20 m). Video:
+[wall.mp4](docs/media/review_41M_20261116_2215/ring_e9_seed1/wall.mp4), ![](docs/media/review_41M_20261116_2215/ring_e9_seed1/wall.gif)
+
+**Decision:** no change yet. Only one seed regressed badly, seed 1 improved, and milestone 2
+(E9 seed 2 at 39M, walls 100 %) is preserved from before the dip. E9 finishes at 54M.
+
+**If the drift continues to the end of E9**, the next experiment (E10) targets wall
+*consistency*:
+- wall-test-like spawns (1 m from the wall, facing it) as a fixed share of training episodes
+- a small "keep moving" term, so that turning then standing still is not a resting point
+
+Separately, policies can be picked by evaluation rather than by last checkpoint. That is
+already done via milestones.
+
+---
+
 ## Report 8: 2026-11-16, ✅ E9 passes every goal: natural, straight, level trot that turns away from walls
 
 ### Status at a glance (E9, 4–5M steps into the continuation)

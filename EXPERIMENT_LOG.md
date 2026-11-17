@@ -255,6 +255,10 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
   - crab 0.1–0.5° (from 31°), walls 83–100 %, roll 0.2–0.4°, pitch 3.1–3.3°
   - trot 0.97–0.98, 0.62–0.63 m/s, track error 0.28–0.50 m
   - Milestone 2: `progress/milestones/e9_seed2_39M_all_nine_goals/`.
+  - **At 41–44M:** posture holds on all seeds (crab 0.2–0.3°). Walls drift: seed 0 100 → 67 %,
+    seed 1 83 → 100 %, seed 2 100 → 0 %. Seed 2 turns away, then stands still. The wall skill
+    is still not stable across checkpoints (same as E7). Candidate E10: wall-test-like spawns
+    plus a "keep moving" term.
   - What worked:
     - the alignment reward plus the lateral-velocity penalty (anti-crab)
     - potential-based heading progress (no freezing)
