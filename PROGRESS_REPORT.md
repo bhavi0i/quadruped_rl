@@ -74,6 +74,38 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 20: 2026-11-17, still stopping at the ramp → C2 launched (spawn-position bug fixed)
+
+C1 at 70M (4–5M course steps, difficulty 0):
+
+| Run | Furthest point (3 runs) | Course falls | Trot | Shin contact | Roll / pitch |
+|---|---|---|---|---|---|
+| C1 seed 0 | 9.47 / 9.64 / 9.47 m | 0/3 | 0.66 | 24 % | 8.0° / 7.6° |
+| C1 seed 1 | 9.50 / 9.50 / 9.50 m | 0/3 | 0.66 | 25 % | 3.7° / 5.6° |
+| C1 seed 2 | 9.40 / 7.59 / 9.43 m | 1/3 | 0.67 | 24 % | 8.1° / 8.8° |
+
+- **Working:** rubble and hurdles are now cleared reliably from the start, with no falls.
+- **Not working:** every run still stops at the ramp foot (9.4–9.6 m), so the trigger rule
+  applies.
+
+![](docs/media/review_70M_20261117_0109/course_c1_seed1/course.gif)
+
+**Root cause: a spawn bug in the original course code.** Training spawns at "section start
++ 0.8 m" put the dog *on* the ramp (10.0 m; the ramp foot is at 9.6 m) and *on* the first stair
+(15.0 m vs 14.6 m). So it never practised stepping onto the ramp or the stairs from flat ground,
+which is exactly where it freezes.
+
+**Change: C2** (Amarel job 63985737, 3 seeds, from C1 seed 1 at 70M → 130M, no restart; C1 keeps
+running): `--spawn-offset 0.15`, so section spawns sit on the flat run-up with all four feet
+before each obstacle (ramp 9.35 m, stairs 14.35 m; checked: ground height 0 under every foot).
+Rewards are unchanged.
+
+**Still to win back on the course:** a natural gait. Trot match is 0.66 (goal ≥ 0.75), shin contact
+24 %, roll/pitch up to 8–9°. If these don't improve once the ramp is solved, the next tweak will
+target the course gait.
+
+---
+
 ## Report 19: 2026-11-17, stage 2 first review: rubble and hurdles cleared; stops at the foot of the ramp
 
 Course from the start, difficulty 0 (1–2M steps into C1):

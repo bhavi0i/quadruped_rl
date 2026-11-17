@@ -37,6 +37,78 @@
    "speed": 0.031423121491741084,
    "trot_match": 0.6494509167303285,
    "body_contact_rate": 0.1944126135302606
+  },
+  {
+   "timesteps": 67829040,
+   "time": "2026-11-17 00:56",
+   "difficulty": 0.0,
+   "distance": 2.970605220243282,
+   "fall_rate": 0.185,
+   "goal_rate": 0.03,
+   "sections_or_laps": 2.385,
+   "speed": 0.04083599615519232,
+   "trot_match": 0.6731253050955653,
+   "body_contact_rate": 0.159246742518118
+  },
+  {
+   "timesteps": 68392980,
+   "time": "2026-11-17 00:57",
+   "difficulty": 0.0,
+   "distance": 3.0335831526492636,
+   "fall_rate": 0.095,
+   "goal_rate": 0.02,
+   "sections_or_laps": 2.305,
+   "speed": 0.03720258757645563,
+   "trot_match": 0.6744188211511863,
+   "body_contact_rate": 0.15569741461857645
+  },
+  {
+   "timesteps": 68939310,
+   "time": "2026-11-17 00:59",
+   "difficulty": 0.0,
+   "distance": 3.7584729502603382,
+   "fall_rate": 0.085,
+   "goal_rate": 0.07,
+   "sections_or_laps": 2.59,
+   "speed": 0.03516327861492678,
+   "trot_match": 0.6956898760822213,
+   "body_contact_rate": 0.14596855380447715
+  },
+  {
+   "timesteps": 69476880,
+   "time": "2026-11-17 01:01",
+   "difficulty": 0.0,
+   "distance": 3.5413906315374266,
+   "fall_rate": 0.14,
+   "goal_rate": 0.09,
+   "sections_or_laps": 2.535,
+   "speed": 0.024863923247970442,
+   "trot_match": 0.7228077273657384,
+   "body_contact_rate": 0.16523243484569453
+  },
+  {
+   "timesteps": 70031250,
+   "time": "2026-11-17 01:03",
+   "difficulty": 0.0,
+   "distance": 3.5159178576966017,
+   "fall_rate": 0.09,
+   "goal_rate": 0.08,
+   "sections_or_laps": 2.49,
+   "speed": 0.030422547897341105,
+   "trot_match": 0.7138062124573841,
+   "body_contact_rate": 0.15506971877987624
+  },
+  {
+   "timesteps": 70567920,
+   "time": "2026-11-17 01:05",
+   "difficulty": 0.0,
+   "distance": 3.724953043458921,
+   "fall_rate": 0.075,
+   "goal_rate": 0.12,
+   "sections_or_laps": 2.63,
+   "speed": 0.03330301122940718,
+   "trot_match": 0.7255706486295116,
+   "body_contact_rate": 0.22868243054390966
   }
  ]
 }

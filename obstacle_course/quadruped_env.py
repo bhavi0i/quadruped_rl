@@ -165,7 +165,8 @@ class QuadrupedCourseEnv(gym.Env):
     def __init__(self, difficulty=0.0, random_start=True, target_speed=0.6,
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
-                 turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS):
+                 turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
+                 spawn_offset=0.8):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -188,6 +189,7 @@ class QuadrupedCourseEnv(gym.Env):
         # [stage 2] episode length in steps (50 Hz). Ring: 1500 (30 s). Course: 3000 (60 s), because
         #   23.5 m at the natural 0.6 m/s takes ~40 s - a 30 s episode could never reach the goal.
         self.max_steps = max_steps
+        self.spawn_offset = spawn_offset     # course section spawns: section start + this (m)
         self.difficulty = float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
@@ -347,7 +349,12 @@ class QuadrupedCourseEnv(gym.Env):
 
         start_x = 0.8
         if self.random_start:
-            start_x = self.np_random.choice(list(course.SECTION_STARTS.values())) + 0.8
+            # [ORIGINAL] section start + 0.8 m. For the ramp (9.2 + 0.8 = 10.0 > ramp foot 9.6) and the
+            #   stairs (15.0 > first step 14.6) this spawns the dog ON the obstacle, so walking onto it
+            #   from flat ground was never practised - C1 stopped at the ramp foot in every run.
+            # [C2, opt-in] spawn_offset 0.15 m: torso just past the section start, all four feet on
+            #   the flat run-up before each obstacle.
+            start_x = self.np_random.choice(list(course.SECTION_STARTS.values())) + self.spawn_offset
             start_x = min(start_x, 18.7 + 0.2)
         qpos = self.data.qpos
         qpos[0] = start_x

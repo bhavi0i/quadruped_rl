@@ -362,6 +362,15 @@ independent runs, not 3. It was left running (no-restart rule).
   - Gait degraded on the course (roll/pitch 8–12°, shin contact 22–32 %).
   - Distance per episode 3.4 m (< 5 m threshold), difficulty 0.
   - Candidate tweak if it persists: pre-ramp and pre-stairs spawns.
+- **At 70M (4–5M in):** still stuck at the ramp foot in every run. Rubble and hurdles reliable (no
+  falls). Gait on the course: trot 0.66, shin contact 24 %, roll/pitch up to 8–9°.
+
+### C2: Course with run-up spawns (bug fix). RUNNING (Amarel job 63985737, from C1 seed 1 at 70M → 130M)
+- **Bug (original course code):** spawn = section start + 0.8 m put ramp and stairs spawns *on*
+  the obstacle (10.0 vs ramp foot 9.6; 15.0 vs first step 14.6). Stepping onto them from flat
+  ground was never trained.
+- **Change (one idea):** `--spawn-offset 0.15`. All feet are on the flat run-up before each
+  obstacle (verified). Rewards are unchanged from C1.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
