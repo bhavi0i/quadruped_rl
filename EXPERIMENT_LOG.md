@@ -544,6 +544,12 @@ independent runs, not 3. It was left running (no-restart rule).
   - New bottleneck: the slalom (possible stage-1 "stop at walls" habit). Training falls up to
     38–46 %.
   - Milestone: `progress/milestones/c11_seed2_200M_bench05_2of6/`.
+- **At 206–212M:**
+  - Seed 0 **3/6** (43.3/46.7/54.3 s); seeds 1–2 1/6 each → 5/18. Stops: stairs ×8, rubble ×3,
+    slalom ×1.
+  - Training falls 16–33 %.
+  - Milestone: `progress/milestones/c11_seed0_212M_bench05_3of6/`.
+  - Slalom tweak (C12) deferred: C11 is still improving.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

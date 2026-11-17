@@ -74,6 +74,32 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 39: 2026-11-17, 🏁 new best: 3 of 6 benchmark crossings (C11 seed 0)
+
+Benchmark: all obstacles 0.5, 6 rubble layouts.
+
+| Run | Goals | Goal times | Where non-goal runs stop |
+|---|---|---|---|
+| **C11 seed 0 (212M)** | **3 / 6** | **43.3, 46.7, 54.3 s** | stairs ×2, slalom ×1 |
+| C11 seed 1 (210M) | 1 / 6 | 41.2 s | stairs ×3 (1 fall), rubble ×2 |
+| C11 seed 2 (206M) | 1 / 6 | 34.7 s | stairs ×3 (1 fall), hurdles, rubble |
+
+- **C11 overall: 5 goals in 18 runs.** The first policy at 50 % (target ≥ 4/6).
+- The slalom no longer dominates (1 stop). The remaining stops are mostly the **stairs** (8),
+  then rubble (3).
+- Training: falls back down to 16–33 %. Ramp level 0.75–1.0, stairs 0.55–0.75.
+- Body straight on the course for seeds 0 and 2 (crab 2.9° and 0.6°); seed 1 crab 14° ❌.
+
+Milestone [`progress/milestones/c11_seed0_212M_bench05_3of6/`](progress/milestones/c11_seed0_212M_bench05_3of6) with its benchmark video (layout 0, goal in 43.3 s):
+![](progress/milestones/c11_seed0_212M_bench05_3of6/course.gif)
+Video: [course.mp4](progress/milestones/c11_seed0_212M_bench05_3of6/course.mp4)
+
+**Decision:** no change. C11 is improving review on review (2/6 → 3/6 best; 2/18 → 5/18 overall),
+so the slalom tweak (C12) is not needed for now. C11 runs to 258M. Then a **checkpoint sweep**
+picks the final stage-2 policy, followed by the full-difficulty test (1.0).
+
+---
+
 ## Report 38: 2026-11-17, ✅ stumble penalty works: ramp and stairs levels jump; the slalom is the next bottleneck
 
 ### Training (C11 at 203–207M, 2–4M steps after adding `feet_stumble`)
