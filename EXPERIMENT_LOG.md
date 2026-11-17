@@ -579,6 +579,12 @@ independent runs, not 3. It was left running (no-restart rule).
   - Seed 0 **4/6** (31.9–51.3 s), seed 1 2/6, seed 2 0/6 (stairs ×4).
   - Milestone: `progress/milestones/c13_seed0_237M_bench05_4of6/`. Sweep at 0.5/0.75/1.0
     pending.
+- **At 240–246M:**
+  - Results: seed 0 2/6, seed 1 1/6, seed 2 1/6. 13 of 18 runs stopped at the first stairs
+    steps (x ≈ 15.15).
+  - Training stairs clear rate 0.26–0.31 at stairs difficulty 0.65–0.7.
+  - Peak-then-drop again, so pick by sweep. Next lever if flat: stair-step spawns /
+    terrain-relative body height.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

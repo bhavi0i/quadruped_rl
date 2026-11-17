@@ -74,6 +74,38 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 43: 2026-11-17, C13 at 240–246M: dropped back to 2/6; the stairs block 13 of 18 runs
+
+Benchmark 0.5, 6 layouts:
+
+| Run | Goals | Where the failures stopped |
+|---|---|---|
+| C13 seed 0 (245M) | 2 / 6 (39.4, 40.4 s) | stairs ×4 |
+| C13 seed 1 (246M) | 1 / 6 (47.3 s) | stairs ×4, rubble ×1 |
+| C13 seed 2 (240M) | 1 / 6 (56.6 s) | stairs ×4, rubble ×1 |
+
+- **Not working:** seed 0 fell from 4/6 at 237M to 2/6. This is the peak-then-drop pattern
+  seen in C8–C11, so the final policy will again be picked by a checkpoint sweep, not by the
+  newest checkpoint.
+- **The stairs:** they are the single bottleneck.
+  - Every stairs failure stops at x ≈ 15.15 m: the body is about 0.55 m in, front feet on the
+    first or second step.
+  - Hurdles and the ramp clear on every run that reaches them.
+- **Training (curriculum):** stairs difficulty is 0.65–0.7, but the stairs clear rate is only
+  0.26–0.31. Elsewhere: ramp 0.85–0.9, other sections 1.0. Falls 20 %, trot_match 0.82–0.83.
+- **Posture on the course is fine:** crab 0.3–8°, roll ≤ 3.3°, pitch ≤ 1.5°, feet under the
+  hips (splay < 4 cm).
+
+Media: [`docs/media/review_240M_20261117_1111/`](docs/media/review_240M_20261117_1111). Best-seed video:
+![](docs/media/review_240M_20261117_1111/course_c13_seed0/course.gif)
+
+**Decision:** no reward change yet. The terrain-aware lift has had only about 13M steps, and
+the stairs already get 3× spawn weight. At about 260M, sweep every C13 checkpoint on Amarel at
+0.5 and 0.75. If the stairs clear rate is still flat, the next step is a stairs-specific fix:
+spawn practice directly on the first step, and/or a body-height reward relative to the terrain.
+
+---
+
 ## Report 42: 2026-11-17, C13 (terrain-aware foot lift): 4 of 6 at a regular review
 
 Benchmark 0.5, 6 layouts:
