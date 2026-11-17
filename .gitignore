@@ -11,3 +11,5 @@ runs/_amarel/
 obstacle_course/runs/
 MUJOCO_LOG.TXT
 runs/_amarel_ppo/
+runs/_review_state.json
+!progress/**/*.pkl

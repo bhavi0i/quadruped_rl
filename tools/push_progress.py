@@ -102,7 +102,7 @@ def pull_ppo():
             sh("rsync", "-a", f"{REMOTE}:{REMOTE_DIR}/obstacle_course/runs/{f}", dst + "/", check=False)
 
 
-def check_ppo_run(run):
+def check_ppo_run(run, force=False):
     src, dst = os.path.join(PPO_CACHE, run), os.path.join(PROGRESS, "ppo_" + run)
     prog = os.path.join(src, "progress.json")
     if not os.path.exists(prog):
@@ -115,7 +115,7 @@ def check_ppo_run(run):
     state_f = os.path.join(dst, "state.json")
     state = json.load(open(state_f)) if os.path.exists(state_f) else {"milestone": 0, "finished": False}
     milestone = steps // PPO_MILESTONE
-    if milestone <= state["milestone"] and finished <= state["finished"]:
+    if not force and milestone <= state["milestone"] and finished <= state["finished"]:
         return None
     os.makedirs(dst, exist_ok=True)
     for f in os.listdir(src):        # keep only the newest checkpoint as latest.zip

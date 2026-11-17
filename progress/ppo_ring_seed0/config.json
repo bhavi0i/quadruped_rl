@@ -1,0 +1,14 @@
+{
+  "arena": "ring",
+  "robot": "go1",
+  "steps": 40000000.0,
+  "envs": 30,
+  "difficulty": 0.0,
+  "target_speed": 0.6,
+  "injury": null,
+  "seed": 0,
+  "out": "runs/ring_seed0",
+  "init_from": null,
+  "torch_threads": 2,
+  "ckpt_freq": 1000000.0
+}

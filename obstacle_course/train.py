@@ -114,6 +114,8 @@ def main():
     p.add_argument("--out", default="runs/ring_seed0")
     p.add_argument("--init-from", default=None, help="start from this model (e.g. the ring policy)")
     p.add_argument("--torch-threads", type=int, default=4)
+    p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
+    p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
     args = p.parse_args()
     torch.set_num_threads(args.torch_threads)
@@ -138,14 +140,15 @@ def main():
         venv = VecNormalize.load(stats, venv) if os.path.exists(stats) else \
             VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
         venv.training = True
-        model = PPO.load(src, env=venv, tensorboard_log=args.out)
+        model = PPO.load(src, env=venv, tensorboard_log=args.out, device=args.device)
         print(f"{'Resuming from' if ckpt else 'Initialised from'} {src} ({model.num_timesteps:,} steps)")
     else:
         venv = VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
-        model = PPO("MlpPolicy", venv, n_steps=1024, batch_size=4096, n_epochs=5,
+        model = PPO("MlpPolicy", venv, n_steps=args.n_steps, batch_size=4096, n_epochs=5,
                     learning_rate=3e-4, gamma=0.99, gae_lambda=0.95, clip_range=0.2,
                     ent_coef=0.0, vf_coef=0.5, max_grad_norm=1.0, seed=args.seed,
-                    policy_kwargs=policy_kwargs, tensorboard_log=args.out, verbose=1)
+                    policy_kwargs=policy_kwargs, tensorboard_log=args.out, verbose=1,
+                    device=args.device)
 
     callbacks = [ProgressCallback(args.out, args.arena, start=difficulty),
                  CheckpointCallback(save_freq=max(1, int(args.ckpt_freq) // args.envs), save_path=args.out,

@@ -1,0 +1,100 @@
+{
+  "speed": 0.12153460486921562,
+  "trot_match": 0.79045,
+  "feet_down": 2.7506,
+  "body_contact_rate": 0.0204,
+  "swing_lift_cm": 6.794704612574681,
+  "fall_rate": 0.0,
+  "track_error_m": 1.037707285947306,
+  "speed_err": 0.47846539513078434,
+  "wall_pass_rate": 0.0,
+  "wall_trials": [
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.001,
+      "metres_along_track": 0.07,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.785,
+      "metres_along_track": 0.13,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": -30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.016,
+      "metres_along_track": 0.07,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.821,
+      "metres_along_track": 0.28,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": -60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.001,
+      "metres_along_track": 0.39,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.0,
+      "metres_along_track": 0.08,
+      "fell": false,
+      "passed": false
+    }
+  ],
+  "goals": {
+    "speed_err": {
+      "value": 0.478,
+      "goal": "<= 0.15",
+      "passed": false
+    },
+    "trot_match": {
+      "value": 0.79,
+      "goal": ">= 0.75",
+      "passed": true
+    },
+    "feet_down": {
+      "value": 2.751,
+      "goal": "between (1.6, 2.6)",
+      "passed": false
+    },
+    "body_contact_rate": {
+      "value": 0.02,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "fall_rate": {
+      "value": 0.0,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "wall_pass_rate": {
+      "value": 0.0,
+      "goal": ">= 0.8",
+      "passed": false
+    }
+  },
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_seed0/ckpt_2999970_steps.zip"
+}

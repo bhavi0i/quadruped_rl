@@ -154,7 +154,23 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
   - natural trot at 0.6 m/s: about 6.7
   - standing still: about 2
   - sprinting at 3 m/s: about 3
-- **Result:** pending. Check the gait at about 10M steps.
+- **Interim result at 5M steps:** WORKS for gait.
+  - Seeds 1 and 2: 0.51–0.55 m/s, trot match 0.84–0.87, about 2 feet down, no falls.
+  - Still failing: shin contact 11–12 % and the wall test (0–17 %). The dog stops before the wall
+    but does not turn.
+  - Seed 0 is behind (0.12 m/s).
+  - Details: PROGRESS_REPORT.md, report 1.
+
+### H1: Hardware for RL training (CPU vs GPU on Amarel). IN PROGRESS
+- **Date:** 2026-11-16
+- **Question:** which Amarel node type trains fastest?
+- **Setup:** the same 2M-step ring PPO run (`amarel/bench.slurm`) on 32 CPU cores, 64 CPU cores,
+  and 1 GPU + 32 cores.
+- **Expectation:** the physics (MuJoCo) runs on the CPU, one simulation per core, and the policy
+  network is small (256-256-128). So the GPU should help only the short network-update phase.
+  More cores should help more. A big GPU speed-up would need a GPU simulator (MuJoCo MJX), which
+  would be a rewrite.
+- **Result:** pending.
 
 ---
 
