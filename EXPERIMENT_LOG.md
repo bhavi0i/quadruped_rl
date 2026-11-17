@@ -310,6 +310,9 @@ independent runs, not 3. It was left running (no-restart rule).
     `progress/milestones/e10_seed1_51M_stage1_final/`
     - walls 100 %, crab 0.1°, roll 0.3°, pitch 2.3°, trot 0.985, 0.59 m/s
     - shin contact 0.6 %, no falls, track error 0.14 m
+- **Late check (56–59M):** seeds 1 and 2 still pass everything. Seed 0's final eroded (shin
+  contact 18.6 %, 0.48 m/s). Lesson confirmed: select policies by evaluation (milestones), not by
+  the last checkpoint.
 
 ---
 

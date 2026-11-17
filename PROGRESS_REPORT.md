@@ -62,6 +62,24 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 13: 2026-11-16, E10 late check: 2 seeds still perfect; seed 0's final eroded
+
+| Run | Walls | Crab | Shin contact | Speed | Track error |
+|---|---|---|---|---|---|
+| E10 seed 0 **final** (59M) | ✅ 100 % | ✅ 1.4° | ❌ **18.6 %** | 0.48 m/s | 0.37 m |
+| E10 seed 1 (58M) | ✅ 100 % | ✅ 0.6° | ✅ | ✅ 0.60 | ✅ 0.05 m |
+| E10 seed 2 (56M) | ✅ 100 % | ✅ 0.1° | ✅ | ✅ 0.60 | ✅ 0.11 m |
+
+- **Seeds 1 and 2 hold every goal** to the end of E10, a third consecutive pass.
+- **Seed 0's last checkpoints eroded:** shins brushing the ground on 18.6 % of steps, and slower.
+  This is the same late-training drift E7 seed 2 showed. It confirms the practice of picking
+  policies **by evaluation (milestones)**, not by the last checkpoint. Milestone 3 (seed 1 at 51M)
+  is unaffected.
+
+Video of seed 1 at 58M (still perfect): ![](docs/media/review_56M_20261116_2305/ring_e10_seed1/wall.gif)
+
+---
+
 ## Report 12: 2026-11-16, ✅ STAGE 1 COMPLETE: stable, natural trot with wall handling
 
 **Stability confirmed.** At the second consecutive review (50–52M), every E10 seed still passes
