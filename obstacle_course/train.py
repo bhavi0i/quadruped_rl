@@ -158,10 +158,13 @@ def main():
     callbacks = [ProgressCallback(args.out, args.arena, start=difficulty),
                  CheckpointCallback(save_freq=max(1, int(args.ckpt_freq) // args.envs), save_path=args.out,
                                     name_prefix="ckpt", save_vecnormalize=True)]
-    done = model.num_timesteps if ckpt else 0
+    # [FAILED, never run] done = model.num_timesteps if ckpt else 0  and  reset_num_timesteps=not ckpt
+    #   -> with --init-from the counter restarted at 0 and trained the full --steps again.
+    # [NEW] a continuation (--init-from) or resume keeps the step count; --steps is the total.
+    done = model.num_timesteps if src else 0
     remaining = int(args.steps) - done
     if remaining > 0:
-        model.learn(total_timesteps=remaining, callback=callbacks, reset_num_timesteps=not ckpt,
+        model.learn(total_timesteps=remaining, callback=callbacks, reset_num_timesteps=not src,
                     tb_log_name=args.arena)
     model.save(f"{args.out}/final")
     venv.save(f"{args.out}/final_vecnormalize.pkl")
