@@ -119,13 +119,14 @@ def main():
                    help="directory to save one mp4 per scenario (set MUJOCO_GL=egl on headless nodes)")
     p.add_argument("--out", type=str, default=None, help="write results JSON here")
     p.add_argument("--seed", type=int, default=123)
+    p.add_argument("--healthy-only", action="store_true", help="skip the injury scenarios")
     args = p.parse_args()
 
     model, cfg, vecnorm = load(args.model_path)
     names = LEG_NAMES[cfg.get("robot", "ant")]
     legs = [args.injured_leg] if args.injured_leg is not None else range(N_LEGS)
     scenarios = {"healthy": None}
-    for s in args.strengths:
+    for s in ([] if args.healthy_only else args.strengths):
         scenarios.update({f"leg{l}_{names[l]}_str{s:g}": {l: s} for l in legs})
 
     results = {}

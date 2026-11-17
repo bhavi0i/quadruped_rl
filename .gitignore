@@ -7,3 +7,4 @@ videos/
 results/
 *.pkl
 checkpoints/
+runs/_amarel/
