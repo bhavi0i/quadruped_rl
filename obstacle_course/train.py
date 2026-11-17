@@ -35,7 +35,8 @@ def make_env(rank, args, difficulty):
     def _init():
         env = QuadrupedCourseEnv(difficulty=difficulty, random_start=True, injury=args.injury,
                                  course_seed=rank, robot=args.robot, arena=args.arena,
-                                 target_speed=args.target_speed)
+                                 target_speed=args.target_speed, reward_weights=args.reward_weights,
+                                 turn_practice=args.turn_practice)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -114,6 +115,10 @@ def main():
     p.add_argument("--out", default="runs/ring_seed0")
     p.add_argument("--init-from", default=None, help="start from this model (e.g. the ring policy)")
     p.add_argument("--torch-threads", type=int, default=4)
+    p.add_argument("--reward-weights", type=json.loads, default={},
+                   help='override reward weights, e.g. \'{"turn_to_route": 1.0}\' (see EXPERIMENT_LOG)')
+    p.add_argument("--turn-practice", type=float, default=0.25,
+                   help="share of spawns facing a random direction (wall/turn practice)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")

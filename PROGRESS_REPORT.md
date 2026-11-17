@@ -52,6 +52,65 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 
 ---
 
+## Report 3: 2026-11-16, ring v2 (E7) at 16–21M steps
+
+**Status at a glance**
+
+| Run | Steps (eval ckpt) | Pace | Trot | Feet down | Shin contact | Falls | Walls | Overall |
+|---|---|---|---|---|---|---|---|---|
+| seed 0 | 16.0M (16M) | ✅ 0.59 m/s | ✅ 0.99 | ✅ 1.98 | ✅ 0.2 % | ✅ 0 % | ❌ 17 % | 5 of 6 goals |
+| seed 1 | 21.1M (21M) | ✅ 0.60 m/s | ✅ 1.00 | ✅ 2.00 | ✅ 0.4 % | ✅ 0 % | 🟡 67 % | 5 of 6 goals, best at walls |
+| seed 2 | 21.2M (21M) | ✅ 0.58 m/s | ✅ 0.99 | ✅ 2.02 | ✅ 0.4 % | ✅ 0 % | ❌ 17 % | 5 of 6 goals |
+
+**Media** (best seed: seed 1, 21M steps; video: [walk.mp4](docs/media/review_15M_20261116_2042/ring_seed1/walk.mp4),
+[wall.mp4](docs/media/review_15M_20261116_2042/ring_seed1/wall.mp4))
+
+| Walking (trot match 1.00) | Facing the wall head-on: turns away and walks off |
+|---|---|
+| ![](docs/media/review_15M_20261116_2042/ring_seed1/walk.gif) | ![](docs/media/review_15M_20261116_2042/ring_seed1/wall.gif) |
+
+- seed 1 at the wall (turns): ![](docs/media/review_15M_20261116_2042/ring_seed1/frames_wall.png)
+- seed 2 at the wall (now stuck; it was turning at 14M): ![](docs/media/review_15M_20261116_2042/ring_seed2/frames_wall.png)
+
+**What changed since report 2**
+- No training changes (no restarts).
+- Tooling:
+  -  replays the wall test in the MuJoCo viewer.
+  - Reviews now save media automatically.
+- **Prepared, not yet used:** E8. An opt-in  reward plus a 
+  spawn share (see EXPERIMENT_LOG). It is off by default, so the running jobs are unaffected.
+
+**What's working**
+- **Walking is essentially perfect on all 3 seeds:**
+  - trot match 0.99–1.00, exactly about 2 feet down (a clean diagonal pair)
+  - pace within 0.02 m/s of target, shin contact < 0.5 %, no falls
+- **Never touching walls.** In all 18 trials the dog stopped before the wall.
+
+**What's not working**
+- **Turning away from walls is unstable.** The pass rate swaps between seeds from one
+  checkpoint to the next:
+
+  | Seed | 10–14M | 16–21M |
+  |---|---|---|
+  | 0 | 33 % | 17 % |
+  | 1 | 17 % | 67 % |
+  | 2 | 67 % | 17 % |
+
+  Each policy learns to turn one way, then drifts. More training alone is not settling it: turning
+  is paid only indirectly (heading +0.5), and only about 25 % of episodes practise it.
+- Seeds 0 and 1 drift about 1 m off the track line while still walking well (track error
+  1.1–1.2 m vs 0.3 m for seed 2). This is minor and not a goal yet.
+
+**Next**
+- E7 finishes at 40M steps (seeds 1 and 2 in about 25 min; seed 0 is on a slower node).
+- Then, per the decision rules (wall pass rate < 50 % for most seeds), run **E8 as a
+  continuation** from the best E7 final policy:
+  -  = 1.0 (reward for turning toward the route when facing more than 45° away)
+  - turn-practice spawns 25 % → 40 %
+  - walking rewards unchanged
+
+---
+
 ## Report 2: 2026-11-16, ring v2 (E7) at 10–14M steps
 
 **Status at a glance**

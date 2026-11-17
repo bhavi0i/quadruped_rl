@@ -173,6 +173,23 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     without reward changes (seed 2: 67 %; seeds 0 and 1: 33 % and 17 %, each favouring one turn
     direction).
   - Details: PROGRESS_REPORT.md, report 2.
+- **Result at 16–21M steps:**
+  - Walking near perfect: trot match 0.99–1.00, 2.0 feet down, 0.58–0.60 m/s, shin contact
+    < 0.5 %, no falls.
+  - Walls unstable: the per-seed pass rate swaps between checkpoints (seed 0 33→17 %, seed 1
+    17→67 %, seed 2 67→17 %). It never touches the wall.
+  - Details: PROGRESS_REPORT.md, report 3.
+
+### E8: Ring continuation with an explicit turn reward. PLANNED (after E7 finishes)
+- **Why:** in E7 the wall turning is unstable. Turning is only rewarded indirectly (heading +0.5)
+  and only practised in 25 % of episodes.
+- **Change** (one idea plus more practice of it):
+  - new  reward, weight 1.0. When the dog faces more than 45° away from the route,
+    it earns clip(yaw rate × sign(heading error), −1, 1): positive for turning toward the route,
+    negative for turning away.
+  - turn-practice spawns 25 % → 40 %.
+- **How:** continue from the best E7 final policy (). No restart from scratch.
+- **Success:** wall pass rate ≥ 80 % with all walking goals still passing.
 
 ### H1: Hardware for RL training (CPU vs GPU on Amarel). DECIDED: keep 32 CPU cores
 - **Date:** 2026-11-16

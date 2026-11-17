@@ -18,6 +18,23 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from quadruped_env import QuadrupedCourseEnv
 
 
+def place_facing_wall(env, ang, off_deg, dist=1.0):
+    """Put the robot `dist` m from the ring wall at angle `ang`, facing the wall (+ offset)."""
+    import mujoco
+    import course
+    r = course.RING_RADIUS - dist
+    d = env.data
+    d.qpos[0] = course.RING_CENTER[0] + r * np.cos(ang)
+    d.qpos[1] = course.RING_CENTER[1] + r * np.sin(ang)
+    yaw = ang + np.deg2rad(off_deg)
+    d.qpos[3:7] = [np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)]
+    d.qvel[:] = 0
+    mujoco.mj_forward(env.model, d)
+    env.ring_last_a, env.ring_theta = ang, 0.0
+    env.start_x = env.max_x = env.progress_s = 0.0
+    return env._get_obs()
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("model", nargs="?")
@@ -29,6 +46,8 @@ def main():
     p.add_argument("--injury", default=None, help='e.g. "FR=0.0", "FL_calf=0.3" or "random_leg"')
     p.add_argument("--episodes", type=int, default=1, help="episodes to play (0 = keep going)")
     p.add_argument("--fast", action="store_true", help="don't slow the viewer down to real time")
+    p.add_argument("--wall-test", action="store_true",
+                   help="ring only: start 1 m from the wall facing it (0, +-30, +-60 deg), 10 s each")
     a = p.parse_args()
 
     injury = a.injury
@@ -51,7 +70,13 @@ def main():
     frames, ep = [], 0
     while a.episodes == 0 or ep < a.episodes:
         obs, _ = env.reset(seed=ep)
+        if a.wall_test:
+            off = [0, 30, -30, 60, -60][ep % 5]
+            obs = place_facing_wall(env, ang=np.deg2rad(45 * ep), off_deg=off)
+            print(f"wall trial {ep + 1}: facing the wall {'head-on' if off == 0 else f'{off:+d} deg off'}",
+                  flush=True)
         done, total, speeds, trot = False, 0.0, [], []
+        hits, touching = 0, False
         while not done:
             t0 = time.time()
             if a.random or not a.model:
@@ -62,12 +87,17 @@ def main():
             obs, r, term, trunc, info = env.step(act)
             total += r
             speeds.append(info["v_fwd"]); trot.append(info["trot_match"])
-            done = term or trunc
+            hits += int(info["wall_hits"] > 0 and not touching); touching = info["wall_hits"] > 0
+            done = term or trunc or (a.wall_test and env.steps >= 500)
             if a.video and env.steps % 2 == 0:
                 frames.append(env.render())
             if mode == "human" and not a.fast:
                 time.sleep(max(0.0, 0.02 - (time.time() - t0)))   # play at real time (50 Hz)
         ep += 1
+        if a.wall_test:
+            print(f"   -> wall touches {hits}, got {abs(env.progress_s - env.start_x):.1f} m away along the ring, "
+                  f"fell: {info['fell']}", flush=True)
+            continue
         where = f"{info['x'] - info['start_x']:.1f} m around the ring" if a.arena == "ring" else \
             f"reached x = {info['x']:.2f} m | goal: {info['reached_goal']}"
         print(f"episode {ep}: return {total:.1f} | {where} | speed {np.mean(speeds):.2f} m/s | "

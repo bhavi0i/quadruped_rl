@@ -113,6 +113,9 @@ DEFAULT_REWARD_WEIGHTS = dict(
     collision=-2.0,        # [NEW v2] torso / thighs / calves (shins) hitting the terrain or obstacles
     wall_contact=-2.0,     # [NEW v1] any part of the robot touching a wall or slalom barrier
     wall_proximity=-1.0,   # [NEW v1] walking within ~0.4 m of a wall straight ahead / to the side
+    turn_to_route=0.0,     # [E8, opt-in] when facing > 45 deg off the route (e.g. at a wall), reward
+                           #   turning toward it: clip(yaw_rate * sign(heading error), -1, 1).
+                           #   0 = off (E7). E8 continuation sets 1.0 via train.py --reward-weights.
     # ---- one-off events ----
     checkpoint=10.0,       # bonus when the robot clears each course section (course only)
     goal=100.0,            # reaching the goal pad
@@ -131,7 +134,8 @@ class QuadrupedCourseEnv(gym.Env):
 
     def __init__(self, difficulty=0.0, random_start=True, target_speed=0.6,
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
-                 robot="go1", gait_period=0.5, swing_height=0.08, arena="course"):
+                 robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
+                 turn_practice=0.25):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -144,6 +148,7 @@ class QuadrupedCourseEnv(gym.Env):
         """
         assert arena in ("course", "ring")
         self.arena = arena
+        self.turn_practice = turn_practice   # share of spawns facing a random way (E7: 0.25, E8: 0.4)
         self.difficulty = float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
@@ -294,7 +299,7 @@ class QuadrupedCourseEnv(gym.Env):
         qpos[1] = self.np_random.uniform(-0.3, 0.3) if self.random_start else 0.0
         qpos[2] = self.cfg["spawn_height"]
         yaw = self.np_random.uniform(-0.3, 0.3) if self.random_start else 0.0
-        turn_practice = self.random_start and self.np_random.random() < 0.25   # face a random way,
+        turn_practice = self.random_start and self.np_random.random() < self.turn_practice  # random heading,
         if turn_practice and self.arena == "course":                          # often into a wall
             yaw = self.np_random.uniform(-1.6, 1.6)
         if self.arena == "ring":            # random spot on the track, facing along it (CCW)
@@ -487,6 +492,8 @@ class QuadrupedCourseEnv(gym.Env):
             "collision": float(n_collisions),
             "wall_contact": float(self.wall_hits),
             "wall_proximity": float(np.sum(np.clip(0.4 - lidar, 0, None) / 0.4)),
+            "turn_to_route": (float(np.clip(ang_vel[2] * np.sign(heading_err), -1, 1))
+                              if abs(heading_err) > np.deg2rad(45) else 0.0),
             "checkpoint": 0.0, "goal": 0.0, "fall": 0.0,
         }
         self.max_x = max(self.max_x, s)
