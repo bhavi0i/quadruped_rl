@@ -62,6 +62,36 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 11: 2026-11-16, ✅ E10: every seed passes every goal, walls 100 % (first review; stability to confirm)
+
+E10 at 44–46M steps (5–7M into the continuation from milestone 2):
+
+| Run | Pace | Trot | Feet | Shin | Falls | Walls | Crab | Roll | Pitch | Track error |
+|---|---|---|---|---|---|---|---|---|---|---|
+| E10 seed 0 | ✅ 0.49 | ✅ 0.90 | ✅ 2.30 | ✅ 0.3 % | ✅ 0 % | ✅ **100 %** | ✅ 1.6° | ✅ 1.4° | ✅ 1.4° | 0.39 m |
+| E10 seed 1 | ✅ 0.63 | ✅ 0.98 | ✅ 1.96 | ✅ 0.5 % | ✅ 0 % | ✅ **100 %** | ✅ 1.0° | ✅ 0.2° | ✅ 2.6° | 0.10 m |
+| E10 seed 2 | ✅ 0.62 | ✅ 0.97 | ✅ 1.99 | ✅ 0.6 % | ✅ 0 % | ✅ **100 %** | ✅ 1.2° | ✅ 0.1° | ✅ 2.9° | 0.06 m |
+
+**All 3 seeds pass all 9 goals, with walls at 100 %.** The wall-test-like spawns removed the
+"wrong-way" trap. Every wall trial turns away and walks on, with no freezing.
+
+For comparison, the E9 finals (54M): walls 67 % on all seeds, crab 0.1–0.7°, no falls. E9 is
+superseded by E10.
+
+| E10 walking | E10 facing the wall head-on |
+|---|---|
+| ![](docs/media/review_44M_20261116_2244/ring_e10_seed0/walk.gif) | ![](docs/media/review_44M_20261116_2244/ring_e10_seed0/wall.gif) |
+
+Videos: [walk.mp4](docs/media/review_44M_20261116_2244/ring_e10_seed0/walk.mp4) · [wall.mp4](docs/media/review_44M_20261116_2244/ring_e10_seed0/wall.mp4)
+
+**Still to confirm:** stability. E7 and E9 also hit 100 % once, then drifted. The success rule is
+≥ 80 % on every seed at **consecutive** reviews, so the next review (about 50M) decides. If it
+holds, stage 1 is done and the best E10 checkpoint becomes milestone 3.
+
+Minor: E10 seed 0 walks a bit slow (0.49 m/s, within the ±0.15 tolerance).
+
+---
+
 ## Report 10: 2026-11-16, E9 walls regress on 2 seeds → E10 launched (practise the exact wall situation)
 
 | Run | Walls (39M → 43M → now) | Falls | Crab | Track error |

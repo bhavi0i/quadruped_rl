@@ -1,0 +1,120 @@
+{
+  "speed": 0.6049062119622584,
+  "trot_match": 0.96535,
+  "feet_down": 1.8818,
+  "body_contact_rate": 0.0026,
+  "swing_lift_cm": 8.141108076059796,
+  "fall_rate": 0.0,
+  "track_error_m": 0.21981525258049006,
+  "speed_err": 0.004906211962258378,
+  "crab_angle_signed_deg": -0.7096699985556403,
+  "crab_angle_deg": 0.7096699985556403,
+  "roll_deg": 0.24049942184350231,
+  "pitch_deg": 0.6298045431741345,
+  "sideways_speed": -0.008959566015828082,
+  "wall_pass_rate": 0.6666666666666666,
+  "wall_trials": [
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.997,
+      "metres_along_track": 4.79,
+      "fell": false,
+      "passed": true
+    },
+    {
+      "offset_deg": 30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.989,
+      "metres_along_track": 4.95,
+      "fell": false,
+      "passed": true
+    },
+    {
+      "offset_deg": -30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.972,
+      "metres_along_track": 0.15,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.997,
+      "metres_along_track": 5.35,
+      "fell": false,
+      "passed": true
+    },
+    {
+      "offset_deg": -60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.885,
+      "metres_along_track": 0.29,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.0,
+      "metres_along_track": 3.95,
+      "fell": false,
+      "passed": true
+    }
+  ],
+  "goals": {
+    "speed_err": {
+      "value": 0.005,
+      "goal": "<= 0.15",
+      "passed": true
+    },
+    "trot_match": {
+      "value": 0.965,
+      "goal": ">= 0.75",
+      "passed": true
+    },
+    "feet_down": {
+      "value": 1.882,
+      "goal": "between (1.6, 2.6)",
+      "passed": true
+    },
+    "body_contact_rate": {
+      "value": 0.003,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "fall_rate": {
+      "value": 0.0,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "wall_pass_rate": {
+      "value": 0.667,
+      "goal": ">= 0.8",
+      "passed": false
+    },
+    "crab_angle_deg": {
+      "value": 0.71,
+      "goal": "<= 10.0",
+      "passed": true
+    },
+    "roll_deg": {
+      "value": 0.24,
+      "goal": "<= 3.0",
+      "passed": true
+    },
+    "pitch_deg": {
+      "value": 0.63,
+      "goal": "<= 4.0",
+      "passed": true
+    }
+  },
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_e9_seed2/final.zip"
+}

@@ -261,6 +261,7 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     plus a "keep moving" term.
   - **At 46–50M:** walls 100 / 17 / 0 %, and seed 0 falls in 20 % of walking episodes. Posture
     still holds. This triggered E10.
+  - **Finals (54M):** walls 67 % on all seeds, crab 0.1–0.7°, no falls. SUPERSEDED by E10.
   - What worked:
     - the alignment reward plus the lateral-velocity penalty (anti-crab)
     - potential-based heading progress (no freezing)
@@ -301,6 +302,8 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Change (one idea):** `--wall-spawn 0.5`, so about 30 % of all episodes start 0.8–1.2 m from
   the ring wall, facing it within ±60°. All E9 rewards are unchanged.
 - **Success:** walls ≥ 80 % on all seeds at consecutive reviews (stable), all other goals passing.
+- **At 44–46M (first review):** all 3 seeds pass all 9 goals, with walls 100 % on every seed and
+  crab 1.0–1.6°. Stability check pending at the next review.
 
 ---
 
