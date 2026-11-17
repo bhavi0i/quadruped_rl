@@ -184,6 +184,8 @@ def main():
                    help="[C9] share of course spawns placed partway up the ramp (crest practice)")
     p.add_argument("--section-weights", type=json.loads, default={},
                    help='[C10] spawn weights per course section, e.g. {"stairs": 3, "rubble": 2}')
+    p.add_argument("--learning-rate", type=float, default=None,
+                   help="[C12] override the learning rate of a continuation (original 3e-4); lower = more stable")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
@@ -226,6 +228,12 @@ def main():
                 print(f"exploration reset: log_std = {args.reset_log_std}")
         if args.ent_coef is not None:
             model.ent_coef = args.ent_coef
+        # [C12] C11 seeds peaked at ~202-212M and then collapsed to 0/6 as the curriculum pushed the
+        #   ramp/stairs to their hardest levels; a lower learning rate makes continuations more stable.
+        if args.learning_rate is not None:
+            model.learning_rate = args.learning_rate
+            model._setup_lr_schedule()
+            print(f"learning rate set to {args.learning_rate}")
         print(f"{'Resuming from' if ckpt else 'Initialised from'} {src} ({model.num_timesteps:,} steps, seed {args.seed})")
     else:
         venv = VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)

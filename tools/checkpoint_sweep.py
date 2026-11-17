@@ -49,14 +49,17 @@ def evaluate(job):
         if info["reached_goal"]:
             times.append(round(t * 0.02, 1))
     steps = int(re.search(r"ckpt_(\d+)_steps", ckpt).group(1))
-    return dict(checkpoint=ckpt, steps=steps, goals=goals, layouts=layouts,
+    return dict(checkpoint=ckpt, steps=steps, difficulty=difficulty, goals=goals, layouts=layouts,
                 mean_distance=round(float(np.mean(dists)), 2), distances=[round(d, 1) for d in dists],
                 goal_times=times)
 
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--runs", nargs="+", required=True, help="run folders under obstacle_course/runs")
+    p.add_argument("--runs", nargs="*", default=[], help="run folders under obstacle_course/runs")
+    p.add_argument("--checkpoints", nargs="*", default=[], help="explicit checkpoint paths (relative to repo)")
+    p.add_argument("--difficulties", type=float, nargs="*", default=None,
+                   help="evaluate each checkpoint at several benchmark difficulties")
     p.add_argument("--every", type=int, default=2, help="evaluate every k-th checkpoint")
     p.add_argument("--min-steps", type=float, default=0)
     p.add_argument("--difficulty", type=float, default=0.5)
@@ -72,6 +75,9 @@ def main():
                     key=lambda f: int(re.search(r"ckpt_(\d+)_steps", f).group(1)))
         ck = [c for c in ck if int(re.search(r"ckpt_(\d+)_steps", c).group(1)) >= a.min_steps][::a.every]
         jobs += [(c, a.difficulty, a.layouts, a.friction) for c in ck]
+    for c in a.checkpoints:
+        for dfc in (a.difficulties or [a.difficulty]):
+            jobs.append((os.path.join(ROOT, c), dfc, a.layouts, a.friction))
     print(f"evaluating {len(jobs)} checkpoints x {a.layouts} layouts on {a.workers} workers", flush=True)
     with Pool(a.workers) as pool:
         results = pool.map(evaluate, jobs, chunksize=1)
@@ -81,7 +87,7 @@ def main():
               open(os.path.join(ROOT, a.out), "w"), indent=1)
     print("top 10:")
     for r in results[:10]:
-        print(f"  {r['goals']}/{r['layouts']} goals  mean {r['mean_distance']:5.1f} m  {os.path.relpath(r['checkpoint'], ROOT)}"
+        print(f"  d={r['difficulty']}  {r['goals']}/{r['layouts']} goals  mean {r['mean_distance']:5.1f} m  {os.path.relpath(r['checkpoint'], ROOT)}"
               f"  times {r['goal_times']}", flush=True)
 
 

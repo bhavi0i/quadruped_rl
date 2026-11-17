@@ -550,6 +550,21 @@ independent runs, not 3. It was left running (no-restart rule).
   - Training falls 16–33 %.
   - Milestone: `progress/milestones/c11_seed0_212M_bench05_3of6/`.
   - Slalom tweak (C12) deferred: C11 is still improving.
+- **Sweep of 65 checkpoints (199–225M, benchmark 0.5, 6 layouts):** 5/6 ×2, 4/6 ×15, 3/6 ×11,
+  ≤ 2 ×37.
+  - All seeds peaked at about 202–214M; seeds 0 and 1 collapsed to 0/6 after about 212–214M.
+- **Validation on 12 layouts:**
+  - C11 seed 2 at 214M: 9/12 at 0.5, 1/12 at 0.75, 0/12 at 1.0.
+  - C11 seed 0 at 207M: 8/12, 2/12, 0/12.
+- **STAGE 2 BENCHMARK MET** (≥ 67 % at 0.5).
+  - Milestone: `progress/milestones/STAGE2_c11_seed2_214M_bench05_9of12/` (fastest crossing
+    31.1 s).
+  - Full difficulty not met: stops at the full stairs and the 15° ramp.
+
+### C12: Lower learning rate for the full-difficulty push. RUNNING (Amarel job 63990557, from the stage-2 milestone at 214M → 274M)
+- **Change (one idea):** `--learning-rate 1e-4` (from 3e-4), against the post-peak collapse.
+- Curriculum starts at the milestone's levels {ramp 1.0, stairs 0.75, others 1.0}. Otherwise as
+  C11.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

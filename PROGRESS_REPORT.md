@@ -74,6 +74,61 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 40: 2026-11-17, 🏆 STAGE 2 BENCHMARK MET: the healthy Go1 crosses the course in 75 % of runs
+
+### Checkpoint sweep: all 65 C11 checkpoints (199–225M), benchmark 0.5, 6 layouts
+
+| Goals out of 6 | Checkpoints |
+|---|---|
+| **5** | **2** |
+| **4** | **15** |
+| 3 | 11 |
+| 2 | 9 |
+| 1 | 8 |
+| 0 | 20 |
+
+Goals per checkpoint along training (each seed):
+- seed 0: 1, 3, 2, **4**, 3, 4, 4, 4, **5**, 4, 3, 4, 3, 4, 1, then **0 from 214M on**
+- seed 1: 2, 3, 2, 3, 2, 2, 4, 2, 4, 3, 1, 1, 2, then **0 from 212M on**
+- seed 2: 2, 1, 1, **4**, 3, 3, 4, **5**, 4, 3, 4, 1, 4, 2, 3, 4
+
+**All seeds peaked at about 202–214M, then two of them collapsed**, as the curriculum pushed the ramp
+and stairs to their hardest levels. The single 5M-step reviews (0–3 of 6) had hidden how good the
+peak was. Choosing by sweep matters.
+
+### Validation of the top 4 on 12 rubble layouts, at three difficulties
+
+| Checkpoint | 0.5 (benchmark) | 0.75 | 1.0 (full) |
+|---|---|---|---|
+| **C11 seed 2 at 214M** | **9 / 12 (75 %)** | 1 / 12 | 0 / 12 |
+| C11 seed 0 at 207M | 8 / 12 (67 %) | 2 / 12 | 0 / 12 |
+| C11 seed 2 at 206M | 6 / 12 | 1 / 12 | 0 / 12 |
+| C11 seed 0 at 202M | 6 / 12 | 1 / 12 | 0 / 12 |
+
+### ✅ Stage 2 milestone policy: [`progress/milestones/STAGE2_c11_seed2_214M_bench05_9of12/`](progress/milestones/STAGE2_c11_seed2_214M_bench05_9of12)
+**C11 seed 2 at 214M crosses the full course from the start to the goal in 75 % of runs** with all
+obstacles at half size (12 layouts; times 36–56 s). The fastest recorded run took **31.1 s**:
+![](progress/milestones/STAGE2_c11_seed2_214M_bench05_9of12/course_goal.gif)
+
+Video: [course_goal.mp4](progress/milestones/STAGE2_c11_seed2_214M_bench05_9of12/course_goal.mp4). The run frame by frame:
+![](progress/milestones/STAGE2_c11_seed2_214M_bench05_9of12/course_goal_frames.png)
+
+### Not yet: full difficulty
+At 0.75, 1–2 of 12; at 1.0 (full-size obstacles), 0 of 12. Runs stop at the **full-height stairs**
+(15.1 m, 9 cm steps) or the **full 15° ramp** (11.0 m).
+
+### Change: C12 (Amarel job 63990557, 3 seeds, from the stage-2 milestone at 214M → 274M)
+- **Learning rate 3e-4 → 1e-4**, to stop the post-peak collapse seen in C11.
+- The curriculum continues from the milestone's levels (ramp 1.0, stairs 0.75, others 1.0).
+- Everything else as C11 (stumble penalty, weighted stairs/rubble practice, per-section curriculum,
+  real friction, terrain-relative tilt).
+- Goal: raise the 0.75 and 1.0 results without losing the 0.5 result. C12 will be judged by a
+  checkpoint sweep at 0.5, 0.75 and 1.0.
+
+Data: `progress/sweeps/sweep_c11_199-225M.json`, `progress/sweeps/validate_c11_top4.json`.
+
+---
+
 ## Report 39: 2026-11-17, 🏁 new best: 3 of 6 benchmark crossings (C11 seed 0)
 
 Benchmark: all obstacles 0.5, 6 rubble layouts.
