@@ -39,7 +39,10 @@ GOALS = {  # what "walking naturally and handling walls" means, numerically
     "speed_err": ("<=", 0.15),          # |speed - 0.6| m/s
     "trot_match": (">=", 0.75),
     "feet_down": ("between", (1.6, 2.6)),
-    "body_contact_rate": ("<=", 0.05),
+    # "body_contact_rate": ("<=", 0.05),   [REPLACED 2026-11-17] counted the calf capsule grazing the
+    #   ground next to a planted foot (a Go1 model artifact, see quadruped_env foot_graze_radius):
+    #   ~0.1 on flat ground even for the stage-1 policy, 0.4-0.6 on the course. Still reported.
+    "shin_contact_rate": ("<=", 0.05),  # [NEW] shin/thigh/torso contacts > 4 cm from any foot
     "fall_rate": ("<=", 0.05),
     "wall_pass_rate": (">=", 0.8),
     # posture / natural look (added 2026-11-16 after the group saw a slanted, crabbing walk)
@@ -97,6 +100,7 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
     speeds, trots, feet, body, lifts, falls, track_err = [], [], [], [], [], [], []
     crabs, rolls, pitches, vlat = [], [], [], []
     rel_off, contacts_l, lifts_l = [], [], []
+    shin = []
     frames = []
     for ep in range(episodes):
         env.random_start = True
@@ -105,6 +109,7 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
             obs, _, term, trunc, info = env.step(act(model, norm, obs))
             speeds.append(info["v_fwd"]); trots.append(info["trot_match"])
             feet.append(info["foot_contact"].sum()); body.append(info["body_contacts"] > 0)
+            shin.append(info["shin_contacts"] > 0)
             swing = ~info["foot_contact"]
             if swing.any():
                 lifts.append(float(info["foot_lift"][swing].max()))
@@ -131,6 +136,7 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
         falls.append(bool(info["fell"]))
     m = dict(speed=float(np.mean(speeds)), trot_match=float(np.mean(trots)),
              feet_down=float(np.mean(feet)), body_contact_rate=float(np.mean(body)),
+             shin_contact_rate=float(np.mean(shin)),
              swing_lift_cm=float(100 * np.mean(lifts)) if lifts else 0.0,
              fall_rate=float(np.mean(falls)),
              track_error_m=float(np.mean(track_err)) if track_err else None)

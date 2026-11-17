@@ -631,6 +631,34 @@ independent runs, not 3. It was left running (no-restart rule).
   - Gait on the course: trot 0.71, contact 0.50, fore-aft 11 cm. A quality pass is needed.
   - Lesson: **a reward paid at zero speed creates a stall attractor.** One diagnosis
     (`tools/stall_diagnosis.py`) beat ~100M steps of curriculum and spawn tweaks (C8–C13).
+- **At 230–240M:**
+  - Benchmark 0.5: 4/6, 5/6, 4/6.
+  - Training at full difficulty: goal 0.58–0.65, falls 0.28–0.36 (falling), stairs 0.76–0.80.
+
+### METRIC BUG: "body contact" counted foot-adjacent calf grazes (affects all E and C runs)
+- **Found by** `tools/contact_audit.py`: the Menagerie Go1 lower calf capsule ends ~1 cm from
+  the foot sphere, ~3 mm above the ground with the foot planted.
+- **Grazes** (calf contact < 4 cm from a foot): rubble 0.96, other sections ~0.2, stage-1 policy
+  on flat ground 0.11.
+- **Real shin/thigh/torso hits:** hurdles 0.11, stairs 0.01, else 0. Overall 0.4 %.
+- **Fix:**
+  - metric `shin_contact_rate` replaces the `body_contact_rate` goal; the old metric is kept and
+    commented
+  - env option `foot_graze_radius` (default 0 = old behaviour) excludes grazes from the
+    collision penalty
+  - env info `shin_contacts`
+
+### C15: Ignore foot-adjacent calf grazes in the collision penalty. RUNNING (Amarel job 63995150, from STAGE2b milestone C14 seed 0 at 222M → 282M)
+- **Why:**
+  - The collision penalty charged ~−2.6/s for unavoidable grazes in rubble, the largest single
+    reward term while walking there.
+  - Rubble is the #2 full-difficulty failure.
+  - The long fore-aft stance (11 cm) may be graze avoidance.
+- **Change (one idea):** `--foot-graze-radius 0.04`. Everything else as C14, curriculum starting
+  at 1.0.
+- **Success test:**
+  - validation at 1.0 > 7/12, fewer rubble failures
+  - trot ≥ 0.75, fore-aft ≤ 8 cm, shin contact ≤ 0.05
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

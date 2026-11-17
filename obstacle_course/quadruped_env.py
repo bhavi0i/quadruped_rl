@@ -172,7 +172,7 @@ class QuadrupedCourseEnv(gym.Env):
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
                  spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False,
                  ramp_spawn=0.0, section_weights=None, terrain_aware_swing=False,
-                 motion_gate=0.0):
+                 motion_gate=0.0, foot_graze_radius=0.0):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -208,6 +208,15 @@ class QuadrupedCourseEnv(gym.Env):
         #   than walking over rough ground (+0.013), because these rewards were paid even at
         #   zero speed. Stopping in front of any hard obstacle was a stable local optimum.
         self.motion_gate = motion_gate
+        # [C15] calf contacts within this distance (m) of a foot centre are not collisions. 0 = off
+        #   (E1-C14 counted them). Found 2026-11-17 (tools/contact_audit.py): the Menagerie Go1's lower
+        #   calf capsule ends ~1 cm from the foot sphere and sits ~3 mm above the ground when the foot
+        #   is planted, so ordinary foot strikes registered as "shin contact": 96 % of rubble steps,
+        #   ~20 % on flat ground, even for the stage-1 walking policy (11 %). Real shin contacts
+        #   (> 4 cm from a foot) are rare: 11 % on hurdles, ~1 % on stairs, 0 elsewhere. The penalty
+        #   charged ~-2.6/s for these grazes in rubble, making rubble an expensive place to move.
+        self.foot_graze_radius = foot_graze_radius
+        self.shin_contacts = 0                       # true shin/thigh/torso contacts (> 4 cm from a foot)
         # a number (all sections alike) or a dict per course section (C7 section curriculum)
         self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
         self.random_start = random_start
@@ -542,7 +551,7 @@ class QuadrupedCourseEnv(gym.Env):
     # ---------------------------------------------------------------- reward
     def _contacts(self):
         foot_contact = np.zeros(4, bool)
-        collision = walls = 0
+        collision = walls = shin = 0
         torso_hit = False
         for k in range(self.data.ncon):
             c = self.data.contact[k]
@@ -558,9 +567,17 @@ class QuadrupedCourseEnv(gym.Env):
             if hit.size:
                 foot_contact[hit[0]] = True
             elif g in self.bad_contact_geoms:
+                # [C15] distance from the contact to the nearest foot centre (graze vs real shin hit)
+                near = float(np.min(np.linalg.norm(self.data.geom_xpos[self.foot_geoms] - c.pos, axis=1)))
+                torso = g in self.torso_geoms
+                if near >= 0.04 or torso:
+                    shin += 1
+                if self.foot_graze_radius and near < self.foot_graze_radius and not torso:
+                    continue                  # [C15] foot-adjacent calf graze: not a collision
                 collision += 1
-                torso_hit |= g in self.torso_geoms
+                torso_hit |= torso
         self.wall_hits = walls
+        self.shin_contacts = shin
         return foot_contact, collision, torso_hit
 
     def _compute_reward(self, action):
@@ -731,7 +748,7 @@ class QuadrupedCourseEnv(gym.Env):
             reward += r
             self.episode_sums[k] += r
         gait = {"foot_contact": foot_contact, "want_contact": want_down, "trot_match": trot_match,
-                "foot_lift": lift, "base_height": height, "body_contacts": n_collisions,
+                "foot_lift": lift, "base_height": height, "body_contacts": n_collisions, "shin_contacts": self.shin_contacts,
                 "v_fwd": v_fwd, "wall_hits": self.wall_hits, "min_wall_dist": float(lidar.min()),
                 "foot_rel_hip": rel + self.nominal_foot_rel, "nominal_foot_rel": self.nominal_foot_rel}
         return reward, terms, fell, reached, gait

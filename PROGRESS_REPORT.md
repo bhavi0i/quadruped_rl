@@ -74,6 +74,68 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 48: 2026-11-17, C14 keeps improving at full difficulty; "shin contact" was mostly a model artifact; C15 launched
+
+### 1. C14 at 230–240M
+
+| Run | Benchmark 0.5 | Training at full difficulty: goal rate / falls / stairs cleared |
+|---|---|---|
+| C14 seed 0 (230M) | 4 / 6 | 0.58 / 0.36 / 0.76 |
+| C14 seed 1 (237M) | **5 / 6** | 0.58 / 0.34 / 0.77 |
+| C14 seed 2 (239M) | 4 / 6 | 0.65 / 0.28 / 0.80 |
+
+- Report 46 had training falls at 0.38–0.49; they are now 0.28–0.36. Goal rate at full
+  difficulty is still rising.
+- Crossings take 27–46 s.
+
+Media: [`docs/media/review_230M_20261117_1244/`](docs/media/review_230M_20261117_1244). Best-seed video:
+![](docs/media/review_230M_20261117_1244/course_c14_seed1/course.gif)
+
+### 2. "Body contact" measured the wrong thing
+
+Report 47 listed knee/shin contact around 0.5 as a gait problem. `tools/contact_audit.py`
+splits contacts by body part, by section, and by distance from the nearest foot:
+
+| Section (full difficulty, 3 layouts) | calf contact within 4 cm of a foot | real shin/thigh/torso contact |
+|---|---|---|
+| start (flat) | 0.20 | 0 |
+| rubble | **0.96** | 0.00 |
+| hurdles | 0.22 | **0.11** |
+| ramp | 0.15 | 0 |
+| stairs | 0.19 | 0.01 |
+| slalom | 0.20 | 0 |
+| *stage-1 walking policy, flat* | *0.11* | *0* |
+
+- **Cause:** in the Menagerie Go1, the lower calf collision capsule ends about 1 cm from the foot
+  sphere. With the foot planted it sits about 3 mm above the ground, so ordinary foot strikes
+  counted as "shin contact".
+- **Real shin contact is rare:** **0.4 %** of steps, almost all on the hurdles.
+- **New metric:** `shin_contact_rate` (> 4 cm from any foot) replaces `body_contact_rate` as the
+  goal in `evaluate_policy.py`. The old number is still reported, commented with history.
+- **Under the corrected metric**, the stage-2 policy passes the shin goal (0.004 ≤ 0.05). The
+  remaining gait gaps are:
+  - trot 0.73 (goal ≥ 0.75)
+  - stance fore-aft spread 11 cm (goal ≤ 8 cm)
+  - swing-height spread between legs 0.38 (goal ≤ 0.2)
+
+### 3. Why it matters for training: C15
+
+- **The cost:** the collision penalty charged these grazes about −2.6/s while walking in
+  rubble. That is the largest single term (`tools/stall_diagnosis.py`), and it made rubble an
+  expensive place to move. Rubble is the #2 full-difficulty failure (51 of 180).
+- **Possible side effect:** the long fore-aft stance may be the policy keeping its calves off
+  the ground.
+- **C15** (Amarel job 63995150, 3 seeds, from the stage-2 milestone C14 seed 0 at 222M → 282M):
+  - **One change:** `--foot-graze-radius 0.04`. Calf contacts within 4 cm of a foot are no
+    longer collisions. Real shin, thigh and torso hits are still penalised.
+  - Everything else as C14. The curriculum starts at full difficulty.
+- **Success test:**
+  - validation at 1.0 beats 7/12, rubble failures fall
+  - trot ≥ 0.75, fore-aft ≤ 8 cm
+  - shin contact stays ≤ 0.05
+
+---
+
 ## Report 47: 2026-11-17, 🏁 first crossings of the FULL-difficulty course (C14 validation)
 
 Validation job 63994608: 20 C14 checkpoints × 3 difficulties × 12 layouts.
