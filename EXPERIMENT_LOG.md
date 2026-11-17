@@ -345,6 +345,12 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Change vs E12:** `swing_overshoot` −1000: sum of max(0, lift − 10 cm)² over the feet. It keeps
   growing (about 1.25/s at 15 cm) where `swing_shape` has no gradient.
 
+- **E12 at 62–63M:** seeds 0 and 1 pass all 12 goals (fore-aft 5.1 cm, spread 11–13 %). The FR
+  high-step faded with more training. Seed 2 falls 20 %.
+- **E13 at 60–63M: WORKS.** Step spread 6–8 % on every seed. Seed 2 at 63M passes all 12 goals
+  (fore-aft 4.3 cm, splay 2.2 cm, spread 6 %, walls 100 %, roll 0.8°, pitch 0.6°). Seed 1 falls
+  40 %. Stability check pending.
+
 ### C1: Stage 2, obstacle course (healthy robot). PREPARED (starts from the best E11 policy)
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.

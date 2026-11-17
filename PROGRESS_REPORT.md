@@ -74,6 +74,46 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 17: 2026-11-17, ✅ legs fixed: straight, under the body, uniform steps (E12/E13); stability check next
+
+| Run | Fore-aft | Sideways | Step heights FR/FL/RR/RL (cm) | Spread | Walls | Falls | All 12 goals |
+|---|---|---|---|---|---|---|---|
+| E12 seed 0 (63M) | ✅ 5.1 | ✅ | 7.8 / 8.4 / 8.8 / 8.1 | ✅ 11 % | ✅ 100 % | ✅ 0 % | ✅ |
+| E12 seed 1 (63M) | ✅ 5.1 | ✅ | 7.9 / 7.4 / 8.4 / 7.8 | ✅ 13 % | ✅ 100 % | ✅ 0 % | ✅ |
+| E12 seed 2 (62M) | ✅ 4.9 | ✅ | 8.4 / 8.1 / 8.1 / 7.6 | ✅ 10 % | ✅ 83 % | ❌ 20 % | ✗ |
+| E13 seed 0 (60M) | ✅ 5.0 | ✅ | 8.0 / 7.8 / 8.3 / 7.7 | ✅ 8 % | ✅ 83 % | ✅ 0 % | ✅ |
+| E13 seed 1 (61M) | ✅ 5.7 | ✅ | 7.7 / 8.1 / 8.3 / 7.6 | ✅ 8 % | ✅ 100 % | ❌ 40 % | ✗ |
+| **E13 seed 2 (63M)** | ✅ **4.3** | ✅ **2.2** | **8.2 / 7.7 / 7.9 / 7.9** | ✅ **6 %** | ✅ **100 %** | ✅ 0 % | ✅ |
+
+**Best: E13 seed 2 at 63M passes all 12 goals.** Trot 0.96, 0.60 m/s, crab 0.4°, roll 0.8°,
+pitch 0.6°, splay 2.2 cm, fore-aft 4.3 cm, step spread 6 %, walls 100 %, no falls.
+
+**Front view, before and after** (same camera: walking straight toward it):
+
+Milestone 3: legs angled outward, uneven lift
+![](docs/media/e11_before_leg_posture/front_view_milestone3.png)
+
+E13 seed 2: legs straight down and parallel, even steps
+![](docs/media/review_60M_20261117_0029/ring_e13_seed2/front_view.png)
+
+**What worked**
+- **E12 (stronger weights)** fixed foot placement and gave even steps on 2 seeds by 63M.
+- **E13's `swing_overshoot`** got there fastest and most cleanly (spread 6–8 % on every seed).
+- Note: E12 had also caught up by 63M. The front-right leg's high step went away with more
+  training under the stronger `swing_shape`. The overshoot penalty mainly sped it up.
+
+**Watch:** two runs fall in 20–40 % of walking episodes (E12 seed 2, E13 seed 1). Policies are
+picked by evaluation, and the chosen one has 0 % falls.
+
+**Next:** if E13 seed 2 (or another seed) passes all 12 goals again at the next review, it
+becomes **milestone 4, the final walking policy**, and **stage 2 (obstacle course) launches on
+Amarel** from it.
+
+Walking video (E12 seed 0, all goals): [walk.mp4](docs/media/review_60M_20261117_0029/ring_e12_seed0/walk.mp4)
+![](docs/media/review_60M_20261117_0029/ring_e12_seed0/walk.gif)
+
+---
+
 ## Report 16: 2026-11-17, E12 fixes foot placement; one leg still steps high → E13 (overshoot penalty)
 
 | Run | Fore-aft | Sideways | Step heights FR/FL/RR/RL (cm) | Spread | Walls | Falls |
