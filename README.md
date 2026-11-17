@@ -12,6 +12,20 @@ Train a robot dog to walk with deep RL, then study how it copes, and adapts, whe
 - Injuries: `InjuryWrapper` weakens one leg's motors (gain, damping and force limit) to a strength in
   [0, 1]. 0 means the leg is paralysed and goes limp.
 
+## Obstacle course (`obstacle_course/`)
+
+A 24 m walled lane the robot has to cross to the finish line: rubble, three hurdles, a ramp,
+stairs and slalom gates. A difficulty setting from 0 to 1 scales every obstacle. It comes with
+a Gymnasium environment (height scan, waypoints, checkpoints, injuries), PPO training with an
+automatic curriculum, and a viewer. See `obstacle_course/README.md` and
+`obstacle_course/course_overview.png`. Run its scripts from inside that folder:
+
+```bash
+cd obstacle_course
+python train.py --envs 8
+python play.py runs/ppo_quadruped/final.zip
+```
+
 ## Setup (local)
 
 ```bash
