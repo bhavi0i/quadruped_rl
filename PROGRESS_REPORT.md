@@ -74,6 +74,48 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 46: 2026-11-17, C14 (no reward for trotting in place): training reaches full difficulty within 10M steps
+
+**Training curriculum** (per-section difficulty, 100-attempt clear rates):
+
+| | C13 at 253M (before) | C14 seeds 0/1/2 at 222–227M (8–13M in) |
+|---|---|---|
+| ramp difficulty | 0.75–0.95 (stuck since C8) | **1.0 (15°)** |
+| stairs difficulty | 0.55–0.7 | **1.0 (9 cm)** |
+| training goal rate | 0.15–0.25 | **0.39–0.53** |
+| mean forward speed | 0.13 m/s | 0.30–0.35 m/s |
+| fall rate | 0.19–0.20 | 0.38–0.49 ⚠️ |
+| trot match | 0.82–0.83 | 0.72–0.73 ⚠️ |
+
+The stall fix from report 45 worked as intended. Within about 2M steps every section's
+curriculum climbed to full difficulty, which no run had done in ~100M steps since C8.
+
+**Review (benchmark 0.5, 6 layouts):**
+
+| Run | Goals | Goal times |
+|---|---|---|
+| C14 seed 0 (222M) | 4 / 6 | 28.8, 46.8, 31.3, 28.9 s |
+| C14 seed 1 (225M) | 2 / 6 | 43.1, 30.8 s |
+| C14 seed 2 (226M) | 4 / 6 | 29.8, 31.4, 32.5, 29.0 s |
+
+Crossings are faster: about 29–32 s, against 34–58 s for C13.
+
+**Costs to watch:**
+- Falls doubled; the robot now pushes on where it used to stop.
+- The trot is a little looser (trot match 0.72–0.73, goal 0.75).
+- C14 seed 1 crabs at 14° on the course; the other seeds are at 1–2°.
+- If falls stay high, the next tweak is the fall penalty or the gate width. Not the gate
+  itself: it is the fix.
+
+Media: [`docs/media/review_222M_20261117_1218/`](docs/media/review_222M_20261117_1218). Best-seed video:
+![](docs/media/review_222M_20261117_1218/course_c14_seed0/course.gif)
+
+**Running on Amarel:** validation job 63994608 tests every second C14 checkpoint from 216M
+at **0.5, 0.75 and 1.0** on 12 layouts each (`amarel/validate.slurm`). The question is whether
+the training gains at full difficulty transfer to the fixed benchmark.
+
+---
+
 ## Report 45: 2026-11-17, validation corrects reports 42 and 44; root cause of the stalls found; C14 launched
 
 ### 1. Validation of C13 (Amarel job 63992889, 12 layouts per difficulty)

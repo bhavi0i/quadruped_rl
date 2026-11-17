@@ -74,7 +74,8 @@ def main():
         ck = sorted(glob.glob(os.path.join(ROOT, "obstacle_course", "runs", run, "ckpt_[0-9]*_steps.zip")),
                     key=lambda f: int(re.search(r"ckpt_(\d+)_steps", f).group(1)))
         ck = [c for c in ck if int(re.search(r"ckpt_(\d+)_steps", c).group(1)) >= a.min_steps][::a.every]
-        jobs += [(c, a.difficulty, a.layouts, a.friction) for c in ck]
+        # [C14] --difficulties also applies to --runs (was: --checkpoints only)
+        jobs += [(c, dfc, a.layouts, a.friction) for c in ck for dfc in (a.difficulties or [a.difficulty])]
     for c in a.checkpoints:
         for dfc in (a.difficulties or [a.difficulty]):
             jobs.append((os.path.join(ROOT, c), dfc, a.layouts, a.friction))

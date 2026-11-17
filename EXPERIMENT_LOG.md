@@ -613,6 +613,14 @@ independent runs, not 3. It was left running (no-restart rule).
   ent_coef 0.002, start difficulty ramp 0.85 / stairs 0.65 / others 1.0).
 - **Success test:** validation (12 layouts) beats 9/12 at 0.5, and > 0/12 at 0.75 and 1.0,
   with the trot and posture goals intact.
+- **At 222–227M (8–13M in):**
+  - The curriculum reached **ramp 1.0 and stairs 1.0 on all seeds** within ~2M steps (stuck
+    at ramp ≤ 0.95 / stairs ≤ 0.75 since C8).
+  - Training goal rate 0.39–0.53 (was 0.15–0.25); speed 0.30–0.35 m/s (was 0.13).
+  - Costs: fall rate 0.38–0.49 (was 0.20), trot 0.72–0.73 (was 0.82).
+  - Benchmark 0.5: 4/6, 2/6, 4/6.
+  - **Stall fix CONFIRMED in training.** Validation job 63994608 (`amarel/validate.slurm`,
+    0.5/0.75/1.0 × 12 layouts).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
