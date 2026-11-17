@@ -81,12 +81,12 @@ ROBOTS = {"go1": _go1_cfg, "custom": _custom_cfg}
 # --------------------------------------------------------------------------------------
 DEFAULT_REWARD_WEIGHTS = dict(
     # ---- rewards (things we want) ----
-    progress=2.0,          # metres gained toward the goal (along course centre line / waypoint)
-    velocity_tracking=1.0, # exp(-(v_fwd - v_target)^2 / 0.25): moving at the commanded speed
+    progress=2.0,          # metres of new ground per second, capped at the target speed (no sprinting)
+    velocity_tracking=2.0, # exp(-(v_fwd - v_target)^2 / 0.1): moving at the commanded speed
     heading=0.5,           # facing the next waypoint
     feet_air_time=5.0,     # taking real steps instead of shuffling / vibrating
     alive=0.5,             # small per-step bonus for staying upright
-    trot=1.0,              # feet follow the diagonal-trot clock (natural dog gait)
+    trot=2.0,              # feet follow the diagonal-trot clock (natural dog gait)
     foot_clearance=0.5,    # swing feet lifted to a real step height above the local terrain
     # ---- punishments (things we don't want) ----
     lin_vel_z=-2.0,        # bouncing up and down
@@ -98,11 +98,11 @@ DEFAULT_REWARD_WEIGHTS = dict(
     action_rate=-0.01,     # large changes in action between steps
     joint_limit=-5.0,      # pushing joints into their limits
     foot_slip=-0.1,        # feet sliding while in contact
-    collision=-1.0,        # torso / thighs / calves hitting the terrain or obstacles
+    collision=-2.0,        # torso / thighs / calves (shins) hitting the terrain or obstacles
     wall_contact=-2.0,     # any part of the robot touching a wall or slalom barrier
     wall_proximity=-1.0,   # walking within ~0.4 m of a wall straight ahead / to the side
     # ---- one-off events ----
-    checkpoint=10.0,       # bonus when the robot clears each course section
+    checkpoint=10.0,       # bonus when the robot clears each course section (course only)
     goal=100.0,            # reaching the goal pad
     fall=-50.0,            # terminal penalty for falling over
 )
@@ -452,8 +452,9 @@ class QuadrupedCourseEnv(gym.Env):
 
         torque = d.actuator_force
         terms = {
-            "progress": max(0.0, s - self.max_x) / dt,             # only new ground counts
-            "velocity_tracking": np.exp(-((v_fwd - self.target_speed) ** 2) / 0.25),
+            # only new ground counts, and never faster than the target speed (no reward for sprinting)
+            "progress": min(max(0.0, s - self.max_x) / dt, self.target_speed),
+            "velocity_tracking": np.exp(-((v_fwd - self.target_speed) ** 2) / 0.1),
             "heading": np.cos(heading_err),
             "feet_air_time": air_reward,             # per touchdown (not a rate)
             "alive": 1.0,
@@ -484,12 +485,8 @@ class QuadrupedCourseEnv(gym.Env):
                     bonus += w["checkpoint"]
                     self.episode_sums["checkpoint"] += w["checkpoint"]
             reached = bool(pos[0] > course.GOAL_X - 0.3 and abs(pos[1]) < 0.8)
-        else:                               # ring: checkpoint bonus for every completed lap
-            laps = int((self.max_x - self.start_x) // (2 * np.pi * course.RING_TRACK_RADIUS))
-            if laps > self.laps:
-                self.laps = laps
-                bonus += w["checkpoint"]
-                self.episode_sums["checkpoint"] += w["checkpoint"]
+        else:                               # ring: count laps for logging only (no bonus: it paid for sprinting)
+            self.laps = (self.max_x - self.start_x) / (2 * np.pi * course.RING_TRACK_RADIUS)
             reached = False
         fell = bool(torso_hit or grav[2] > -0.5 or height < 0.12)   # >60 deg tilt or collapsed
         if reached:
