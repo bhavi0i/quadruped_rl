@@ -179,6 +179,14 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
   - Walls unstable: the per-seed pass rate swaps between checkpoints (seed 0 33→17 %, seed 1
     17→67 %, seed 2 67→17 %). It never touches the wall.
   - Details: PROGRESS_REPORT.md, report 3.
+- **Result at 21–27M steps:**
+  - Walking still perfect (trot 0.99–1.00).
+  - Walls regressing: 17/0/17 %. The policies converged on "stop at the wall and trot in place".
+  - Track error: seeds 0 and 1 at 1.0–1.1 m (off the line); seed 2 at 0.23 m.
+  - Lesson: indirect rewards (heading +0.5) are not enough to learn turning around. A safe
+    "wait" behaviour that keeps the dense trot and alive rewards beats it. E8 adds a direct
+    turning payoff.
+  - Details: PROGRESS_REPORT.md, report 4.
 
 ### E8: Ring continuation with an explicit turn reward. PLANNED (after E7 finishes)
 - **Why:** in E7 the wall turning is unstable. Turning is only rewarded indirectly (heading +0.5)
@@ -188,8 +196,15 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     it earns clip(yaw rate × sign(heading error), −1, 1): positive for turning toward the route,
     negative for turning away.
   - turn-practice spawns 25 % → 40 %.
+  - new `track_following` reward, weight 1.0 (ring only): exp(−d² / 0.25), where d is the
+    distance from the yellow track line. Added after the group noticed later policies walking
+    off the line. Measured on the newest checkpoints: seeds 0 and 1 (18M, 23M) walk 1.1–1.4 m
+    *outside* the line, while seed 2 (24M) stays within 0.4 m. Nothing in E7 rewarded staying
+    on the line (steering aims at a point ahead on the line, but walking a slightly bigger circle
+    costs nothing). This is a second idea in the same continuation; it is logged separately so
+    its effect can be judged with the track-error metric.
 - **How:** continue from the best E7 final policy (`train.py --init-from ... --reward-weights
-  '{"turn_to_route": 1.0}' --turn-practice 0.4`). No restart from scratch.
+  '{"turn_to_route": 1.0, "track_following": 1.0}' --turn-practice 0.4`). No restart from scratch.
 - **Success:** wall pass rate ≥ 80 % with all walking goals still passing.
 
 ### H1: Hardware for RL training (CPU vs GPU on Amarel). DECIDED: keep 32 CPU cores

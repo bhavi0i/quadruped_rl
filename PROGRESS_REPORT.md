@@ -52,6 +52,53 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 
 ---
 
+## Report 4: 2026-11-16, ring v2 (E7) at 21–27M steps
+
+**Status at a glance** (new column: track error = average distance from the yellow line)
+
+| Run | Steps (eval ckpt) | Pace | Trot | Feet down | Shin contact | Falls | Walls | Track error | Overall |
+|---|---|---|---|---|---|---|---|---|---|
+| seed 0 | 20.9M (21M) | ✅ 0.59 m/s | ✅ 1.00 | ✅ 2.00 | ✅ 0.3 % | ✅ 0 % | ❌ 17 % | 1.14 m | walks perfectly, stuck at walls, off the line |
+| seed 1 | 27.5M (27M) | ✅ 0.61 m/s | ✅ 0.99 | ✅ 2.00 | ✅ 0.2 % | ✅ 0 % | ❌ 0 % | 1.00 m | walks perfectly, stuck at walls, off the line |
+| seed 2 | 27.7M (27M) | ✅ 0.60 m/s | ✅ 0.99 | ✅ 2.02 | ✅ 0.5 % | ✅ 0 % | ❌ 17 % | 0.23 m | walks perfectly on the line, stuck at walls |
+
+**Media** (seed 0, 21M; video: [walk.mp4](docs/media/review_20M_20261116_2054/ring_seed0/walk.mp4), [wall.mp4](docs/media/review_20M_20261116_2054/ring_seed0/wall.mp4))
+
+| Walking | Facing the wall head-on: stops about 1 m short and trots in place |
+|---|---|
+| ![](docs/media/review_20M_20261116_2054/ring_seed0/walk.gif) | ![](docs/media/review_20M_20261116_2054/ring_seed0/wall.gif) |
+
+**What changed since report 3**
+- No training changes (no restarts).
+- E8 extended (still opt-in, off for running jobs): added a `track_following` reward after the
+  group noticed later policies walking off the yellow line. Measured: seeds 0 and 1 walk
+  1.0–1.4 m *outside* the line, seed 2 stays within 0.2–0.4 m.
+
+**What's working**
+- **Walking is perfect and stable on all 3 seeds:** trot match 0.99–1.00, exactly 2 feet down,
+  0.59–0.61 m/s, shin contact ≤ 0.5 %, no falls.
+- **No wall collisions** in the head-on, ±30° and −60° trials. The dog always stops about 1 m
+  short.
+
+**What's not working (poor progress, so tweaking)**
+- **Wall turning is getting worse with training:** 33/17/67 % (report 2) → 17/67/17 %
+  (report 3) → **17/0/17 %** now. The only pass left is the +60° glancing angle.
+  - The policies have converged on "stop at the wall and trot in place". In E7 that is a safe
+    local optimum: it keeps the alive, trot and heading rewards and avoids the wall penalties.
+    Turning around has no direct payoff.
+  - Seen in the viewer for seed 0 (10M): at +60° it scrapes along the wall (6–9 touches) instead
+    of turning away.
+- **Track drift** on seeds 0 and 1 (about 1 m outside the line). Nothing rewards being on the line.
+
+**Next: E8 (automatic, as soon as seeds 1 and 2 finish 40M, about 25 min)**
+- Continue from the best E7 final policy with no restart:
+  - `turn_to_route` reward 1.0
+  - `track_following` reward 1.0
+  - turn-practice spawns 40 %
+- Success: wall pass rate ≥ 80 % and track error ≤ 0.5 m, with all walking goals still passing.
+
+---
+
 ## Report 3: 2026-11-16, ring v2 (E7) at 16–21M steps
 
 **Status at a glance**

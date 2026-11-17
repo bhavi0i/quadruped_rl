@@ -116,6 +116,9 @@ DEFAULT_REWARD_WEIGHTS = dict(
     turn_to_route=0.0,     # [E8, opt-in] when facing > 45 deg off the route (e.g. at a wall), reward
                            #   turning toward it: clip(yaw_rate * sign(heading error), -1, 1).
                            #   0 = off (E7). E8 continuation sets 1.0 via train.py --reward-weights.
+    track_following=0.0,   # [E8, opt-in] ring only: exp(-(distance from the yellow line)^2 / 0.25).
+                           #   E7 seeds 0/1 drifted to walk ~1.1-1.4 m outside the line because
+                           #   nothing rewarded staying on it. 0 = off (E7); E8 sets 1.0.
     # ---- one-off events ----
     checkpoint=10.0,       # bonus when the robot clears each course section (course only)
     goal=100.0,            # reaching the goal pad
@@ -494,6 +497,9 @@ class QuadrupedCourseEnv(gym.Env):
             "wall_proximity": float(np.sum(np.clip(0.4 - lidar, 0, None) / 0.4)),
             "turn_to_route": (float(np.clip(ang_vel[2] * np.sign(heading_err), -1, 1))
                               if abs(heading_err) > np.deg2rad(45) else 0.0),
+            "track_following": (float(np.exp(-(np.linalg.norm(pos[:2] - np.array(course.RING_CENTER))
+                                               - course.RING_TRACK_RADIUS) ** 2 / 0.25))
+                                if self.arena == "ring" else 0.0),
             "checkpoint": 0.0, "goal": 0.0, "fall": 0.0,
         }
         self.max_x = max(self.max_x, s)
