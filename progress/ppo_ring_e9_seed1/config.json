@@ -1,0 +1,25 @@
+{
+  "arena": "ring",
+  "robot": "go1",
+  "steps": 54000000.0,
+  "envs": 30,
+  "difficulty": 0.0,
+  "target_speed": 0.6,
+  "injury": null,
+  "seed": 1,
+  "out": "runs/ring_e9_seed1",
+  "init_from": "runs/milestone_e7s0_34M.zip",
+  "torch_threads": 2,
+  "reward_weights": {
+    "heading_progress": 0.5,
+    "track_following": 1.0,
+    "body_alignment": 1.5,
+    "lateral_velocity": -2.0,
+    "orientation": -30.0
+  },
+  "turn_practice": 0.4,
+  "ring_lookahead": 0.25,
+  "device": "auto",
+  "n_steps": 1024,
+  "ckpt_freq": 1000000.0
+}

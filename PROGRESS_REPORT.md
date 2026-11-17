@@ -62,6 +62,62 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 8: 2026-11-16, ✅ E9 passes every goal: natural, straight, level trot that turns away from walls
+
+### Status at a glance (E9, 4–5M steps into the continuation)
+
+| Run | Pace | Trot | Feet | Shin | Falls | Walls | **Crab** | Roll | Pitch | Track error |
+|---|---|---|---|---|---|---|---|---|---|---|
+| E9 seed 0 (38M) | ✅ 0.63 | ✅ 0.98 | ✅ 1.93 | ✅ 0.3 % | ✅ 0 % | ✅ **100 %** | ✅ **0.2°** | ✅ 0.2° | ✅ 3.1° | 0.50 m |
+| E9 seed 1 (39M) | ✅ 0.62 | ✅ 0.97 | ✅ 1.99 | ✅ 0.7 % | ✅ 0 % | ✅ **83 %** | ✅ **0.5°** | ✅ 0.4° | ✅ 3.3° | 0.28 m |
+| E9 seed 2 (39M) | ✅ 0.63 | ✅ 0.98 | ✅ 1.96 | ✅ 0.5 % | ✅ 0 % | ✅ **100 %** | ✅ **0.1°** | ✅ 0.2° | ✅ 3.2° | 0.38 m |
+
+**All 3 seeds pass all 9 goals.** Before E9, the best policy crabbed 31° and pitched 5.4°.
+
+### Milestone 2 saved: [`progress/milestones/e9_seed2_39M_all_nine_goals/`](progress/milestones/e9_seed2_39M_all_nine_goals)
+E9 seed 2 at 39M: walls 100 %, crab 0.1°, track error 0.38 m. Policy, metrics and videos.
+
+| Walking: body points where it goes | Facing the wall: turns, returns to the line, carries on |
+|---|---|
+| ![](docs/media/review_38M_20261116_2207/ring_e9_seed0/walk.gif) | ![](docs/media/review_38M_20261116_2207/ring_e9_seed0/wall.gif) |
+
+Videos (seed 0): [walk.mp4](docs/media/review_38M_20261116_2207/ring_e9_seed0/walk.mp4) · [wall.mp4](docs/media/review_38M_20261116_2207/ring_e9_seed0/wall.mp4).
+Frames, wall test: ![](docs/media/review_38M_20261116_2207/ring_e9_seed0/frames_wall.png)
+
+**Before vs. after (same camera, same test):**
+
+| Milestone 1 (E7, crab 31°): body angled toward the ring centre | Milestone 2 (E9, crab 0.1°) |
+|---|---|
+| ![](progress/milestones/e7_seed0_34M_all_six_goals/walk.gif) | ![](progress/milestones/e9_seed2_39M_all_nine_goals/walk.gif) |
+
+### What made the difference
+1. **`body_alignment` + `lateral_velocity`** (anti-crab): crab 31° → 0.1–0.5° within about
+   4M steps.
+2. **`heading_progress`** (potential-based turning): walls held or improved (83 % → 83–100 %),
+   with no freezing. It fixed E8's mistake: wobble nets zero, real turning pays.
+3. **Ring look-ahead 0.6 → 0.25 rad**: removed the 17° inward pull of the steering target.
+4. **`orientation` −30**: roll fell to 0.2–0.4°. Pitch is 3.1–3.3° (within ≤ 4°), so the nose is
+   still slightly down; worth watching.
+5. **Starting from the milestone, not E8**: kept the wall skill E8 had lost.
+
+### E8 final (60M) for the record
+Walls 17–50 %, crab 12–15° (it improved late even without an alignment reward), track error
+0.07–0.10 m, walking perfect. Superseded by E9.
+
+### Notes
+- Track error is 0.28–0.50 m: good, but seed 0 is right at the 0.5 m limit. E9 trades a little
+  line accuracy for the posture fix.
+- Housekeeping: per-run evaluation videos are no longer committed under `progress/` (they
+  duplicated `docs/media/`; about 30 MB per review). Milestone and best-seed videos are kept.
+
+### Next
+- E9 continues to 54M. The next reviews check that the gains hold (E7 showed skills can drift).
+- **Stage 1 (training ring) is essentially complete.** Next is **stage 2: the obstacle course**,
+  continuing from milestone 2 with the difficulty curriculum. That needs a decision on running
+  it while E9 finishes, or after.
+
+---
+
 ## Report 7: 2026-11-16, E8 backfired (dog freezes at walls); E9 launched from the milestone
 
 ### E8 at 50M steps

@@ -13,3 +13,6 @@ MUJOCO_LOG.TXT
 runs/_amarel_ppo/
 runs/_review_state.json
 !progress/**/*.pkl
+# per-run eval videos are duplicated in docs/media (best seed) and milestones
+progress/ppo_*/eval/*.mp4
+progress/ppo_*/eval/*.gif

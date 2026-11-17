@@ -200,6 +200,7 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     - Keep milestone snapshots.
 
 ### E8: Ring continuation with an explicit turn reward. RUNNING (Amarel job 63982746, from E7 seed 1 final, 40M → 60M)
+- **Final (60M):** walls 17–50 %, crab 12–15°, track error 0.07–0.10 m. SUPERSEDED by E9.
 - **At 50M: FAILED for walls.**
   - Wall pass rate 0 % on every run. The dog freezes facing the wall.
   - Cause: the −1 side of `turn_to_route` punished the yaw wobble of trotting in place, so
@@ -249,7 +250,16 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
 - **Decision:** keep 32-core CPU nodes (`amarel/ring_ppo.slurm`). Training takes about 75–90 min
   per 40M-step run.
 
-### E9: Natural posture + potential-based turning. RUNNING (Amarel job 63983152, from E7 milestone 34M → 54M)
+### E9: Natural posture + potential-based turning. WORKS (Amarel job 63983152, from E7 milestone 34M → 54M)
+- **Result at 38–39M (4–5M steps in): every goal passes on all 3 seeds.**
+  - crab 0.1–0.5° (from 31°), walls 83–100 %, roll 0.2–0.4°, pitch 3.1–3.3°
+  - trot 0.97–0.98, 0.62–0.63 m/s, track error 0.28–0.50 m
+  - Milestone 2: `progress/milestones/e9_seed2_39M_all_nine_goals/`.
+  - What worked:
+    - the alignment reward plus the lateral-velocity penalty (anti-crab)
+    - potential-based heading progress (no freezing)
+    - the closer look-ahead
+    - starting from the wall-capable milestone
 - **Updated plan:** E9 starts from the E7 milestone (walls 83 %), not from E8, which froze at
   walls. `turn_to_route` is replaced by `heading_progress` (potential-based, 0.5).
 - **Date:** 2026-11-16
