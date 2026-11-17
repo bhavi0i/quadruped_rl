@@ -1,4 +1,7 @@
 """
+HISTORY: replaces the original course train.py (commit 16dc2d4: custom robot, single stage,
+curriculum from difficulty 0, no resume). See ../EXPERIMENT_LOG.md.
+
 train.py - PPO training for the Go1 in two stages:
 
   1. ring:   learn to walk (natural trot, steering) by doing laps of the flat training ring

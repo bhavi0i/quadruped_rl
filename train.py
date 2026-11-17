@@ -1,3 +1,6 @@
+# SUPERSEDED (2026-11-16): flat-ground SAC training of Phase 1. The project moved to
+# obstacle_course/train.py (PPO, ~60x faster, training ring + obstacle course). Kept for the record;
+# see EXPERIMENT_LOG.md (experiments E1-E3).
 """Train a 4-legged robot (MuJoCo Ant) to walk with deep RL.
 
 Examples

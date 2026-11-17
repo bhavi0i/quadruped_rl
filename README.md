@@ -12,6 +12,12 @@ Train a robot dog to walk with deep RL, then study how it copes, and adapts, whe
 - Injuries: `InjuryWrapper` weakens one leg's motors (gain, damping and force limit) to a strength in
   [0, 1]. 0 means the leg is paralysed and goes limp.
 
+## Experiment log
+
+All changes to the robot, world, rewards and training, with results and what worked or failed,
+are recorded in [`EXPERIMENT_LOG.md`](EXPERIMENT_LOG.md). Replaced code is kept commented out in the
+source with `[FAILED]` / `[REPLACED]` / `[ORIGINAL]` tags.
+
 ## Obstacle course (`obstacle_course/`)
 
 A 24 m walled lane the robot has to cross to the finish line: rubble, three hurdles, a ramp,

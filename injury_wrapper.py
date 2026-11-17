@@ -115,6 +115,21 @@ class InjuryWrapper(gym.Wrapper):
         return self._obs(obs), reward, terminated, truncated, info
 
 
+# ------------------------------------------------------------------------------------------
+# HISTORY (see EXPERIMENT_LOG.md). This flat-ground SAC pipeline is SUPERSEDED by
+# obstacle_course/ (PPO, training ring + course) but kept for the record and for comparison.
+#
+# [FAILED as gait design, 2026-11-16] Go1Control v1 reward - "move forward, don't fall":
+#   reward = 2.0 * x_velocity + 1.0 alive - 0.02 * |a|^2 - 0.02 * |a - a_prev|^2
+#            - 0.5 * |y_velocity| - 0.5 * (1 - upright)        (tilt > 50 deg ends the episode)
+#   Learned to walk quickly (seed 0: 0.73 m/s, no falls at 150k steps) but trot match stayed at
+#   chance (0.51): forward speed alone does not produce a natural gait. Replaced by the trot-shaped
+#   reward below (v2). Runs were cancelled when we moved to the obstacle-course world.
+#
+# [REPLACED] Injuries originally scaled the policy's *commands* (action *= strength). With the
+#   Go1's position servos a zero command holds the joint stiff at 0 rad instead of going limp,
+#   so injuries now scale the motor's gain / damping / force limit instead (InjuryWrapper).
+# ------------------------------------------------------------------------------------------
 FOOT_GEOMS = ("FR", "FL", "RR", "RL")
 TROT_OFFSET = np.array([0.0, 0.5, 0.5, 0.0])   # FR+RL move together, FL+RR half a cycle later
 

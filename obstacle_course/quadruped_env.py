@@ -79,15 +79,27 @@ ROBOTS = {"go1": _go1_cfg, "custom": _custom_cfg}
 # Reward weights.  Positive = reward, negative = punishment.  (dt = 0.02 s multiplies
 # every term, so per-second magnitudes are what you see here.)
 # --------------------------------------------------------------------------------------
+#
+# HISTORY - see ../EXPERIMENT_LOG.md for the full record. Earlier settings stay commented out
+# next to the current ones with a note on what happened.  Status tags:
+#   [WORKS]  verified good in training       [FAILED]  tried, caused a problem (kept for the record)
+#   [NEW]    added, not yet verified          [ORIGINAL] from the first version of this course env
+#
 DEFAULT_REWARD_WEIGHTS = dict(
     # ---- rewards (things we want) ----
-    progress=2.0,          # metres of new ground per second, capped at the target speed (no sprinting)
-    velocity_tracking=2.0, # exp(-(v_fwd - v_target)^2 / 0.1): moving at the commanded speed
-    heading=0.5,           # facing the next waypoint
-    feet_air_time=5.0,     # taking real steps instead of shuffling / vibrating
-    alive=0.5,             # small per-step bonus for staying upright
-    trot=2.0,              # feet follow the diagonal-trot clock (natural dog gait)
-    foot_clearance=0.5,    # swing feet lifted to a real step height above the local terrain
+    # progress=2.0 uncapped                     [FAILED v1 ring, 2026-11-16] paid for every extra metre,
+    #                                            so the Go1 learned to bound at ~3 m/s (target 0.6) with
+    #                                            ~1 foot down. Now capped at target_speed (see _compute_reward).
+    # velocity_tracking=1.0, sigma^2 = 0.25     [ORIGINAL; FAILED v1 ring] too weak/wide to stop sprinting
+    # trot=1.0                                  [FAILED v1 ring] trot match stayed at chance (~0.52)
+    # collision=-1.0                            [ORIGINAL; FAILED v1 ring] shins still scraped the ground
+    progress=2.0,          # [NEW v2] metres of new ground per second, capped at the target speed
+    velocity_tracking=2.0, # [NEW v2] exp(-(v_fwd - v_target)^2 / 0.1): moving at the commanded speed
+    heading=0.5,           # [ORIGINAL] facing the next waypoint
+    feet_air_time=5.0,     # [ORIGINAL] taking real steps instead of shuffling / vibrating
+    alive=0.5,             # [ORIGINAL] small per-step bonus for staying upright
+    trot=2.0,              # [NEW v2] feet follow the diagonal-trot clock (natural dog gait)
+    foot_clearance=0.5,    # [NEW v1] swing feet lifted to a real step height above the local terrain
     # ---- punishments (things we don't want) ----
     lin_vel_z=-2.0,        # bouncing up and down
     ang_vel_xy=-0.05,      # rolling / pitching rates
@@ -98,9 +110,9 @@ DEFAULT_REWARD_WEIGHTS = dict(
     action_rate=-0.01,     # large changes in action between steps
     joint_limit=-5.0,      # pushing joints into their limits
     foot_slip=-0.1,        # feet sliding while in contact
-    collision=-2.0,        # torso / thighs / calves (shins) hitting the terrain or obstacles
-    wall_contact=-2.0,     # any part of the robot touching a wall or slalom barrier
-    wall_proximity=-1.0,   # walking within ~0.4 m of a wall straight ahead / to the side
+    collision=-2.0,        # [NEW v2] torso / thighs / calves (shins) hitting the terrain or obstacles
+    wall_contact=-2.0,     # [NEW v1] any part of the robot touching a wall or slalom barrier
+    wall_proximity=-1.0,   # [NEW v1] walking within ~0.4 m of a wall straight ahead / to the side
     # ---- one-off events ----
     checkpoint=10.0,       # bonus when the robot clears each course section (course only)
     goal=100.0,            # reaching the goal pad
@@ -452,7 +464,10 @@ class QuadrupedCourseEnv(gym.Env):
 
         torque = d.actuator_force
         terms = {
-            # only new ground counts, and never faster than the target speed (no reward for sprinting)
+            # [ORIGINAL; FAILED v1 ring] uncapped progress + wide speed tracking -> sprinting/bounding:
+            # "progress": max(0.0, s - self.max_x) / dt,
+            # "velocity_tracking": np.exp(-((v_fwd - self.target_speed) ** 2) / 0.25),
+            # [NEW v2] only new ground counts, never faster than the target speed; sharper tracking
             "progress": min(max(0.0, s - self.max_x) / dt, self.target_speed),
             "velocity_tracking": np.exp(-((v_fwd - self.target_speed) ** 2) / 0.1),
             "heading": np.cos(heading_err),
@@ -485,7 +500,15 @@ class QuadrupedCourseEnv(gym.Env):
                     bonus += w["checkpoint"]
                     self.episode_sums["checkpoint"] += w["checkpoint"]
             reached = bool(pos[0] > course.GOAL_X - 0.3 and abs(pos[1]) < 0.8)
-        else:                               # ring: count laps for logging only (no bonus: it paid for sprinting)
+        else:
+            # [FAILED v1 ring] +10 bonus per completed lap. A 38 m lap takes ~63 s at the 0.6 m/s
+            # target but episodes are 30 s, so only sprinting ever earned it -> taught bounding.
+            # laps = int((self.max_x - self.start_x) // (2 * np.pi * course.RING_TRACK_RADIUS))
+            # if laps > self.laps:
+            #     self.laps = laps
+            #     bonus += w["checkpoint"]
+            #     self.episode_sums["checkpoint"] += w["checkpoint"]
+            # [NEW v2] laps are only counted for logging
             self.laps = (self.max_x - self.start_x) / (2 * np.pi * course.RING_TRACK_RADIUS)
             reached = False
         fell = bool(torso_hit or grav[2] > -0.5 or height < 0.12)   # >60 deg tilt or collapsed

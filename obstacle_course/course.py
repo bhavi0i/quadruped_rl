@@ -30,6 +30,9 @@ LANE_HALF_WIDTH = 1.5
 
 # Training ring: a flat, walled circular arena beside the course where the robot first learns
 # to walk (and turn) before it is sent onto the obstacles. It walks laps on the track circle.
+# RING_CENTER, RING_RADIUS, RING_TRACK_RADIUS = (12.0, -8.0), 4.0, 2.5
+#   [REPLACED 2026-11-16] first ring: 16 m lap meant constant tight turning; enlarged so walking
+#   is nearly straight while still practising steering.
 RING_CENTER = (12.0, -11.5)
 RING_RADIUS = 8.0          # inner face of the ring wall (m)
 RING_TRACK_RADIUS = 6.0    # the circle the robot is steered around (38 m lap)
@@ -176,6 +179,8 @@ def course_xml(difficulty=1.0, seed=0):
 def ring_xml():
     """Walled circular arena (flat floor), wall segments tangent to a circle."""
     cx, cy = RING_CENTER
+    # n = 96 segments [REPLACED]: each wall geom slows the height-scan/lidar ray casts; 64 still
+    # looks round at this radius.
     n, r, t = 64, RING_RADIUS + 0.05, 0.05
     half_len = (r + t) * np.tan(np.pi / n) + 0.01
     g = []

@@ -1,0 +1,168 @@
+# Experiment log
+
+A record of the method and of every change to the robot, the world, the reward and the
+training setup. Each entry says what was tried and what happened, and whether it was kept.
+Nothing is deleted: replaced code stays in the source as commented-out blocks tagged
+`[FAILED]`, `[REPLACED]` or `[ORIGINAL]`, next to the current version.
+
+Status tags used here and in the code:
+- **WORKS:** verified good in training
+- **FAILED:** tried and caused a problem; kept for the record
+- **NEW:** added but not yet verified
+- **SUPERSEDED:** still works, but no longer the main approach
+
+---
+
+## Methodology
+
+**Goal (Phase 1).** Train a healthy quadruped to walk with a natural, dog-like gait. Train it
+until it can cross the obstacle course to the finish line. Save that policy. It is the starting
+point for Phase 2 (adaptation) and the "no adaptation" baseline. Then measure how much worse it
+does with an injured leg.
+
+**Robot.** Unitree Go1 robot dog from MuJoCo Menagerie: 12 position-controlled motors, 3 per
+leg (hip abduction, thigh, calf).
+
+**World** (`obstacle_course/course.py`):
+- a flat, walled **training ring** (8 m radius, 6 m lap track)
+- a walled **obstacle course** lane: rubble, hurdles, ramp, stairs, slalom gates, goal pad. A
+  difficulty setting from 0 to 1 scales every obstacle.
+
+**Training stages:**
+1. **Ring.** Learn to walk: natural trot, steady speed, steering, turning away from walls.
+2. **Course.** Continue from the ring policy. A curriculum raises obstacle difficulty from 0 to 1
+   whenever the robot reliably makes progress.
+
+**Algorithm.** PPO (Stable-Baselines3) with about 30 parallel simulations per run on Amarel
+(Rutgers HPC), about 8,800 steps/s per run. Observation and reward are normalised (VecNormalize).
+Runs checkpoint every 1M steps and resume automatically after preemption. Each setting is run
+with 3 seeds.
+
+**How results are judged.** Every reward change is checked by measurements and by video, not
+just by the return. RL finds loopholes ("reward hacking"), so a high return can hide a bad gait.
+
+| Measure | What a natural trot looks like |
+|---|---|
+| speed | about the 0.6 m/s target |
+| trot match (feet follow the diagonal-trot clock) | > 0.8 (0.5 = chance) |
+| feet on the ground | about 2 (one diagonal pair) |
+| body contact rate (shins, knees, belly) | about 0 |
+| falls | about 0 % |
+| wall contacts | about 0 |
+
+Training writes these to `progress.json` in each run folder. Every 5M steps,
+`tools/push_progress.py` pushes them and the latest policy to `progress/` on GitHub.
+
+**Rules for changes:**
+1. Change one idea at a time when possible. Log it here before launching.
+2. Keep failed settings, commented out with the reason.
+3. Archive failed runs instead of deleting them (`obstacle_course/runs_archive/` on Amarel).
+
+---
+
+## Experiments
+
+### E1: Ant-v5, SAC, default reward (flat ground). SUPERSEDED
+- **Date:** 2026-11-16
+- **Setup:** Gymnasium Ant-v5 with the standard reward. SAC, 3 seeds, 3M steps on Amarel `main`.
+- **Result:** started walking. Seed 2 had an eval return of about 2,050 at 0.5M steps; seeds
+  varied a lot. Snapshots are in `progress/phase1_sac_seed1`, `seed2`.
+- **Why stopped:** the group wanted a realistic robot dog, not the spider-like Ant.
+
+### E2: Go1 flat ground, SAC, "move forward, don't fall" reward. FAILED (gait)
+- **Date:** 2026-11-16
+- **Setup:** Go1 in Ant-v5. Reward = 2 × forward speed + alive − small action, drift and tilt
+  penalties.
+- **Result:** walked fast early (0.73 m/s, no falls at 150k steps). Trot match stayed at 0.51,
+  which is chance.
+- **Lesson:** a speed reward alone does not give a natural gait. The policy needs an explicit
+  gait signal (a clock) and a gait reward.
+- **Where:** commented summary at the top of `Go1Control` history in `injury_wrapper.py`.
+
+### E3: Go1 flat ground, SAC, trot-shaped reward (A: base, B: trot weight ×2). SUPERSEDED
+- **Date:** 2026-11-16
+- **Setup:**
+  - Gait clock in the observation.
+  - Rewards: track 0.8 m/s, trot match, swing foot clearance.
+  - Penalties: slip, height, tilt, bounce, body contact, torque.
+  - Two versions: A (3 seeds) and B with stronger trot and clearance weights (2 seeds).
+- **Result:** cancelled early, at about 0.1–0.2M steps. SAC was too slow for the obstacle course:
+  about 150 steps/s, so 50M+ steps would take about 4 days.
+- **Lesson:** use PPO with many parallel simulations, which is the standard for legged robots.
+
+### E4: World with the Go1 in the obstacle course, plus a training ring. WORKS
+- **Date:** 2026-11-16
+- **Change:** attached the Menagerie Go1 into the original course world. Added a walled flat ring
+  beside the course and closed the course lane at both ends.
+- **Ring size:**
+  - First version: 4 m radius, 2.5 m track. **REPLACED:** a 16 m lap meant constant tight turning.
+  - Now: 8 m radius, 6 m track (38 m lap).
+- **Verified:** the Go1 stands still for a full 30 s episode on the course and in the ring. A
+  paralysed front-right leg makes it fall in about 1.3 s.
+
+### E5: Wall awareness. NEW
+- **Date:** 2026-11-16
+- **Change:**
+  - Sensing: 9 horizontal range rays (−90° to +90°, 3 m) and a "touching a wall" flag in the
+    observation.
+  - Penalties: `wall_contact` −2 and `wall_proximity` −1 (inside 0.4 m).
+  - Practice: 25 % of spawns face a random direction, often into a wall.
+- **Verified in a unit test:** at 0.3 m from the wall the rays read 0.30–0.39 m, and driving the
+  dog into the wall sets the flag and the penalty.
+- **Still to verify:** that trained policies turn away and keep walking.
+
+### E6: Ring v1, PPO. FAILED (reward hack: sprinting and bounding)
+- **Date:** 2026-11-16
+- **Run:** Amarel job 63980991, 3 seeds. Archived on Amarel as
+  `obstacle_course/runs_archive/ring_v1_sprinting_seed*`.
+- **Reward:** the original course reward (progress 2.0 uncapped, velocity tracking 1.0 with
+  σ² = 0.25), plus trot 1.0, foot clearance 0.5, collision −1, and a +10 bonus per lap.
+- **Result at 7.4M steps (16 min):**
+
+  | | Target | Measured |
+  |---|---|---|
+  | speed | 0.6 m/s | 2.2–3.0 m/s |
+  | distance | — | 85–121 m per 30 s episode |
+  | feet on the ground | ~2 | ~1.1 (bounding) |
+  | trot match | > 0.8 | 0.52 |
+  | shin contact | ~0 | ~30 % of steps (FR and RR calves) |
+  | falls | ~0 % | 11–14 % |
+
+  Video frames showed a hunched, bounding gallop.
+- **Cause:**
+  - Progress paid for every extra metre, so 3 m/s earned 5× the reward of 0.6 m/s.
+  - The lap bonus could only be earned by sprinting: a lap takes about 63 s at 0.6 m/s, but
+    episodes last 30 s.
+  - Speed tracking (maximum 1.0 per second) was too weak to compete.
+- **Lesson:** every distance-based reward must be capped at the target speed. Bonuses must be
+  reachable at the intended pace.
+
+### E7: Ring v2, PPO, capped progress and stronger trot. NEW (running)
+- **Date:** 2026-11-16
+- **Run:** Amarel job 63981178, 3 seeds, 40M steps (about 75 min).
+- **Changes from E6:**
+
+  | Setting | E6 | E7 |
+  |---|---|---|
+  | progress | uncapped | capped at 0.6 m/s |
+  | lap bonus | +10 per lap | none (laps logged only) |
+  | velocity tracking | weight 1.0, σ² = 0.25 | weight 2.0, σ² = 0.1 |
+  | trot | 1.0 | 2.0 |
+  | collision (shins, knees, belly) | −1 | −2 |
+
+- **Expected reward per second:**
+  - natural trot at 0.6 m/s: about 6.7
+  - standing still: about 2
+  - sprinting at 3 m/s: about 3
+- **Result:** pending. Check the gait at about 10M steps.
+
+---
+
+## Open questions and ideas
+- If the trot match stays low in E7, raise `trot` further or add a feet-down-count term (2 feet).
+- Shin contact: if it persists, check the calf collision capsules against the ground clearance
+  at the default pose.
+- Course stage: start from the best ring policy. Watch whether the trot clock helps or hurts on
+  stairs and hurdles; the gait period may need to vary.
+- Phase 2: injured-leg evaluation on the course. Distance reached, finish rate and falls per
+  injured leg.
