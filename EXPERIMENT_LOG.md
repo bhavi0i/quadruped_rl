@@ -382,6 +382,11 @@ independent runs, not 3. It was left running (no-restart rule).
   copy time).
 - **Lesson:** with `ent_coef = 0`, long PPO training makes the policy nearly deterministic. New
   skills in a later stage need exploration restored.
+- **At 89M (3M in):**
+  - Training falls 100 % → 18–27 % after the reset; goal reached in 12–14 % of training
+    episodes.
+  - Course from the start: 9.8–10.1 m. It now steps onto the ramp (C1/C2 stuck at 9.6–9.7).
+  - log std about −1.28 (holding).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

@@ -74,6 +74,39 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 22: 2026-11-17, C3 (exploration reset): first steps onto the ramp
+
+**C3 training** (3M steps since the exploration reset):
+
+| | 86.1M (reset) | 86.9M | 88.6M |
+|---|---|---|---|
+| falls per episode | 100 % | 66 % | **18–27 %** |
+| distance per episode | 0.8 m | 2.3 m | 3.0–3.8 m |
+| goal reached (training) | 0 % | 5–7 % | 12–14 % |
+
+As expected, the extra randomness first made it fall in every episode. It recovered within
+about 2.5M steps. Exploration is holding (log std about −1.28, vs −2.8 before), so no
+re-collapse.
+
+**On the course from the start (89M checkpoints, 2 runs each):**
+
+| Run | Furthest point | Before (C1/C2) |
+|---|---|---|
+| C3 seed 0 | **10.10 / 10.08 m** | 9.61–9.69 m |
+| C3 seed 1 | **10.02 / 9.99 m** | |
+| C3 seed 2 | 9.89 / 9.81 m | |
+
+**First progress past the ramp edge:** it now steps *onto* the ramp, 0.2–0.5 m up the slope, where
+before it froze at the edge every time. It still times out partway up.
+
+C1 and C2 at 82–90M: still stuck at 9.6–9.8 m in every run (the comparison confirms the effect
+is from the exploration reset).
+
+**Decision:** no change. C3 is only 3M steps in and moving in the right direction. Next review at
+about 90M.
+
+---
+
 ## Report 21: 2026-11-17, ramp still blocks every run → root cause: exploration had collapsed → C3 launched
 
 ### Review at 76–80M (C1 and C2, difficulty 0)
