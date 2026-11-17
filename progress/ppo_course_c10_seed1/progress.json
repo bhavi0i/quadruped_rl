@@ -3,8 +3,8 @@
  "difficulty": {
   "rubble": 1.0,
   "hurdles": 1.0,
-  "ramp": 0.65,
-  "stairs": 0.5,
+  "ramp": 0.5,
+  "stairs": 0.4,
   "slalom": 1.0
  },
  "history": [
@@ -525,6 +525,254 @@
    "clear_rubble": 0.74,
    "clear_slalom": 0.74,
    "clear_ramp": 0.38
+  },
+  {
+   "timesteps": 205553520,
+   "time": "2026-11-17 08:35",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.65,
+    "stairs": 0.5,
+    "slalom": 1.0
+   },
+   "distance": 4.827744354455439,
+   "fall_rate": 0.125,
+   "goal_rate": 0.205,
+   "sections_or_laps": 2.78,
+   "speed": 0.10383554858485249,
+   "trot_match": 0.826953714929913,
+   "body_contact_rate": 0.25581434922255547,
+   "clear_hurdles": 0.93,
+   "clear_stairs": 0.27,
+   "clear_rubble": 0.7,
+   "clear_slalom": 0.76,
+   "clear_ramp": 0.26
+  },
+  {
+   "timesteps": 206058930,
+   "time": "2026-11-17 08:37",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.6,
+    "stairs": 0.5,
+    "slalom": 1.0
+   },
+   "distance": 5.275813261222729,
+   "fall_rate": 0.14,
+   "goal_rate": 0.14,
+   "sections_or_laps": 2.585,
+   "speed": 0.10157209491840052,
+   "trot_match": 0.8331626798045152,
+   "body_contact_rate": 0.23213034961714252,
+   "clear_hurdles": 0.91,
+   "clear_stairs": 0.2,
+   "clear_rubble": 0.77,
+   "clear_slalom": 0.77,
+   "clear_ramp": 0.15
+  },
+  {
+   "timesteps": 206542470,
+   "time": "2026-11-17 08:39",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.6,
+    "stairs": 0.5,
+    "slalom": 1.0
+   },
+   "distance": 5.232940820085121,
+   "fall_rate": 0.22,
+   "goal_rate": 0.115,
+   "sections_or_laps": 2.705,
+   "speed": 0.1090814438141679,
+   "trot_match": 0.8284226744426522,
+   "body_contact_rate": 0.2388964718534144,
+   "clear_hurdles": 0.9,
+   "clear_stairs": 0.25,
+   "clear_rubble": 0.79,
+   "clear_slalom": 0.74
+  },
+  {
+   "timesteps": 207007020,
+   "time": "2026-11-17 08:41",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.6,
+    "stairs": 0.45,
+    "slalom": 1.0
+   },
+   "distance": 5.186053148402159,
+   "fall_rate": 0.2,
+   "goal_rate": 0.165,
+   "sections_or_laps": 2.72,
+   "speed": 0.106294939297732,
+   "trot_match": 0.8238693359164783,
+   "body_contact_rate": 0.2527499730922398,
+   "clear_hurdles": 0.88,
+   "clear_stairs": 0.13,
+   "clear_rubble": 0.78,
+   "clear_slalom": 0.75,
+   "clear_ramp": 0.29
+  },
+  {
+   "timesteps": 207477210,
+   "time": "2026-11-17 08:43",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.6,
+    "stairs": 0.45,
+    "slalom": 1.0
+   },
+   "distance": 5.581653926960788,
+   "fall_rate": 0.205,
+   "goal_rate": 0.2,
+   "sections_or_laps": 2.855,
+   "speed": 0.11644268549990884,
+   "trot_match": 0.8297002275675791,
+   "body_contact_rate": 0.2349071651885408,
+   "clear_hurdles": 0.9,
+   "clear_rubble": 0.83,
+   "clear_slalom": 0.8,
+   "clear_ramp": 0.27
+  },
+  {
+   "timesteps": 207943620,
+   "time": "2026-11-17 08:45",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.55,
+    "stairs": 0.45,
+    "slalom": 1.0
+   },
+   "distance": 4.602600299774351,
+   "fall_rate": 0.205,
+   "goal_rate": 0.15,
+   "sections_or_laps": 2.66,
+   "speed": 0.10216784795586789,
+   "trot_match": 0.8352061490962887,
+   "body_contact_rate": 0.2201496537381274,
+   "clear_hurdles": 0.93,
+   "clear_stairs": 0.26,
+   "clear_rubble": 0.75,
+   "clear_slalom": 0.76,
+   "clear_ramp": 0.16
+  },
+  {
+   "timesteps": 208413810,
+   "time": "2026-11-17 08:47",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.55,
+    "stairs": 0.45,
+    "slalom": 1.0
+   },
+   "distance": 5.347186783794764,
+   "fall_rate": 0.205,
+   "goal_rate": 0.14,
+   "sections_or_laps": 2.815,
+   "speed": 0.10819591840510838,
+   "trot_match": 0.8299123758480614,
+   "body_contact_rate": 0.245077521852868,
+   "clear_hurdles": 0.92,
+   "clear_stairs": 0.27,
+   "clear_rubble": 0.81,
+   "clear_slalom": 0.68
+  },
+  {
+   "timesteps": 208899510,
+   "time": "2026-11-17 08:48",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.55,
+    "stairs": 0.45,
+    "slalom": 1.0
+   },
+   "distance": 5.424472547168085,
+   "fall_rate": 0.195,
+   "goal_rate": 0.15,
+   "sections_or_laps": 2.785,
+   "speed": 0.11204364565366547,
+   "trot_match": 0.8300705167799053,
+   "body_contact_rate": 0.23415894585134858,
+   "clear_hurdles": 0.87,
+   "clear_stairs": 0.23,
+   "clear_rubble": 0.8,
+   "clear_slalom": 0.72,
+   "clear_ramp": 0.37
+  },
+  {
+   "timesteps": 209362770,
+   "time": "2026-11-17 08:50",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.55,
+    "stairs": 0.4,
+    "slalom": 1.0
+   },
+   "distance": 4.863220418683092,
+   "fall_rate": 0.225,
+   "goal_rate": 0.125,
+   "sections_or_laps": 2.58,
+   "speed": 0.10708768188698116,
+   "trot_match": 0.8291612701290851,
+   "body_contact_rate": 0.24013297068600786,
+   "clear_hurdles": 0.86,
+   "clear_stairs": 0.16,
+   "clear_rubble": 0.77,
+   "clear_slalom": 0.72,
+   "clear_ramp": 0.22
+  },
+  {
+   "timesteps": 209835870,
+   "time": "2026-11-17 08:52",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.5,
+    "stairs": 0.4,
+    "slalom": 1.0
+   },
+   "distance": 5.058626124345974,
+   "fall_rate": 0.16,
+   "goal_rate": 0.16,
+   "sections_or_laps": 2.685,
+   "speed": 0.1072995870560879,
+   "trot_match": 0.8255897273303742,
+   "body_contact_rate": 0.25703868103994926,
+   "clear_hurdles": 0.89,
+   "clear_rubble": 0.75,
+   "clear_slalom": 0.7,
+   "clear_ramp": 0.14
+  },
+  {
+   "timesteps": 210250110,
+   "time": "2026-11-17 08:54",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.5,
+    "stairs": 0.4,
+    "slalom": 1.0
+   },
+   "distance": 6.159782723420268,
+   "fall_rate": 0.295,
+   "goal_rate": 0.225,
+   "sections_or_laps": 3.065,
+   "speed": 0.1539113223095395,
+   "trot_match": 0.8238321987253766,
+   "body_contact_rate": 0.2241333526458092,
+   "clear_hurdles": 0.83,
+   "clear_stairs": 0.4,
+   "clear_rubble": 0.74,
+   "clear_slalom": 0.68
   }
  ]
 }

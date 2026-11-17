@@ -74,6 +74,50 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 38: 2026-11-17, ✅ stumble penalty works: ramp and stairs levels jump; the slalom is the next bottleneck
+
+### Training (C11 at 203–207M, 2–4M steps after adding `feet_stumble`)
+
+| | ramp level | stairs level | stairs clear rate | goal rate | falls |
+|---|---|---|---|---|---|
+| C10 (before) | 0.30–0.65 | 0.30–0.55 | 24–33 % | 11–17 % | 16–30 % |
+| **C11** | **0.70–0.95** | **0.60–0.75** | **51–58 %** | **30–33 %** | 38–46 % |
+
+### Benchmark (all obstacles 0.5, 6 layouts)
+
+| Run | Goals | Where non-goal runs stop |
+|---|---|---|
+| **C11 seed 2 (200M)** | **2 / 6 (32.8 s, 50.1 s)** | **slalom ×3** (19.4–20.2 m), hurdles ×1 |
+| C11 seed 0 (202M) | 0 / 6 | **slalom ×2** (20.6 m), stairs ×2, rubble, hurdles |
+| C11 seed 1 (201M) | 0 / 6 | stairs ×3, slalom ×1, rubble ×2 |
+| C10 seeds 0–2 (210–224M) | 0 / 18 | ramp crest, stairs, rubble |
+
+- **Working: the stumble penalty fixed the riser problem.** C11 runs get past the stairs to the
+  slalom in 6 of 18 benchmark runs, and both the ramp and stairs levels jumped.
+- **Not working:**
+  - **The slalom is now the main stopping point** for the best runs.
+  - Falls in training rose to 38–46 % (watch).
+
+Milestone [`progress/milestones/c11_seed2_200M_bench05_2of6/`](progress/milestones/c11_seed2_200M_bench05_2of6). A full crossing in 32.8 s (layout 3):
+![](progress/milestones/c11_seed2_200M_bench05_2of6/course_goal.gif)
+
+And a run that stops in the slalom (layout 0, 20.2 m):
+![](progress/milestones/c11_seed2_200M_bench05_2of6/slalom_frames.png)
+Videos: [course_goal.mp4](progress/milestones/c11_seed2_200M_bench05_2of6/course_goal.mp4) · [course_slalom_stop.mp4](progress/milestones/c11_seed2_200M_bench05_2of6/course_slalom_stop.mp4)
+
+### Likely cause of the slalom stops
+The slalom barriers are "walls" to the dog's range sensors. In stage 1 it learned to **stop before
+walls and turn away** (`wall_contact`, `wall_proximity` within 0.4 m). Weaving needs it to pass close
+to a barrier end. The last frame above shows it stopped between gates, turned sideways near a
+barrier.
+
+**Decision:** one more review first. C11 is only 2–4M steps old, and the slalom now gets far more
+practice because the dog actually reaches it. If the slalom still blocks, the candidate fix (C12)
+is more slalom practice (`section_weights` slalom 2) and a smaller wall-proximity zone on the
+course (0.4 → 0.2 m).
+
+---
+
 ## Report 37: 2026-11-17, checkpoint sweep: C10 tops out at 2 of 6; the stairs riser is the bottleneck → C11 (stumble penalty)
 
 ### Reliability swings between checkpoints

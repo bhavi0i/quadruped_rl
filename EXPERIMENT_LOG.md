@@ -537,6 +537,13 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Change (one idea):** `feet_stumble` −1.0 (feet with |F_xy| > 2 |F_z| and > 1 N).
 - Unit test: 0 on flat ground, 2 when front feet are pushed into the riser.
 - First version subtracted the number of feet without contact (bug); fixed before launch.
+- **At 200–207M (2–4M in): WORKS.**
+  - Levels: ramp 0.7–0.95, stairs 0.6–0.75 (C10: 0.3–0.65 / 0.3–0.55). Stairs clear 51–58 %.
+    Goal rate 30–33 %.
+  - Benchmark: seed 2 2/6 (32.8 s, 50.1 s). 6/18 C11 runs reach the slalom.
+  - New bottleneck: the slalom (possible stage-1 "stop at walls" habit). Training falls up to
+    38–46 %.
+  - Milestone: `progress/milestones/c11_seed2_200M_bench05_2of6/`.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

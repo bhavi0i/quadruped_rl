@@ -1,0 +1,190 @@
+{
+ "arena": "course",
+ "difficulty": {
+  "rubble": 1.0,
+  "hurdles": 1.0,
+  "ramp": 0.5,
+  "stairs": 0.6,
+  "slalom": 1.0
+ },
+ "history": [
+  {
+   "timesteps": 198341430,
+   "time": "2026-11-17 08:47",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.3,
+    "stairs": 0.35,
+    "slalom": 1.0
+   },
+   "distance": 9.271295982336177,
+   "fall_rate": 0.335,
+   "goal_rate": 0.56,
+   "sections_or_laps": 3.825,
+   "speed": 0.34698722767629064,
+   "trot_match": 0.731469131097561,
+   "body_contact_rate": 0.3759400406504065,
+   "clear_stairs": 0.92,
+   "clear_slalom": 0.77
+  },
+  {
+   "timesteps": 198639720,
+   "time": "2026-11-17 08:48",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.35,
+    "stairs": 0.4,
+    "slalom": 1.0
+   },
+   "distance": 9.925840231772131,
+   "fall_rate": 0.31,
+   "goal_rate": 0.59,
+   "sections_or_laps": 3.995,
+   "speed": 0.359309173319438,
+   "trot_match": 0.7385027992892822,
+   "body_contact_rate": 0.3328438767642227,
+   "clear_stairs": 0.87,
+   "clear_slalom": 0.81,
+   "clear_rubble": 0.71,
+   "clear_hurdles": 0.8,
+   "clear_ramp": 0.95
+  },
+  {
+   "timesteps": 198975750,
+   "time": "2026-11-17 08:50",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.35,
+    "stairs": 0.45,
+    "slalom": 1.0
+   },
+   "distance": 9.791364566769795,
+   "fall_rate": 0.29,
+   "goal_rate": 0.525,
+   "sections_or_laps": 3.82,
+   "speed": 0.31980682212425243,
+   "trot_match": 0.7423883284230575,
+   "body_contact_rate": 0.3603815135553373,
+   "clear_stairs": 0.8,
+   "clear_slalom": 0.79,
+   "clear_rubble": 0.76,
+   "clear_hurdles": 0.89
+  },
+  {
+   "timesteps": 199326150,
+   "time": "2026-11-17 08:51",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.4,
+    "stairs": 0.5,
+    "slalom": 1.0
+   },
+   "distance": 9.913605580175197,
+   "fall_rate": 0.325,
+   "goal_rate": 0.51,
+   "sections_or_laps": 3.825,
+   "speed": 0.2950389772952023,
+   "trot_match": 0.7602347317351598,
+   "body_contact_rate": 0.322351598173516,
+   "clear_stairs": 0.78,
+   "clear_slalom": 0.74,
+   "clear_rubble": 0.78,
+   "clear_hurdles": 0.79,
+   "clear_ramp": 0.94
+  },
+  {
+   "timesteps": 199639560,
+   "time": "2026-11-17 08:52",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.4,
+    "stairs": 0.55,
+    "slalom": 1.0
+   },
+   "distance": 9.12910865846204,
+   "fall_rate": 0.41,
+   "goal_rate": 0.465,
+   "sections_or_laps": 3.65,
+   "speed": 0.3081047212261569,
+   "trot_match": 0.7624581219488848,
+   "body_contact_rate": 0.29032896206247405,
+   "clear_stairs": 0.75,
+   "clear_slalom": 0.75,
+   "clear_rubble": 0.81,
+   "clear_hurdles": 0.71
+  },
+  {
+   "timesteps": 200003730,
+   "time": "2026-11-17 08:53",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.45,
+    "stairs": 0.6,
+    "slalom": 1.0
+   },
+   "distance": 8.810882231964891,
+   "fall_rate": 0.32,
+   "goal_rate": 0.395,
+   "sections_or_laps": 3.64,
+   "speed": 0.24829894946400596,
+   "trot_match": 0.7748427932009776,
+   "body_contact_rate": 0.2996567537139248,
+   "clear_stairs": 0.61,
+   "clear_slalom": 0.76,
+   "clear_rubble": 0.82,
+   "clear_hurdles": 0.73,
+   "clear_ramp": 0.95
+  },
+  {
+   "timesteps": 200378190,
+   "time": "2026-11-17 08:54",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.45,
+    "stairs": 0.6,
+    "slalom": 1.0
+   },
+   "distance": 8.077749510564265,
+   "fall_rate": 0.375,
+   "goal_rate": 0.33,
+   "sections_or_laps": 3.395,
+   "speed": 0.22713049598838772,
+   "trot_match": 0.7716952411472521,
+   "body_contact_rate": 0.3304491801527533,
+   "clear_stairs": 0.53,
+   "clear_slalom": 0.69,
+   "clear_rubble": 0.75,
+   "clear_hurdles": 0.76
+  },
+  {
+   "timesteps": 200708490,
+   "time": "2026-11-17 08:56",
+   "difficulty": {
+    "rubble": 1.0,
+    "hurdles": 1.0,
+    "ramp": 0.5,
+    "stairs": 0.6,
+    "slalom": 1.0
+   },
+   "distance": 8.430350656429354,
+   "fall_rate": 0.435,
+   "goal_rate": 0.365,
+   "sections_or_laps": 3.5,
+   "speed": 0.2653372625235292,
+   "trot_match": 0.7701014229488344,
+   "body_contact_rate": 0.2846351801392673,
+   "clear_stairs": 0.56,
+   "clear_slalom": 0.79,
+   "clear_rubble": 0.8,
+   "clear_hurdles": 0.75,
+   "clear_ramp": 0.96
+  }
+ ]
+}
