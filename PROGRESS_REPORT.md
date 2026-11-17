@@ -74,6 +74,49 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 31: 2026-11-17, rubble, hurdles and slalom at full size; evaluation made fairer (6 rubble layouts)
+
+### C8 curriculum (161–169M)
+
+| | rubble | hurdles | ramp | stairs | slalom | goal rate (training) | falls |
+|---|---|---|---|---|---|---|---|
+| C8 seed 0 | **1.0** | **1.0** | 0.70 (was 1.0) | 0.45 | **1.0** | 15 % | 26 % |
+| C8 seed 1 | **1.0** | **1.0** | 0.25 | 0.15 | **1.0** | 26 % | 28 % |
+| C8 seed 2 | **1.0** | **1.0** | 0.50 | 0.35 | **1.0** | 12 % | 13 % |
+
+- **Working:** rubble, hurdles and slalom have all reached **full size** on every seed.
+- **Not working:**
+  - The ramp level oscillates: the curriculum lowers it when the clear rate drops below 20 %.
+  - The **stairs** are the slowest obstacle (0.15–0.45).
+
+### Evaluation fix: one fixed rubble layout was misleading
+Rubble blocks are placed from a random seed. Training uses 30 layouts (one per simulation), but
+the course test always used layout 0. The same C8 policy, at the same settings, on six layouts
+(2 runs each):
+
+| Layout | 0 | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|---|
+| result | fell 7.9 / stall 10.8 | 19.5 / fell 21.3 | fell 5.3 / 10.8 | fell 13.0 / **GOAL** | 10.8 / 10.8 | 10.9 / 19.8 |
+
+So the review's "stalls at the rubble entrance" partly reflected one unlucky layout.
+
+**Changes:**
+- **The course test now runs 6 times, once per rubble layout (0–5).** The goal-rate goal is now
+  ≥ 4 of 6.
+- **Reviews evaluate only the active line (C8).** Superseded runs (C5–C7) finish untouched but are
+  no longer evaluated. Each course test now takes several minutes.
+
+With the new test, C8 seed 1 (169M): furthest points 4.7 / 5.4 / **17.3** / 10.9 / 10.9 / 7.1 m.
+The stops are spread across the rubble, hurdles, ramp top and stairs, with no completion at these
+harder levels yet.
+
+### Next
+- C8 keeps training. The curriculum is still adjusting the ramp and stairs.
+- If the stairs stay below 0.5 for two more reviews, consider a targeted stairs tweak
+  (e.g. stairs-only spawn share).
+
+---
+
 ## Report 30: 2026-11-17, 🏁 C8 crosses the course with FULL-SIZE hurdles, ramp and slalom
 
 ### C8 per-section curriculum after about 8–12M steps (training)

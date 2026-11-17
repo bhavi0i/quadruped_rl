@@ -51,7 +51,7 @@ GOALS = {  # what "walking naturally and handling walls" means, numerically
     "foot_fore_aft_cm": ("<=", 8.0),    # mean |fore-aft| stance-foot offset from standing pose
     "step_height_spread": ("<=", 0.2),  # (max - min) / mean of the four legs' swing heights
     # stage 2: obstacle course from the start
-    "goal_rate": (">=", 0.67),          # reached the goal pad in >= 2 of 3 runs from the start
+    "goal_rate": (">=", 0.67),          # reached the goal pad in >= 4 of 6 runs (6 rubble layouts)
 }
 
 
@@ -206,13 +206,18 @@ def save_video(frames, out, name):
     imageio.v3.imwrite(os.path.join(out, f"{name}.gif"), np.stack(small), duration=80, loop=0)
 
 
-def course_test(model, norm, env, episodes=3, seconds=60):
-    """Stage 2: start at the beginning of the course and try to reach the goal pad."""
+def course_test(model, norm, env, episodes=6, seconds=60):
+    """Stage 2: start at the beginning of the course and try to reach the goal pad.
+    [C8 review] each run uses a different rubble layout (course_seed 0..episodes-1). With one fixed
+    layout (seed 0) results were unrepresentative: the same policy reached the goal on layout 3
+    and fell early on layouts 0 and 2."""
     import course as C
     from quadruped_env import CHECKPOINT_X, SECTION_NAMES
     runs, video = [], []
     for ep in range(episodes):
         env.random_start = False
+        env.course_seed = ep
+        env.set_difficulty(env.difficulty)          # rebuild with this rubble layout
         obs, _ = env.reset(seed=300 + ep)
         t, fell, reached = 0, False, False
         while t < int(seconds / 0.02):
@@ -225,7 +230,7 @@ def course_test(model, norm, env, episodes=3, seconds=60):
                 break
         x = float(env.max_x)
         cleared = [n for n, cx in zip(SECTION_NAMES, CHECKPOINT_X) if x > cx]
-        runs.append(dict(max_x=round(x, 2), sections_cleared=cleared, reached_goal=reached, fell=fell,
+        runs.append(dict(layout=ep, max_x=round(x, 2), sections_cleared=cleared, reached_goal=reached, fell=fell,
                          time_s=round(t * 0.02, 1), stopped_in=next((n for n, cx in zip(SECTION_NAMES, CHECKPOINT_X)
                                                                      if x <= cx), "goal")))
     return dict(goal_rate=float(np.mean([r["reached_goal"] for r in runs])),

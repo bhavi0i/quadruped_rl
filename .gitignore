@@ -16,3 +16,4 @@ runs/_review_state.json
 # per-run eval videos are duplicated in docs/media (best seed) and milestones
 progress/ppo_*/eval/*.mp4
 progress/ppo_*/eval/*.gif
+runs/_active_prefixes.json

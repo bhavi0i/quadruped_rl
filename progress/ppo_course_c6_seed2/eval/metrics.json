@@ -1,79 +1,78 @@
 {
-  "speed": 0.09910464780376095,
-  "trot_match": 0.64855,
-  "feet_down": 3.0726,
-  "body_contact_rate": 0.7282,
-  "swing_lift_cm": 9.485294466496244,
+  "speed": 0.11628788871234204,
+  "trot_match": 0.6682,
+  "feet_down": 2.9908,
+  "body_contact_rate": 0.6406,
+  "swing_lift_cm": 9.264867523391942,
   "fall_rate": 0.0,
   "track_error_m": null,
-  "speed_err": 0.500895352196239,
-  "foot_splay_cm": 2.0755911446453603,
-  "foot_fore_aft_cm": 5.234660985168412,
-  "step_height_spread": 0.741732960524347,
+  "speed_err": 0.48371211128765795,
+  "foot_splay_cm": 2.3512241311836246,
+  "foot_fore_aft_cm": 4.926879965477053,
+  "step_height_spread": 0.5903322011191894,
   "step_height_per_leg_cm": [
-    9.4,
-    13.6,
-    10.1,
-    6.3
+    10.6,
+    13.8,
+    9.1,
+    7.7
   ],
-  "crab_angle_signed_deg": -21.03634353816567,
-  "crab_angle_deg": 21.03634353816567,
-  "roll_deg": 3.114920912791982,
-  "pitch_deg": 2.5219753499361435,
-  "sideways_speed": 0.010457683980838132,
+  "crab_angle_signed_deg": -11.625565335662488,
+  "crab_angle_deg": 11.625565335662488,
+  "roll_deg": 2.587071342997891,
+  "pitch_deg": 0.9355027565422687,
+  "sideways_speed": 0.0008556028390683426,
   "goal_rate": 0.0,
-  "mean_progress_m": 8.78,
-  "course_progress": 0.37361702127659574,
+  "mean_progress_m": 7.13,
+  "course_progress": 0.30340425531914894,
   "course_runs": [
     {
-      "max_x": 4.57,
+      "max_x": 6.38,
+      "sections_cleared": [
+        "rubble"
+      ],
+      "reached_goal": false,
+      "fell": true,
+      "time_s": 9.2,
+      "stopped_in": "hurdles"
+    },
+    {
+      "max_x": 9.8,
+      "sections_cleared": [
+        "rubble",
+        "hurdles"
+      ],
+      "reached_goal": false,
+      "fell": false,
+      "time_s": 60.0,
+      "stopped_in": "ramp"
+    },
+    {
+      "max_x": 5.21,
       "sections_cleared": [],
       "reached_goal": false,
       "fell": false,
       "time_s": 60.0,
       "stopped_in": "rubble"
-    },
-    {
-      "max_x": 10.85,
-      "sections_cleared": [
-        "rubble",
-        "hurdles"
-      ],
-      "reached_goal": false,
-      "fell": false,
-      "time_s": 60.0,
-      "stopped_in": "ramp"
-    },
-    {
-      "max_x": 10.92,
-      "sections_cleared": [
-        "rubble",
-        "hurdles"
-      ],
-      "reached_goal": false,
-      "fell": false,
-      "time_s": 60.0,
-      "stopped_in": "ramp"
     }
   ],
   "goals": {
     "speed_err": {
-      "value": 0.501,
+      "value": 0.484,
       "goal": "<= 0.15",
       "passed": false
     },
     "trot_match": {
-      "value": 0.649,
+      "value": 0.668,
       "goal": ">= 0.75",
       "passed": false
     },
     "feet_down": {
-      "value": 3.073,
+      "value": 2.991,
       "goal": "between (1.6, 2.6)",
       "passed": false
     },
     "body_contact_rate": {
-      "value": 0.728,
+      "value": 0.641,
       "goal": "<= 0.05",
       "passed": false
     },
@@ -83,32 +82,32 @@
       "passed": true
     },
     "crab_angle_deg": {
-      "value": 21.036,
+      "value": 11.626,
       "goal": "<= 10.0",
       "passed": false
     },
     "roll_deg": {
-      "value": 3.115,
+      "value": 2.587,
       "goal": "<= 3.0",
-      "passed": false
+      "passed": true
     },
     "pitch_deg": {
-      "value": 2.522,
+      "value": 0.936,
       "goal": "<= 4.0",
       "passed": true
     },
     "foot_splay_cm": {
-      "value": 2.076,
+      "value": 2.351,
       "goal": "<= 5.0",
       "passed": true
     },
     "foot_fore_aft_cm": {
-      "value": 5.235,
+      "value": 4.927,
       "goal": "<= 8.0",
       "passed": true
     },
     "step_height_spread": {
-      "value": 0.742,
+      "value": 0.59,
       "goal": "<= 0.2",
       "passed": false
     },
@@ -118,5 +117,5 @@
       "passed": false
     }
   },
-  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/course_c6_seed2/ckpt_175020480_steps.zip"
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/course_c6_seed2/ckpt_185020380_steps.zip"
 }

@@ -476,6 +476,11 @@ independent runs, not 3. It was left running (no-restart rule).
   - From the start at those levels: goal 1/3 in 55.2 s.
   - Milestone: `progress/milestones/c8_seed0_152M_full_ramp_hurdles_slalom/`.
   - Remaining issues: rubble-entrance stalls, stairs height, shin contact about 72 %.
+- **At 161–169M:** rubble, hurdles and slalom 1.0 on all seeds. Ramp 0.25–0.7 (oscillating),
+  stairs 0.15–0.45.
+  - **Eval fix:** course test over 6 rubble layouts (one fixed layout was misleading: the same
+    policy reached the goal on layout 3 and fell early on 0 and 2).
+  - Reviews evaluate only active prefixes (`runs/_active_prefixes.json` = `["course_c8"]`).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

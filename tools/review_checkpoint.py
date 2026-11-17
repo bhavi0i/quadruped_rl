@@ -72,8 +72,12 @@ def review():
     rows = {}
     done_f = os.path.join(ROOT, "runs", "_reviewed_finals.json")
     reviewed = set(json.load(open(done_f))) if os.path.exists(done_f) else set()
+    active_f = os.path.join(ROOT, "runs", "_active_prefixes.json")   # e.g. ["course_c8"]
+    active = json.load(open(active_f)) if os.path.exists(active_f) else None
     for run in sorted(os.listdir(pp.PPO_CACHE)):
         src = os.path.join(pp.PPO_CACHE, run)
+        if active and not any(run.startswith(a) for a in active):
+            continue                              # superseded line: skip the (slow) evaluation
         if run in reviewed:                       # finished run already evaluated on its final policy
             continue
         ckpts = sorted((f for f in os.listdir(src) if f.startswith("ckpt_") and f.endswith(".zip")
