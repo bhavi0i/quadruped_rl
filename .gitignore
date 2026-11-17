@@ -10,3 +10,4 @@ checkpoints/
 runs/_amarel/
 obstacle_course/runs/
 MUJOCO_LOG.TXT
+runs/_amarel_ppo/

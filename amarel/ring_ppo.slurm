@@ -21,7 +21,7 @@ SEED=${SLURM_ARRAY_TASK_ID:-0}
 STEPS=${STEPS:-40e6}
 ENVS=$((SLURM_CPUS_PER_TASK - 2))
 PY=~/.conda/envs/rlq/bin/python
-export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
+export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONUNBUFFERED=1
 
 cd obstacle_course
 echo "host=$(hostname) job=$SLURM_JOB_ID seed=$SEED envs=$ENVS restart=${SLURM_RESTART_COUNT:-0}"

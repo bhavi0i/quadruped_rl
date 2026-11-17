@@ -1,5 +1,6 @@
 """Every few minutes, pull small training artifacts from Amarel and push a progress
-snapshot to GitHub each time a run passes another 500k-step milestone.
+snapshot to GitHub each time a run passes another milestone (500k steps for the SAC runs,
+5M steps for the PPO ring/course runs, which train about 20x faster).
 
 python tools/push_progress.py                       # loop forever (Ctrl-C to stop)
 python tools/push_progress.py --once                # single check
@@ -79,6 +80,62 @@ def check_run(run):
     return summary
 
 
+PPO_MILESTONE = 5_000_000
+PPO_CACHE = os.path.join(ROOT, "runs", "_amarel_ppo")
+
+
+def pull_ppo():
+    """PPO ring/course runs: progress.json, config and the newest checkpoint (+ normalisation)."""
+    os.makedirs(PPO_CACHE, exist_ok=True)
+    listing = sh("ssh", REMOTE, f"cd {REMOTE_DIR}/obstacle_course/runs 2>/dev/null && "
+                 "for d in */; do d=${d%/}; c=$(ls -t $d/ckpt_*_steps.zip 2>/dev/null | head -1); "
+                 "echo $d ${c:-none}; done", check=False).stdout.split("\n")
+    for line in filter(None, listing):
+        run, ckpt = line.split()
+        dst = os.path.join(PPO_CACHE, run)
+        os.makedirs(dst, exist_ok=True)
+        files = [f"{run}/progress.json", f"{run}/config.json", f"{run}/final.zip",
+                 f"{run}/final_vecnormalize.pkl"]
+        if ckpt != "none":
+            files += [ckpt, ckpt.replace("ckpt_", "ckpt_vecnormalize_").replace(".zip", ".pkl")]
+        for f in files:
+            sh("rsync", "-a", f"{REMOTE}:{REMOTE_DIR}/obstacle_course/runs/{f}", dst + "/", check=False)
+
+
+def check_ppo_run(run):
+    src, dst = os.path.join(PPO_CACHE, run), os.path.join(PROGRESS, "ppo_" + run)
+    prog = os.path.join(src, "progress.json")
+    if not os.path.exists(prog):
+        return None
+    hist = json.load(open(prog))["history"]
+    if not hist:
+        return None
+    steps = hist[-1]["timesteps"]
+    finished = os.path.exists(os.path.join(src, "final.zip"))
+    state_f = os.path.join(dst, "state.json")
+    state = json.load(open(state_f)) if os.path.exists(state_f) else {"milestone": 0, "finished": False}
+    milestone = steps // PPO_MILESTONE
+    if milestone <= state["milestone"] and finished <= state["finished"]:
+        return None
+    os.makedirs(dst, exist_ok=True)
+    for f in os.listdir(src):        # keep only the newest checkpoint as latest.zip
+        if f.startswith("ckpt_vecnormalize_"):
+            shutil.copy2(os.path.join(src, f), os.path.join(dst, "latest_vecnormalize.pkl"))
+        elif f.startswith("ckpt_"):
+            shutil.copy2(os.path.join(src, f), os.path.join(dst, "latest.zip"))
+        elif f in ("progress.json", "config.json", "final.zip", "final_vecnormalize.pkl"):
+            shutil.copy2(os.path.join(src, f), dst)
+    for f in os.listdir(src):       # drop stale checkpoints from the cache
+        if f.startswith("ckpt_") and os.path.getmtime(os.path.join(src, f)) < time.time() - 3 * 3600:
+            os.remove(os.path.join(src, f))
+    h = hist[-1]
+    summary = (f"ppo {run} @ {steps / 1e6:.1f}M steps: {h['distance']:.1f} m/episode, "
+               f"{h['speed']:.2f} m/s, falls {h['fall_rate']:.0%}, trot match {h['trot_match']:.2f}, "
+               f"difficulty {h['difficulty']:.1f}" + (" [FINISHED]" if finished else ""))
+    json.dump({"milestone": milestone, "finished": finished, "steps": steps}, open(state_f, "w"))
+    return summary
+
+
 def git_push(summaries):
     sh("git", "add", "progress")
     if sh("git", "diff", "--cached", "--quiet", check=False).returncode == 0:
@@ -93,6 +150,8 @@ def once():
     pull()
     runs = sorted(r for r in os.listdir(CACHE) if r.startswith("phase1_") and not r.endswith(("_1", "_2")))
     summaries = [s for s in (check_run(r) for r in runs) if s]
+    pull_ppo()
+    summaries += [s for s in (check_ppo_run(r) for r in sorted(os.listdir(PPO_CACHE))) if s]
     for s in summaries:
         print(time.strftime("%H:%M"), s)
     if summaries:
