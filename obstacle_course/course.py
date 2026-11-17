@@ -3,7 +3,7 @@ course.py - builds the MuJoCo world (quadruped robot + obstacle course) as an MJ
 
 The course runs along the +x axis inside a 3 m wide walled lane:
 
-    x:  0 ─ 2.5   start pad (flat)
+    x:  0 ─ 2.5   start pad (flat)  (lane is closed by walls at both ends)
         2.5 ─ 5.5 rubble field      (random small blocks)
         6.0 ─ 9.0 hurdles           (3 bars across the lane)
         9.6 ─ 13.6 ramp             (up, 1 m plateau, down)
@@ -11,13 +11,28 @@ The course runs along the +x axis inside a 3 m wide walled lane:
        19.2 ─ 21.6 slalom gates     (barriers from alternating walls to weave around)
        23.5        goal pad
 
+Beside the course is a flat, walled training ring (RING_CENTER, RING_RADIUS) where the robot
+first learns to walk by doing laps before it is sent onto the obstacles.
+
 `difficulty` in [0, 1] scales obstacle heights / slopes so you can run a curriculum.
 Every section starts on flat ground at z = 0, so the robot can also be spawned at
 the start of any section (see SECTION_STARTS) to speed up training.
 """
+import os
+import warnings
+
+import mujoco
 import numpy as np
 
+GO1_XML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "robots", "unitree_go1", "go1.xml")
+
 LANE_HALF_WIDTH = 1.5
+
+# Training ring: a flat, walled circular arena beside the course where the robot first learns
+# to walk (and turn) before it is sent onto the obstacles. It walks laps on the track circle.
+RING_CENTER = (12.0, -11.5)
+RING_RADIUS = 8.0          # inner face of the ring wall (m)
+RING_TRACK_RADIUS = 6.0    # the circle the robot is steered around (38 m lap)
 GOAL_X = 23.5
 SECTION_STARTS = {"start": 0.0, "rubble": 2.2, "hurdles": 5.7, "ramp": 9.2,
                   "stairs": 14.2, "slalom": 18.7}
@@ -97,6 +112,7 @@ def course_xml(difficulty=1.0, seed=0):
     g.append(_box("wall_L", (L / 2 - 0.5, W + 0.05, 0.15), (L / 2 + 0.5, 0.05, 0.15), "0.3 0.35 0.45 0.4"))
     g.append(_box("wall_R", (L / 2 - 0.5, -W - 0.05, 0.15), (L / 2 + 0.5, 0.05, 0.15), "0.3 0.35 0.45 0.4"))
     g.append(_box("wall_back", (-0.55, 0, 0.15), (0.05, W, 0.15), "0.3 0.35 0.45 0.4"))
+    g.append(_box("wall_end", (L - 0.45, 0, 0.15), (0.05, W + 0.1, 0.15), "0.3 0.35 0.45 0.4"))
     g.append(f'<geom name="goal" type="cylinder" pos="{GOAL_X} 0 0.001" size="0.6 0.001" '
              f'rgba="0.1 0.85 0.3 0.6" contype="0" conaffinity="0" group="2"/>')
 
@@ -157,6 +173,24 @@ def course_xml(difficulty=1.0, seed=0):
     return "\n    ".join(g)
 
 
+def ring_xml():
+    """Walled circular arena (flat floor), wall segments tangent to a circle."""
+    cx, cy = RING_CENTER
+    n, r, t = 64, RING_RADIUS + 0.05, 0.05
+    half_len = (r + t) * np.tan(np.pi / n) + 0.01
+    g = []
+    for k in range(n):
+        a = 2 * np.pi * k / n
+        g.append(_box(f"ring_wall_{k}", (cx + r * np.cos(a), cy + r * np.sin(a), 0.15),
+                      (t, half_len, 0.15), "0.3 0.35 0.45 0.4", euler=(0, 0, a)))
+    # painted track circle (visual only, no collision, not seen by the height scan)
+    g.append(f'<geom name="ring_track" type="cylinder" pos="{cx} {cy} 0.001" size="{RING_TRACK_RADIUS + 0.06} 0.0005" '
+             f'rgba="0.95 0.75 0.2 0.5" contype="0" conaffinity="0" group="2"/>')
+    g.append(f'<geom name="ring_inner" type="cylinder" pos="{cx} {cy} 0.0015" size="{RING_TRACK_RADIUS - 0.06} 0.0005" '
+             f'rgba="0.78 0.8 0.82 1" contype="0" conaffinity="0" group="2"/>')
+    return "\n    ".join(g)
+
+
 def build_mjcf(difficulty=1.0, seed=0, kp=45.0):
     return f"""
 <mujoco model="quadruped_obstacle_course">
@@ -177,6 +211,7 @@ def build_mjcf(difficulty=1.0, seed=0, kp=45.0):
     <light pos="10 -4 8" dir="-0.3 0.3 -1" directional="true" castshadow="true"/>
     <geom name="floor" type="plane" size="40 40 0.1" material="grid" group="0"/>
     {course_xml(difficulty, seed)}
+    {ring_xml()}
     {robot_xml()}
   </worldbody>
   <actuator>
@@ -188,3 +223,38 @@ def build_mjcf(difficulty=1.0, seed=0, kp=45.0):
     <velocimeter name="vel" site="imu"/>
   </sensor>
 </mujoco>"""
+
+
+def build_model(difficulty=1.0, seed=0, robot="go1"):
+    """Compile the course with the chosen robot.
+
+    robot="go1":    Unitree Go1 from MuJoCo Menagerie (robots/unitree_go1), attached into the course.
+    robot="custom": the original hand-built 12-DoF quadruped defined above.
+    """
+    if robot == "custom":
+        return mujoco.MjModel.from_xml_string(build_mjcf(difficulty, seed))
+    world = f"""
+<mujoco model="go1_obstacle_course">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.005" integrator="implicitfast"/>
+  <visual><global offwidth="1280" offheight="720"/><quality shadowsize="4096"/></visual>
+  <default><geom contype="1" conaffinity="1" friction="1.0 0.02 0.01" solref="0.01 1"/></default>
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.82 0.84 0.86" rgb2="0.72 0.74 0.77" width="512" height="512"/>
+    <material name="grid" texture="grid" texrepeat="40 40" reflectance="0.05"/>
+    <texture name="sky" type="skybox" builtin="gradient" rgb1="0.55 0.7 0.9" rgb2="0.95 0.97 1" width="512" height="512"/>
+  </asset>
+  <worldbody>
+    <light pos="10 -4 8" dir="-0.3 0.3 -1" directional="true" castshadow="true"/>
+    <geom name="floor" type="plane" size="40 40 0.1" material="grid" group="0"/>
+    {course_xml(difficulty, seed)}
+    {ring_xml()}
+  </worldbody>
+</mujoco>"""
+    spec = mujoco.MjSpec.from_string(world)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        go1 = mujoco.MjSpec.from_file(GO1_XML)
+        go1.option.impratio, go1.option.cone = spec.option.impratio, spec.option.cone  # no merge conflict
+        spec.worldbody.add_frame().attach_body(go1.body("trunk"), "go1/", "")
+        return spec.compile()

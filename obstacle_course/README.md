@@ -1,5 +1,37 @@
 # Quadruped obstacle course – MuJoCo + RL
 
+**Update (Go1 version).** The robot is now the Unitree Go1 robot dog (MuJoCo Menagerie,
+`../robots/unitree_go1`); the original hand-built robot is still available with `robot="custom"`.
+The world has two areas:
+
+* **Training ring:** a flat, walled circular arena (8 m radius) beside the course. Stage 1 of
+  training: the dog learns to walk with a natural trot by doing laps of the yellow 6 m track
+  (`arena="ring"`).
+* **Obstacle course:** the walled lane below, closed at both ends. Stage 2 continues from the
+  ring policy with the difficulty curriculum (`arena="course"`).
+
+Additions to the original environment:
+* **Trot:** a 0.5 s gait clock in the observation, a `trot` reward for feet following the
+  diagonal-trot pattern, and `foot_clearance` for lifting swing feet about 8 cm above the local
+  terrain.
+* **Walls:** 9 horizontal wall-distance rays (−90° to +90°) and a "touching a wall" flag in the
+  observation. `wall_contact` (−2) and `wall_proximity` (−1, inside 0.4 m) penalties. 25 % of
+  spawns face a random way, often into a wall, so the dog learns to turn away and carry on.
+* **Injuries:** whole-leg injuries (`injury={"FR": 0.0}`, `"random_leg"`).
+* **Training:** resumable PPO training (`train.py --arena ring|course`), `progress.json` logging,
+  and `show_world.py` to view the world and the sensors.
+
+```
+python train.py --arena ring --envs 8 --out runs/ring_seed0              # stage 1
+python train.py --arena course --init-from runs/ring_seed0/final.zip \
+                --envs 8 --out runs/course_seed0                          # stage 2
+mjpython show_world.py --sensors                                          # view spawns and sensors
+mjpython play.py runs/ring_seed0/final.zip --arena ring                   # watch a policy
+```
+
+The rest of this file describes the original version; the reward and observation tables
+are still accurate apart from the additions above.
+
 A 12-DoF quadruped (hip abduction, hip flexion, knee per leg, ~9 kg) learns with PPO to walk
 down a 24 m walled lane full of obstacles.
 

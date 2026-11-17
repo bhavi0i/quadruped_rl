@@ -1,16 +1,26 @@
 """
-train.py - PPO training with an automatic difficulty curriculum.
+train.py - PPO training for the Go1 in two stages:
 
-    python train.py                          # train from scratch (default 30M steps)
-    python train.py --steps 2e6 --envs 8     # shorter run
-    python train.py --injury random          # train with a random weakened joint each episode
+  1. ring:   learn to walk (natural trot, steering) by doing laps of the flat training ring
+  2. course: continue from the ring policy on the obstacle course with a difficulty curriculum
 
-Curriculum: every evaluation the mean distance travelled is checked; when the robot
-covers most of the sections it is spawned on, the obstacles get bigger (difficulty += 0.1).
+    python train.py --arena ring --steps 30e6 --envs 32 --out runs/ring_seed0
+    python train.py --arena course --init-from runs/ring_seed0/final.zip --out runs/course_seed0
+    python train.py --arena course --injury random_leg ...   # train with a random weakened leg
+
+The run resumes automatically from the newest checkpoint in --out (Amarel can preempt jobs).
+Course curriculum: when the robot reliably makes progress, obstacles get bigger (difficulty += 0.1).
+progress.json in the run folder logs distance, falls, speed and gait quality over training.
 """
 import argparse
+import glob
+import json
 import os
+import re
+import time
+
 import numpy as np
+import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv, VecNormalize, VecMonitor
@@ -18,90 +28,130 @@ from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv, VecNorm
 from quadruped_env import QuadrupedCourseEnv
 
 
-def make_env(rank, difficulty, injury):
+def make_env(rank, args, difficulty):
     def _init():
-        env = QuadrupedCourseEnv(difficulty=difficulty, random_start=True, injury=injury,
-                                 course_seed=rank)          # different rubble per worker
-        env.reset(seed=rank)
+        env = QuadrupedCourseEnv(difficulty=difficulty, random_start=True, injury=args.injury,
+                                 course_seed=rank, robot=args.robot, arena=args.arena,
+                                 target_speed=args.target_speed)
+        env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
 
 
-class CurriculumCallback(BaseCallback):
-    """Raises obstacle difficulty when the robot reliably makes progress."""
+class ProgressCallback(BaseCallback):
+    """Tracks walking quality, writes progress.json and (course only) raises difficulty."""
 
-    def __init__(self, start=0.0, step=0.1, threshold=3.0, window=200, verbose=1):
+    def __init__(self, out, arena, start=0.0, step=0.1, threshold=3.0, window=200, verbose=1):  # window = episodes per progress row
         super().__init__(verbose)
+        self.out, self.arena = out, arena
         self.difficulty, self.step_size, self.threshold, self.window = start, step, threshold, window
-        self.distances, self.goals, self.falls = [], [], []
-        self.start_x = None
+        self.reset_stats()
+        self.history = []
+        path = os.path.join(out, "progress.json")
+        if os.path.exists(path):
+            self.history = json.load(open(path)).get("history", [])
 
-    def _on_training_start(self):
-        self.start_x = np.array(self.training_env.get_attr("max_x"), dtype=float)
+    def reset_stats(self):
+        self.distances, self.goals, self.falls, self.sections, self.lengths = [], [], [], [], []
+        self.trot, self.speed, self.body = [], [], []
 
     def _on_step(self):
-        for i, (done, info) in enumerate(zip(self.locals["dones"], self.locals["infos"])):
+        for done, info in zip(self.locals["dones"], self.locals["infos"]):
+            self.trot.append(info["trot_match"])
+            self.speed.append(info["v_fwd"])
+            self.body.append(info["body_contacts"] > 0)
             if done:
-                self.distances.append(info["x"] - self.start_x[i])
+                self.distances.append(info["max_x"] - info["start_x"])
                 self.goals.append(info["reached_goal"])
                 self.falls.append(info["fell"])
+                self.sections.append(info["sections_cleared"])
                 for k, v in info.get("episode_sums", {}).items():
                     self.logger.record_mean(f"reward_terms/{k}", float(v))
-        # start position of the episode that just began in each env
-        dones = self.locals["dones"]
-        if np.any(dones):
-            xs = np.array(self.training_env.get_attr("max_x"), dtype=float)
-            self.start_x[dones] = xs[dones]
 
         if len(self.distances) >= self.window:
-            mean_d = float(np.mean(self.distances))
-            self.logger.record("curriculum/mean_distance", mean_d)
-            self.logger.record("curriculum/fall_rate", float(np.mean(self.falls)))
-            self.logger.record("curriculum/goal_rate", float(np.mean(self.goals)))
-            if mean_d > self.threshold and self.difficulty < 1.0:
-                self.difficulty = min(1.0, self.difficulty + self.step_size)
+            row = dict(timesteps=int(self.num_timesteps), time=time.strftime("%Y-%m-%d %H:%M"),
+                       difficulty=self.difficulty, distance=float(np.mean(self.distances)),
+                       fall_rate=float(np.mean(self.falls)), goal_rate=float(np.mean(self.goals)),
+                       sections_or_laps=float(np.mean(self.sections)),
+                       speed=float(np.mean(self.speed)), trot_match=float(np.mean(self.trot)),
+                       body_contact_rate=float(np.mean(self.body)))
+            for k, v in row.items():
+                if k not in ("timesteps", "time"):
+                    self.logger.record(f"progress/{k}", v)
+            if self.verbose:
+                print(f"[{row['timesteps'] / 1e6:.1f}M] dist {row['distance']:.1f} m  falls {row['fall_rate']:.0%}  "
+                      f"speed {row['speed']:.2f}  trot {row['trot_match']:.2f}  difficulty {self.difficulty:.1f}",
+                      flush=True)
+            self.history.append(row)
+            if self.arena == "course" and row["distance"] > self.threshold and self.difficulty < 1.0:
+                self.difficulty = round(min(1.0, self.difficulty + self.step_size), 2)
                 self.training_env.env_method("set_difficulty", self.difficulty)
-                if self.verbose:
-                    print(f"[curriculum] mean distance {mean_d:.2f} m -> difficulty {self.difficulty:.1f}")
-            self.logger.record("curriculum/difficulty", self.difficulty)
-            self.distances, self.goals, self.falls = [], [], []
+                print(f"[curriculum] -> difficulty {self.difficulty:.1f}", flush=True)
+            with open(os.path.join(self.out, "progress.json"), "w") as f:
+                json.dump({"arena": self.arena, "difficulty": self.difficulty, "history": self.history}, f, indent=1)
+            self.reset_stats()
         return True
+
+
+def latest_checkpoint(out):
+    files = glob.glob(os.path.join(out, "ckpt_*_steps.zip"))
+    return max(files, key=lambda f: int(re.search(r"ckpt_(\d+)_steps", f).group(1))) if files else None
 
 
 def main():
     p = argparse.ArgumentParser()
+    p.add_argument("--arena", choices=["ring", "course"], default="ring")
+    p.add_argument("--robot", choices=["go1", "custom"], default="go1")
     p.add_argument("--steps", type=float, default=30e6)
     p.add_argument("--envs", type=int, default=max(1, (os.cpu_count() or 2) - 1))
     p.add_argument("--difficulty", type=float, default=0.0)
-    p.add_argument("--injury", default=None, help='"random" for random joint injuries')
-    p.add_argument("--out", default="runs/ppo_quadruped")
-    p.add_argument("--resume", default=None, help="path to a saved model .zip")
+    p.add_argument("--target-speed", type=float, default=0.6)
+    p.add_argument("--injury", default=None, help='"random_leg", "random", or none')
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--out", default="runs/ring_seed0")
+    p.add_argument("--init-from", default=None, help="start from this model (e.g. the ring policy)")
+    p.add_argument("--torch-threads", type=int, default=4)
+    p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
     args = p.parse_args()
+    torch.set_num_threads(args.torch_threads)
+    os.makedirs(args.out, exist_ok=True)
 
-    fns = [make_env(i, args.difficulty, args.injury) for i in range(args.envs)]
+    # Resume after preemption: newest checkpoint + its normalisation stats + curriculum level.
+    ckpt = latest_checkpoint(args.out)
+    prog = os.path.join(args.out, "progress.json")
+    difficulty = json.load(open(prog))["difficulty"] if ckpt and os.path.exists(prog) else args.difficulty
+    with open(os.path.join(args.out, "config.json"), "w") as f:
+        json.dump(vars(args), f, indent=2)
+
+    fns = [make_env(i, args, difficulty) for i in range(args.envs)]
     venv = SubprocVecEnv(fns) if args.envs > 1 else DummyVecEnv(fns)
     venv = VecMonitor(venv)
-    venv = VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
 
-    policy_kwargs = dict(net_arch=dict(pi=[256, 256, 128], vf=[256, 256, 128]),
-                         log_std_init=-0.5)
-    if args.resume:
-        model = PPO.load(args.resume, env=venv)
-        venv_stats = args.resume.replace(".zip", "_vecnormalize.pkl")
-        if os.path.exists(venv_stats):
-            venv = VecNormalize.load(venv_stats, venv.venv)
-            model.set_env(venv)
+    policy_kwargs = dict(net_arch=dict(pi=[256, 256, 128], vf=[256, 256, 128]), log_std_init=-0.5)
+    src = ckpt or args.init_from
+    if src:
+        stats = (src.replace("ckpt_", "ckpt_vecnormalize_").replace(".zip", ".pkl") if ckpt
+                 else src.replace(".zip", "_vecnormalize.pkl"))
+        venv = VecNormalize.load(stats, venv) if os.path.exists(stats) else \
+            VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
+        venv.training = True
+        model = PPO.load(src, env=venv, tensorboard_log=args.out)
+        print(f"{'Resuming from' if ckpt else 'Initialised from'} {src} ({model.num_timesteps:,} steps)")
     else:
+        venv = VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
         model = PPO("MlpPolicy", venv, n_steps=1024, batch_size=4096, n_epochs=5,
                     learning_rate=3e-4, gamma=0.99, gae_lambda=0.95, clip_range=0.2,
-                    ent_coef=0.0, vf_coef=0.5, max_grad_norm=1.0,
+                    ent_coef=0.0, vf_coef=0.5, max_grad_norm=1.0, seed=args.seed,
                     policy_kwargs=policy_kwargs, tensorboard_log=args.out, verbose=1)
 
-    os.makedirs(args.out, exist_ok=True)
-    callbacks = [CurriculumCallback(start=args.difficulty),
-                 CheckpointCallback(save_freq=max(1, 500_000 // args.envs), save_path=args.out,
+    callbacks = [ProgressCallback(args.out, args.arena, start=difficulty),
+                 CheckpointCallback(save_freq=max(1, int(args.ckpt_freq) // args.envs), save_path=args.out,
                                     name_prefix="ckpt", save_vecnormalize=True)]
-    model.learn(total_timesteps=int(args.steps), callback=callbacks, reset_num_timesteps=not args.resume)
+    done = model.num_timesteps if ckpt else 0
+    remaining = int(args.steps) - done
+    if remaining > 0:
+        model.learn(total_timesteps=remaining, callback=callbacks, reset_num_timesteps=not ckpt,
+                    tb_log_name=args.arena)
     model.save(f"{args.out}/final")
     venv.save(f"{args.out}/final_vecnormalize.pkl")
     print(f"saved to {args.out}/final.zip")
