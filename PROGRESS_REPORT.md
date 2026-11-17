@@ -74,6 +74,52 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 18: 2026-11-17, ✅ final walking policy (milestone 4) + 🚀 STAGE 2 (obstacle course) launched
+
+### Stability: all 6 runs pass all 12 goals (review at 65–69M)
+
+| Run | Walls | Trot | Speed | Crab | Fore-aft | Splay | Step spread | Track |
+|---|---|---|---|---|---|---|---|---|
+| E12 seed 0 final | 100 % | 0.96 | 0.56 | 0.3° | 4.6 cm | 1.8 cm | 12 % | 0.33 m |
+| **E12 seed 1 final** | **100 %** | **0.97** | **0.59** | **0.4°** | **4.1 cm** | **2.5 cm** | **9 %** | **0.06 m** |
+| E12 seed 2 final | 100 % | 0.96 | 0.61 | 0.3° | 4.3 cm | 2.1 cm | 4 % | 0.30 m |
+| E13 seed 0 (65M) | 100 % | 0.97 | 0.61 | 0.3° | 3.6 cm | 2.4 cm | 10 % | 0.41 m |
+| E13 seed 1 (69M) | 100 % | 0.97 | 0.62 | 0.5° | 3.1 cm | 1.8 cm | 6 % | 0.13 m |
+| E13 seed 2 final | 83 % | 0.96 | 0.58 | 1.5° | 3.4 cm | 2.0 cm | 3 % | 0.13 m |
+
+### Milestone 4 = final walking policy: [`progress/milestones/e12_seed1_66M_final_walking/`](progress/milestones/e12_seed1_66M_final_walking)
+**E12 seed 1, final (66M).** Chosen because it passed all 12 goals at **two consecutive reviews**
+(63M and final). E13 seed 1 scores slightly better on fore-aft offset, but it fell 40 % of the
+time one review earlier, so it is not proven stable.
+
+| Walking | Wall test |
+|---|---|
+| ![](progress/milestones/e12_seed1_66M_final_walking/walk.gif) | ![](progress/milestones/e12_seed1_66M_final_walking/wall.gif) |
+
+Videos: [walk.mp4](progress/milestones/e12_seed1_66M_final_walking/walk.mp4) · [wall.mp4](progress/milestones/e12_seed1_66M_final_walking/wall.mp4)
+
+**The walking journey, in one table**
+
+| Fix | Problem it solved | Result |
+|---|---|---|
+| E7 capped progress + trot reward | sprinting/bounding (E6) | natural diagonal trot |
+| E9 body alignment | body slanted 31° (crabbing) | crab 0.1–0.5° |
+| E10 wall-situation practice | stuck or freezing at walls | walls 100 %, stable |
+| E12/E13 foot placement + swing shape/overshoot | legs slanted, uneven steps | feet under hips, steps within 9 % |
+
+### 🚀 Stage 2 launched: obstacle course (C1)
+- Amarel job 63985544, 3 seeds, from milestone 4 (66M → 126M, about 2 h).
+- The healthy dog learns to cross the course from the start to the goal pad.
+  - Obstacles start tiny (difficulty 0) and grow by 0.1 each time the mean distance per
+    episode exceeds 5 m.
+  - Episodes are 60 s. Spawns are at random section starts so every obstacle gets practice.
+- All natural-gait rewards are kept (`swing_shape` 0.5 so it can lift higher for obstacles).
+- Every review runs the **whole course from the start** at the current difficulty: distance,
+  sections cleared, goal reached, falls, gait goals, and a video of the run.
+- Baseline before training: the ring policy at the course start moves 0.1 m and falls.
+
+---
+
 ## Report 17: 2026-11-17, ✅ legs fixed: straight, under the body, uniform steps (E12/E13); stability check next
 
 | Run | Fore-aft | Sideways | Step heights FR/FL/RR/RL (cm) | Spread | Walls | Falls | All 12 goals |

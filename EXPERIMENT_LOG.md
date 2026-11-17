@@ -351,7 +351,11 @@ independent runs, not 3. It was left running (no-restart rule).
   (fore-aft 4.3 cm, splay 2.2 cm, spread 6 %, walls 100 %, roll 0.8°, pitch 0.6°). Seed 1 falls
   40 %. Stability check pending.
 
-### C1: Stage 2, obstacle course (healthy robot). PREPARED (starts from the best E11 policy)
+- **Stability review (65–69M):** all 6 E12/E13 runs pass all 12 goals. **Milestone 4 = E12 seed 1
+  final (66M)**, `progress/milestones/e12_seed1_66M_final_walking/` (passed at two consecutive
+  reviews). **Walking stage COMPLETE.**
+
+### C1: Stage 2, obstacle course (healthy robot). RUNNING (Amarel job 63985544, from milestone 4 at 66M → 126M)
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
