@@ -1,0 +1,100 @@
+{
+  "speed": 0.5934798401299526,
+  "trot_match": 0.9976,
+  "feet_down": 2.004,
+  "body_contact_rate": 0.0006,
+  "swing_lift_cm": 8.123080105323004,
+  "fall_rate": 0.0,
+  "track_error_m": 1.1687968542103235,
+  "speed_err": 0.006520159870047393,
+  "wall_pass_rate": 0.16666666666666666,
+  "wall_trials": [
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.001,
+      "metres_along_track": 0.07,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.015,
+      "metres_along_track": 0.15,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": -30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.015,
+      "metres_along_track": 0.58,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.0,
+      "metres_along_track": 0.24,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": -60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.001,
+      "metres_along_track": 3.65,
+      "fell": false,
+      "passed": true
+    },
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.001,
+      "metres_along_track": 0.06,
+      "fell": false,
+      "passed": false
+    }
+  ],
+  "goals": {
+    "speed_err": {
+      "value": 0.007,
+      "goal": "<= 0.15",
+      "passed": true
+    },
+    "trot_match": {
+      "value": 0.998,
+      "goal": ">= 0.75",
+      "passed": true
+    },
+    "feet_down": {
+      "value": 2.004,
+      "goal": "between (1.6, 2.6)",
+      "passed": true
+    },
+    "body_contact_rate": {
+      "value": 0.001,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "fall_rate": {
+      "value": 0.0,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "wall_pass_rate": {
+      "value": 0.167,
+      "goal": ">= 0.8",
+      "passed": false
+    }
+  },
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_seed1/final.zip"
+}

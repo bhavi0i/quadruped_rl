@@ -30,8 +30,9 @@ PY = sys.executable
 
 def remote_status():
     out = pp.sh("ssh", "-o", "ConnectTimeout=20", pp.REMOTE,
-                "squeue -u bpa29 -h -o %j | grep -c ppo; cd rl_quadruped/obstacle_course/runs 2>/dev/null && "
-                "for d in */; do python3 -c \"import json,sys; h=json.load(open(sys.argv[1]))['history']; "
+                "squeue -u bpa29 -h -o %j | grep -c ring; cd rl_quadruped/obstacle_course/runs 2>/dev/null && "
+                "for d in */; do test -f $d/final.zip && continue; "   # only runs still training
+                "python3 -c \"import json,sys; h=json.load(open(sys.argv[1]))['history']; "
                 "print(sys.argv[1].split('/')[0], h[-1]['timesteps'] if h else 0)\" $d/progress.json 2>/dev/null; done",
                 check=False).stdout.split()
     if not out:
@@ -45,8 +46,10 @@ def wait_for_milestone(poll_min=3):
     state = json.load(open(STATE)) if os.path.exists(STATE) else {}
     while True:
         running, steps = remote_status()
-        if running is not None and steps:
-            low = min(steps.values()) // MILESTONE     # review when the slowest run passes a milestone
+        # [FAILED] min over all runs: finished runs never advance, so reviews stopped once any run ended
+        # [NEW] min over runs still training (remote_status skips runs with final.zip)
+        if running is not None and (steps or running == 0):
+            low = min(steps.values()) // MILESTONE if steps else 10 ** 6
             if low > state.get("_min", 0) or running == 0:
                 state["_min"] = low
                 os.makedirs(os.path.dirname(STATE), exist_ok=True)
@@ -58,8 +61,12 @@ def wait_for_milestone(poll_min=3):
 def review():
     pp.pull_ppo()
     rows = {}
+    done_f = os.path.join(ROOT, "runs", "_reviewed_finals.json")
+    reviewed = set(json.load(open(done_f))) if os.path.exists(done_f) else set()
     for run in sorted(os.listdir(pp.PPO_CACHE)):
         src = os.path.join(pp.PPO_CACHE, run)
+        if run in reviewed:                       # finished run already evaluated on its final policy
+            continue
         ckpts = sorted((f for f in os.listdir(src) if f.startswith("ckpt_") and f.endswith(".zip")
                         and "vecnormalize" not in f), key=lambda f: int(f.split("_")[1]))
         model = os.path.join(src, "final.zip") if os.path.exists(os.path.join(src, "final.zip")) else \
@@ -77,6 +84,9 @@ def review():
         if os.path.exists(mfile):
             m = json.load(open(mfile))
             hist = json.load(open(os.path.join(src, "progress.json")))["history"]
+            if os.path.basename(model) == "final.zip":
+                reviewed.add(run)
+                json.dump(sorted(reviewed), open(done_f, "w"))
             rows[run] = dict(steps=hist[-1]["timesteps"] if hist else 0, checkpoint=os.path.basename(model),
                              goals={k: v for k, v in m["goals"].items()},
                              swing_lift_cm=m["swing_lift_cm"], speed=m["speed"],
