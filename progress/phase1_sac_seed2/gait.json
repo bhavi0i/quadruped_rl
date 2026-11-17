@@ -1,0 +1,17 @@
+{
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/progress/phase1_sac_seed2/best_model.zip",
+  "results": {
+    "healthy": {
+      "return_mean": 1849.546803465889,
+      "return_std": 480.50128813095176,
+      "distance_mean": 86.35129930925325,
+      "distance_std": 31.568325616646394,
+      "speed_mean": 1.7270259861850648,
+      "length_mean": 1000.0,
+      "fall_rate": 0.0,
+      "episodes": 3,
+      "return_drop_pct": 0.0,
+      "distance_drop_pct": 0.0
+    }
+  }
+}

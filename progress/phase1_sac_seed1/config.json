@@ -1,0 +1,16 @@
+{
+  "algo": "sac",
+  "timesteps": 3000000,
+  "n_envs": 1,
+  "injury_prob": 0.0,
+  "expose_injury": false,
+  "seed": 1,
+  "run_name": "phase1_sac_seed1",
+  "runs_dir": "runs",
+  "device": "cpu",
+  "checkpoint_freq": 250000,
+  "eval_freq": 25000,
+  "no_resume": false,
+  "init_from": null,
+  "torch_threads": null
+}
