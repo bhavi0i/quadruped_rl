@@ -141,6 +141,11 @@ DEFAULT_REWARD_WEIGHTS = dict(
                            #   swing_height * sin(pi * swing progress): exp(-err^2 / 3cm^2), averaged.
                            #   Milestone 3 lifted 15.5 / 9.8 / 9.1 / 6.6 cm per leg (uneven, limp-like;
                            #   the old foot_clearance only asks for >= 8 cm). E11 sets 1.0.
+                           #   [LIMIT found in E12] the bell curve is ~0 once a foot is > 6 cm off, so
+                           #   it gives no pull on a leg lifting 14-15 cm (FR) -> see swing_overshoot.
+    swing_overshoot=0.0,   # [E13, opt-in] quadratic penalty that keeps growing: sum over feet of
+                           #   max(0, lift - (swing_height + 2 cm))^2. FR lifted 13-15 cm in E11/E12
+                           #   while the others lifted ~8 cm. E13 sets -1000 (~1.25/s at 15 cm).
     # ---- one-off events ----
     checkpoint=10.0,       # bonus when the robot clears each course section (course only)
     goal=100.0,            # reaching the goal pad
@@ -509,6 +514,7 @@ class QuadrupedCourseEnv(gym.Env):
         swing_prog = np.clip((foot_phase - 0.5) / 0.5, 0, 1)
         z_ref = self.swing_height * np.sin(np.pi * swing_prog)
         shape = float(np.sum(np.exp(-((lift - z_ref) ** 2) / 0.03 ** 2) * swing) / max(swing.sum(), 1))
+        overshoot = float(np.sum(np.clip(lift - (self.swing_height + 0.02), 0, None) ** 2))
         # [E11] stance feet under the hips (as in the standing pose), and no hip splay
         rel = self._feet_rel_hips(d) - self.nominal_foot_rel
         placement = float(np.sum(np.sum(rel ** 2, axis=1) * foot_contact))
@@ -572,6 +578,7 @@ class QuadrupedCourseEnv(gym.Env):
             "foot_placement": placement,
             "hip_abduction": splay,
             "swing_shape": shape,
+            "swing_overshoot": overshoot,
             "track_following": (float(np.exp(-(np.linalg.norm(pos[:2] - np.array(course.RING_CENTER))
                                                - course.RING_TRACK_RADIUS) ** 2 / 0.25))
                                 if self.arena == "ring" else 0.0),

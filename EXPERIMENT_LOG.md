@@ -335,6 +335,16 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Change vs E11:** `foot_placement` −40, `hip_abduction` −6, `swing_shape` 3.0. Everything
   else is identical, so this is a clean comparison of the weights.
 
+- **E12 at 55M (4M in):** WORKS for foot placement on 2 of 3 seeds (fore-aft 6.9–7.3 cm, sideways
+  3.5–3.6 cm, walls 100 %). Step spread still 58–69 %: the FR leg alone lifts 13–15 cm.
+  - Lesson: a bell-curve tracking reward has no gradient far from target. Pair it with a
+    penalty that keeps growing.
+- **E11 at 62–66M:** fore-aft 8.0–9.9 cm, spread 25–62 %. Seed 0's final falls 40 %.
+
+### E13: Swing-overshoot penalty. RUNNING (Amarel job 63984883, from E12 seed 2 at 55M → 70M)
+- **Change vs E12:** `swing_overshoot` −1000: sum of max(0, lift − 10 cm)² over the feet. It keeps
+  growing (about 1.25/s at 15 cm) where `swing_shape` has no gradient.
+
 ### C1: Stage 2, obstacle course (healthy robot). PREPARED (starts from the best E11 policy)
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.

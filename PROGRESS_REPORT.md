@@ -74,6 +74,38 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 16: 2026-11-17, E12 fixes foot placement; one leg still steps high → E13 (overshoot penalty)
+
+| Run | Fore-aft | Sideways | Step heights FR/FL/RR/RL (cm) | Spread | Walls | Falls |
+|---|---|---|---|---|---|---|
+| E11 seed 0 final (66M) | ✅ 8.0 | ✅ 3.9 | 11.2 / 8.6 / 8.4 / 7.8 | ❌ 38 % | 100 % | ❌ **40 %** |
+| E11 seed 1 (62M) | ❌ 9.9 | ✅ 4.2 | 13.7 / 8.1 / 8.7 / 7.7 | ❌ 62 % | 100 % | 0 % |
+| E11 seed 2 (62M) | ❌ 9.0 | ✅ 3.7 | 9.6 / 7.5 / 8.9 / 8.5 | ❌ 25 % | 100 % | 0 % |
+| **E12 seed 0 (55M)** | ✅ **7.3** | ✅ 3.6 | 14.8 / 8.1 / 8.4 / 8.3 | ❌ 67 % | 100 % | 0 % |
+| E12 seed 1 (55M) | ❌ 8.5 | ✅ 3.7 | 13.3 / 7.8 / 8.6 / 8.3 | ❌ 58 % | 67 % | 0 % |
+| **E12 seed 2 (55M)** | ✅ **6.9** | ✅ 3.5 | 14.7 / 7.9 / 8.6 / 8.4 | ❌ 69 % | 100 % | 0 % |
+
+**What's working**
+- **Stronger weights fixed foot placement within 4M steps.** E12 seeds 0 and 2 now plant the feet
+  under the hips: fore-aft 6.9–7.3 cm (was 11.3), sideways 3.5–3.6 cm.
+- Three of the four legs now step at a uniform about 8 cm.
+
+**What's not working**
+- **The front-right leg alone still lifts 13–15 cm.** It is the outside front leg on the
+  counter-clockwise ring.
+- **Found the limit of `swing_shape`:** its bell curve is about 0 once a foot is more than 6 cm
+  off target, so it gives no pull on a leg that far above it. Lowering it a little gains nothing.
+- E11 seed 0's final fell in 40 % of walking episodes (late erosion again).
+
+**Change: E13** (Amarel job 63984883, from E12 seed 2 at 55M → 70M, no restart):
+`swing_overshoot` −1000, a quadratic penalty on any foot lifting above 10 cm that keeps growing
+the higher it goes (about 1.25/s at 15 cm, 0 for normal steps). E11 and E12 continue untouched.
+
+Media: walking video of E12 seed 0: [walk.mp4](docs/media/review_55M_20261117_0005/ring_e12_seed0/walk.mp4)
+![](docs/media/review_55M_20261117_0005/ring_e12_seed0/walk.gif)
+
+---
+
 ## Report 15: 2026-11-16, E11 too weak on leg posture → E12 (3–4× stronger) launched in parallel
 
 | | Milestone 3 | E11 seeds (55–57M) | Goal |
