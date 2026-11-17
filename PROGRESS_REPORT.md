@@ -74,6 +74,42 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 44: 2026-11-17, C13 seed 0 at 253M: 5 of 6 on the benchmark, the stairs cleared every time
+
+Benchmark 0.5, 6 layouts:
+
+| Run | Goals | Goal times | Failures |
+|---|---|---|---|
+| **C13 seed 0 (253M)** | **5 / 6** ✅ | 54.2, 58.3, 38.8, 34.2, 44.7 s | rubble ×1 |
+| C13 seed 1 (254M) | 1 / 6 | 38.4 s | stairs ×4, rubble ×1 |
+| C13 seed 2 (245M) | 0 / 6 | – | stairs ×3, rubble ×2, fell in slalom ×1 |
+
+- **Working:**
+  - Best review result of stage 2 (goal rate 0.83). Seed 0 climbs the stairs on all 5 runs
+    that reach them; report 43 had 4 stairs stalls for the same seed.
+  - Posture holds on the course: roll 0.5°, pitch 2.1°, crab 8.3°, feet under the hips
+    (splay 3.9 cm), trot_match 0.75.
+  - Training: stairs clear rate is rising (0.31 → 0.34 seed 0, 0.26 → 0.40 seed 1).
+- **Not working / to watch:**
+  - Seeds 1 and 2 still stall on the first step.
+  - Body contact 0.42 and fore-aft foot spread 12 cm on the course: knees and shins touch
+    the steps, and the stance lengthens on terrain.
+  - Peak-then-drop risk, so this checkpoint is not trusted until validated.
+
+Milestone [`progress/milestones/c13_seed0_253M_bench05_5of6/`](progress/milestones/c13_seed0_253M_bench05_5of6):
+![](progress/milestones/c13_seed0_253M_bench05_5of6/course.gif)
+
+**Running on Amarel (job 63992889):**
+- **Validation:** C13 seed 0, every checkpoint 237–254M, at difficulties **0.5, 0.75 and
+  1.0** on 12 layouts each. This is the first proper test of whether the terrain-aware lift
+  gets the robot up the full 9 cm stairs.
+- **Sweep:** every C13 checkpoint (all seeds) at 0.5.
+
+The results pick the new stage-2 policy and decide whether a stairs-specific change is still
+needed.
+
+---
+
 ## Report 43: 2026-11-17, C13 at 240–246M: dropped back to 2/6; the stairs block 13 of 18 runs
 
 Benchmark 0.5, 6 layouts:

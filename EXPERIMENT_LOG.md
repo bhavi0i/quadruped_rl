@@ -585,6 +585,11 @@ independent runs, not 3. It was left running (no-restart rule).
   - Training stairs clear rate 0.26–0.31 at stairs difficulty 0.65–0.7.
   - Peak-then-drop again, so pick by sweep. Next lever if flat: stair-step spawns /
     terrain-relative body height.
+- **At 253M:**
+  - Seed 0 **5/6** (stairs 5/5; one rubble stall), seed 1 1/6, seed 2 0/6.
+  - Milestone: `progress/milestones/c13_seed0_253M_bench05_5of6/`.
+  - Validation at 0.5/0.75/1.0 (12 layouts) and a full C13 sweep:
+    `amarel/validate_c13.slurm`, job 63992889.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
