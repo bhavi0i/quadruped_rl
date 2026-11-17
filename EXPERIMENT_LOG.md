@@ -438,6 +438,22 @@ independent runs, not 3. It was left running (no-restart rule).
   the ground pitch from heights ±0.3 m along the heading. Verified 0 for "parallel to ground" on
   up, flat and down slopes.
 - Everything else as C5.
+- **At 141–148M:** crab back under 10° (2–8°). Still stalls at 10.74–10.86 m (upper 9° ramp) like
+  C3–C5.
+  - Trace: rocking ±0.5 m/s per half-stride. Geometry, friction, motor load, reward balance and
+    exploration all checked and fine.
+
+### C7: Per-section curriculum. RUNNING (Amarel job 63987554, from C6 seed 1 at 149M → 209M)
+- **Why:**
+  - The global curriculum (+0.1 when mean distance > 5 m) stalled at 0.4 for 35M steps. The ramp
+    alone froze every section.
+  - 8° → 9° was too big a step.
+- **Change:** `--section-curriculum`.
+  - Separate difficulty per section; ±0.05 by clear rate over the last 100 attempts (≥ 60 % up,
+    < 20 % down).
+  - `course.course_xml` accepts a per-section dict.
+  - The env reports `section_results` at episode end; evaluation accepts a JSON difficulty.
+- Otherwise as C6.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

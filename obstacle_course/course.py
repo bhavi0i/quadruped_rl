@@ -104,8 +104,20 @@ def _box(name, pos, size, rgba="0.55 0.55 0.6 1", euler=None):
             f'size="{size[0]:.3f} {size[1]:.3f} {size[2]:.4f}"{e} rgba="{rgba}" group="0"/>')
 
 
-def course_xml(difficulty=1.0, seed=0):
+SECTIONS = ("rubble", "hurdles", "ramp", "stairs", "slalom")
+
+
+def section_difficulties(difficulty):
+    """A single number (all sections the same, as in C1-C6) or a dict per section (C7+)."""
+    if isinstance(difficulty, dict):
+        return {k: float(np.clip(difficulty.get(k, 0.0), 0.0, 1.0)) for k in SECTIONS}
     d = float(np.clip(difficulty, 0.0, 1.0))
+    return {k: d for k in SECTIONS}
+
+
+def course_xml(difficulty=1.0, seed=0):
+    sd = section_difficulties(difficulty)
+    d = sd["rubble"]
     rng = np.random.default_rng(seed)
     g = []
     W = LANE_HALF_WIDTH
@@ -128,11 +140,13 @@ def course_xml(difficulty=1.0, seed=0):
                       euler=(0, 0, rng.uniform(0, np.pi))))
 
     # 2) hurdles: bars across the lane, 3 cm -> 11 cm tall
+    d = sd["hurdles"]
     hh = 0.03 + 0.08 * d
     for i, x in enumerate((6.5, 7.5, 8.5)):
         g.append(_box(f"hurdle_{i}", (x, 0, hh / 2), (0.05, W, hh / 2), "0.85 0.2 0.2 1"))
 
     # 3) ramp: incline 5 deg -> 15 deg, 1 m plateau, then decline
+    d = sd["ramp"]
     ang = np.deg2rad(5 + 10 * d)
     run = 1.5
     rise = run * np.tan(ang)
@@ -151,6 +165,7 @@ def course_xml(difficulty=1.0, seed=0):
                   "0.4 0.55 0.7 1", euler=(0, ang, 0)))
 
     # 4) stairs: 3 up, landing, 3 down; step height 3 cm -> 9 cm, tread 0.3 m
+    d = sd["stairs"]
     sh, tread = 0.03 + 0.06 * d, 0.3
     xs = 14.6
     for k in range(3):                                   # up
@@ -167,6 +182,7 @@ def course_xml(difficulty=1.0, seed=0):
     # 5) slalom: staggered barriers sticking out from alternating walls. At d=0 they stop
     #    short of the centre line (straight path works); at d=1 they cross it by 0.3 m,
     #    so the robot has to weave left/right to get through.
+    d = sd["slalom"]
     edge = 0.6 - 0.9 * d          # inner edge of a barrier, measured from the centre line
     for i, x in enumerate((19.3, 20.4, 21.5)):
         side = 1 if i % 2 == 0 else -1

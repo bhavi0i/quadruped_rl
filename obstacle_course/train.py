@@ -49,10 +49,20 @@ def make_env(rank, args, difficulty):
 class ProgressCallback(BaseCallback):
     """Tracks walking quality, writes progress.json and (course only) raises difficulty."""
 
-    def __init__(self, out, arena, start=0.0, step=0.1, threshold=3.0, window=200, verbose=1):  # window = episodes per progress row
+    def __init__(self, out, arena, start=0.0, step=0.1, threshold=3.0, window=200, verbose=1,
+                 section_curriculum=False):  # window = episodes per progress row
         super().__init__(verbose)
         self.out, self.arena = out, arena
         self.difficulty, self.step_size, self.threshold, self.window = start, step, threshold, window
+        # [C7] per-section curriculum: each obstacle has its own difficulty, +0.05 when it is cleared
+        #   in >= 60 % of the last 100 attempts, -0.05 when < 20 %. (C1-C6: one global difficulty,
+        #   +0.1 when the mean distance per episode > threshold - C5 sat at 0.4 for 35M steps because
+        #   the ramp alone held every section back.)
+        self.section_curriculum = section_curriculum
+        if section_curriculum and not isinstance(self.difficulty, dict):
+            from course import SECTIONS
+            self.difficulty = {k: float(start) for k in SECTIONS}
+        self.section_hist = {}
         self.reset_stats()
         self.history = []
         path = os.path.join(out, "progress.json")
@@ -68,6 +78,9 @@ class ProgressCallback(BaseCallback):
             self.trot.append(info["trot_match"])
             self.speed.append(info["v_fwd"])
             self.body.append(info["body_contacts"] > 0)
+            if done and self.section_curriculum:
+                for name, ok in info.get("section_results", {}).items():
+                    self.section_hist.setdefault(name, []).append(ok)
             if done:
                 self.distances.append(info["max_x"] - info["start_x"])
                 self.goals.append(info["reached_goal"])
@@ -86,12 +99,32 @@ class ProgressCallback(BaseCallback):
             for k, v in row.items():
                 if k not in ("timesteps", "time"):
                     self.logger.record(f"progress/{k}", v)
+            if self.section_curriculum:
+                changed = False
+                for name, hist in self.section_hist.items():
+                    if len(hist) >= 100:
+                        rate = float(np.mean(hist[-100:]))
+                        old = self.difficulty[name]
+                        if rate >= 0.6 and old < 1.0:
+                            self.difficulty[name] = round(min(1.0, old + 0.05), 2)
+                        elif rate < 0.2 and old > 0.0:
+                            self.difficulty[name] = round(max(0.0, old - 0.05), 2)
+                        if self.difficulty[name] != old:
+                            changed = True
+                            print(f"[curriculum] {name}: clear rate {rate:.0%} -> {old} -> {self.difficulty[name]}",
+                                  flush=True)
+                            self.section_hist[name] = []
+                        row[f"clear_{name}"] = rate
+                row["difficulty"] = dict(self.difficulty)
+                if changed:
+                    self.training_env.env_method("set_difficulty", dict(self.difficulty))
             if self.verbose:
+                diff = (self.difficulty if isinstance(self.difficulty, dict) else f"{self.difficulty:.1f}")
                 print(f"[{row['timesteps'] / 1e6:.1f}M] dist {row['distance']:.1f} m  falls {row['fall_rate']:.0%}  "
-                      f"speed {row['speed']:.2f}  trot {row['trot_match']:.2f}  difficulty {self.difficulty:.1f}",
-                      flush=True)
+                      f"speed {row['speed']:.2f}  trot {row['trot_match']:.2f}  difficulty {diff}", flush=True)
             self.history.append(row)
-            if self.arena == "course" and row["distance"] > self.threshold and self.difficulty < 1.0:
+            if (self.arena == "course" and not self.section_curriculum and row["distance"] > self.threshold
+                    and self.difficulty < 1.0):
                 self.difficulty = round(min(1.0, self.difficulty + self.step_size), 2)
                 self.training_env.env_method("set_difficulty", self.difficulty)
                 print(f"[curriculum] -> difficulty {self.difficulty:.1f}", flush=True)
@@ -143,6 +176,8 @@ def main():
                    help="contact friction: pyramidal (E1-C4, slippery on slopes) or elliptic (Menagerie, C5+)")
     p.add_argument("--terrain-relative-tilt", action="store_true",
                    help="[C6] penalise body tilt relative to the ground slope, not gravity")
+    p.add_argument("--section-curriculum", action="store_true",
+                   help="[C7] separate difficulty per course section (+-0.05 by clear rate)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
@@ -195,7 +230,8 @@ def main():
                     device=args.device)
 
     callbacks = [ProgressCallback(args.out, args.arena, start=difficulty,
-                                  threshold=args.curriculum_threshold),
+                                  threshold=args.curriculum_threshold,
+                                  section_curriculum=args.section_curriculum),
                  CheckpointCallback(save_freq=max(1, int(args.ckpt_freq) // args.envs), save_path=args.out,
                                     name_prefix="ckpt", save_vecnormalize=True)]
     # [FAILED, never run] done = model.num_timesteps if ckpt else 0  and  reset_num_timesteps=not ckpt

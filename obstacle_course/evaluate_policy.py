@@ -250,7 +250,8 @@ def main():
     p.add_argument("model")
     p.add_argument("--out", default="eval/latest")
     p.add_argument("--arena", choices=["ring", "course"], default="ring")
-    p.add_argument("--difficulty", type=float, default=0.0, help="course obstacle size 0..1")
+    p.add_argument("--difficulty", type=lambda v: json.loads(v) if v.strip().startswith("{") else float(v),
+                   default=0.0, help='course obstacle size 0..1, or per section as JSON {"ramp": 0.3, ...}')
     p.add_argument("--friction-model", choices=["pyramidal", "elliptic"], default=None,
                    help="default: the model's training config (pyramidal if unknown)")
     a = p.parse_args()

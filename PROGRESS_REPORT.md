@@ -74,6 +74,53 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 28: 2026-11-17, every policy stalls at the same spot → per-obstacle curriculum (C7)
+
+### Review at 141–160M (C5, C6, difficulty 0.4)
+
+| Run | Furthest point (3 runs) | Crab | Shin contact |
+|---|---|---|---|
+| C5 seeds 0–2 (143–153M) | 10.76–10.86 / 3.4–7.1 | 12–24° | 63–81 % |
+| C6 seed 0 (141M) | 10.77 / 3.75 / 10.75 | **2.0°** | 77 % |
+| C6 seed 1 (141M) | 7.3 (fell) / 10.76 / 10.74 | **7.1°** | 66 % |
+| C6 seed 2 (141M) | 4.9 / 6.1 / 10.82 | **8.3°** | 79 % |
+
+- **Working:** terrain-relative tilt (C6) brought the crab angle back under the 10° goal on every
+  seed (C5: 12–24°).
+- **Not working:** every policy from C3 to C6, with either friction model, stalls at
+  **10.74–10.86 m**, just below the top of the 9° ramp.
+
+### Investigation
+- **Geometry is clean.** Ray-cast heights rise smoothly to 0.238 m at the crest (11.1 m). No lip,
+  no wall; all wall sensors read open (3 m).
+- **The dog rocks back and forth.** Forward speed alternates about ±0.5 m/s with each half-stride,
+  so the position oscillates between 10.55 and 10.8 m.
+- **The reward prefers climbing** (progress, speed and alignment all fall while stuck). Motors are
+  *less* loaded on the slope than on flat ground. Foot slip is the same as on flat ground.
+- **Exploration is healthy** (log std about −1.5, not collapsed).
+- **The curriculum itself is stuck.** C5 sat at difficulty 0.4 for 35M steps (125 → 161M). The
+  single global difficulty only rises when the mean distance per episode exceeds 5 m, and the
+  ramp blocks that, so *every* section is frozen by one obstacle. The jump from 8° (passable once,
+  at 0.3) to 9° is a step the policy can't make.
+
+### Change: C7, a per-section curriculum (Amarel job 63987554, 3 seeds, from C6 seed 1 at 149M → 209M)
+- Each obstacle (rubble, hurdles, ramp, stairs, slalom) has **its own difficulty**.
+  - It rises **+0.05** when that section is cleared in ≥ 60 % of the last 100 attempts.
+  - It drops **−0.05** when < 20 %.
+  - So the ramp gets **0.5° steps at its own pace** while the other sections keep growing.
+- An attempt counts when the dog spawns on that section's run-up or reaches it. A clear means
+  passing its checkpoint.
+- Tested: geometry follows each section's level (hurdle 6.2 cm at 0.4, ramp 8.0° at 0.3 and 8.5°
+  at 0.35). Results are recorded per section. The rule lowers a section at 10 % clear rate and
+  raises it at 70 %.
+- Everything else as C6: real friction, terrain-relative tilt, 10 cm lift, collision −4,
+  entropy 0.002, run-up spawns.
+
+Old runs: C4 (slippery physics), C5 and C6 keep running to completion (no-restart rule). Their
+results are superseded.
+
+---
+
 ## Report 27: 2026-11-17, real friction alone isn't enough → second flat-ground assumption fixed (C6)
 
 ### C5 first review (realistic friction, difficulty 0.4, about 7M steps in)

@@ -192,7 +192,8 @@ class QuadrupedCourseEnv(gym.Env):
         self.spawn_offset = spawn_offset     # course section spawns: section start + this (m)
         self.friction_model = friction_model # "pyramidal" (E1-E13, C1-C4: slippery) or "elliptic" (C5+)
         self.terrain_relative = terrain_relative  # [C6] orientation penalty relative to ground slope
-        self.difficulty = float(difficulty)
+        # a number (all sections alike) or a dict per course section (C7 section curriculum)
+        self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
         self.w = dict(DEFAULT_REWARD_WEIGHTS, **(reward_weights or {}))
@@ -265,7 +266,8 @@ class QuadrupedCourseEnv(gym.Env):
 
     def set_difficulty(self, difficulty):
         """Called by the curriculum callback; rebuilds the course at the next reset."""
-        self._pending_difficulty = float(np.clip(difficulty, 0, 1))
+        self._pending_difficulty = (dict(difficulty) if isinstance(difficulty, dict)
+                                    else float(np.clip(difficulty, 0, 1)))
 
     # ---------------------------------------------------------------- injuries
     def _apply_injury(self):
@@ -318,6 +320,16 @@ class QuadrupedCourseEnv(gym.Env):
         self.ring_theta += (a - self.ring_last_a + np.pi) % (2 * np.pi) - np.pi   # unwrap
         self.ring_last_a = a
         return float(self.ring_theta * course.RING_TRACK_RADIUS)
+
+    def _section_results(self):
+        """[C7] per course section: True = cleared, False = reached but not cleared this episode.
+        Sections behind the spawn point or never reached are left out."""
+        out = {}
+        for name, cx in zip(SECTION_NAMES, CHECKPOINT_X):
+            start = course.SECTION_STARTS[name]
+            if self.start_x <= start + 0.9 and self.max_x >= start:     # spawned on its run-up or reached it
+                out[name] = bool(self.max_x > cx)
+        return out
 
     def _terrain_relative_tilt(self, pos, yaw, grav):
         """Roll^2 + (pitch - ground pitch)^2, ground pitch from heights 0.3 m ahead / behind."""
@@ -435,6 +447,8 @@ class QuadrupedCourseEnv(gym.Env):
                 "sections_cleared": sections, "reward_terms": terms, **gait}
         if terminated or truncated:
             info["episode_sums"] = self.episode_sums
+            if self.arena == "course":
+                info["section_results"] = self._section_results()
         if self.render_mode == "human":
             self.render()
         return self._get_obs(), float(reward), terminated, truncated, info
