@@ -115,9 +115,13 @@ DEFAULT_REWARD_WEIGHTS = dict(
     collision=-2.0,        # [NEW v2] torso / thighs / calves (shins) hitting the terrain or obstacles
     wall_contact=-2.0,     # [NEW v1] any part of the robot touching a wall or slalom barrier
     wall_proximity=-1.0,   # [NEW v1] walking within ~0.4 m of a wall straight ahead / to the side
-    turn_to_route=0.0,     # [E8, opt-in] when facing > 45 deg off the route (e.g. at a wall), reward
-                           #   turning toward it: clip(yaw_rate * sign(heading error), -1, 1).
-                           #   0 = off (E7). E8 continuation sets 1.0 via train.py --reward-weights.
+    turn_to_route=0.0,     # [FAILED E8] when facing > 45 deg off the route (e.g. at a wall):
+                           #   clip(yaw_rate * sign(heading error), -1, 1). The -1 side punished the
+                           #   small yaw wobble of trotting in place, so policies learned to FREEZE
+                           #   at walls (wall pass 0 % at 50M, from 17-83 %). Kept off (0).
+    heading_progress=0.0,  # [E9, opt-in] potential-based: (|heading err| before - after) / dt,
+                           #   only while > 30 deg off the route. Turning toward the route pays,
+                           #   wobbling nets zero, so freezing gains nothing. E9 sets 0.5.
     track_following=0.0,   # [E8, opt-in] ring only: exp(-(distance from the yellow line)^2 / 0.25).
                            #   E7 seeds 0/1 drifted to walk ~1.1-1.4 m outside the line because
                            #   nothing rewarded staying on it. 0 = off (E7); E8 sets 1.0.
@@ -338,6 +342,7 @@ class QuadrupedCourseEnv(gym.Env):
         self.start_x = self._update_progress_coord(qpos[:2])
         self.last_action = np.zeros(12)
         self.wall_hits = 0
+        self.last_heading_err = None
         self.last_qvel = np.zeros(12)
         self.feet_air_time = np.zeros(4)
         self.last_contacts = np.ones(4, bool)
@@ -506,6 +511,10 @@ class QuadrupedCourseEnv(gym.Env):
             "collision": float(n_collisions),
             "wall_contact": float(self.wall_hits),
             "wall_proximity": float(np.sum(np.clip(0.4 - lidar, 0, None) / 0.4)),
+            "heading_progress": ((abs(self.last_heading_err) - abs(heading_err)) / dt
+                                 if self.last_heading_err is not None
+                                 and max(abs(heading_err), abs(self.last_heading_err)) > np.deg2rad(30)
+                                 else 0.0),
             "turn_to_route": (float(np.clip(ang_vel[2] * np.sign(heading_err), -1, 1))
                               if abs(heading_err) > np.deg2rad(45) else 0.0),
             "body_alignment": (float(np.exp(-(((np.arctan2(d.qvel[1], d.qvel[0]) - yaw + np.pi) % (2 * np.pi) - np.pi)
@@ -518,6 +527,7 @@ class QuadrupedCourseEnv(gym.Env):
             "checkpoint": 0.0, "goal": 0.0, "fall": 0.0,
         }
         self.max_x = max(self.max_x, s)
+        self.last_heading_err = heading_err
 
         # --- one-off events (not scaled by dt)
         bonus = 0.0

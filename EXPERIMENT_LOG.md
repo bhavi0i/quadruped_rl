@@ -200,6 +200,14 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     - Keep milestone snapshots.
 
 ### E8: Ring continuation with an explicit turn reward. RUNNING (Amarel job 63982746, from E7 seed 1 final, 40M → 60M)
+- **At 50M: FAILED for walls.**
+  - Wall pass rate 0 % on every run. The dog freezes facing the wall.
+  - Cause: the −1 side of `turn_to_route` punished the yaw wobble of trotting in place, so
+    standing still became optimal.
+  - Kept from E8: `track_following` WORKS (track error 0.08–0.11 m). Roll and pitch now pass
+    (≤ 1.7°). Crab 25–27° (still fails).
+  - Lesson: never penalise "turning the wrong way" with a signed rate. Use potential-based
+    progress, where oscillation nets zero.
 - **At 45M:**
   - **Track error fell from 1.2 m to 0.1–0.3 m:** `track_following` WORKS.
   - Walls 0–33 %, not improved yet.
@@ -241,7 +249,9 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
 - **Decision:** keep 32-core CPU nodes (`amarel/ring_ppo.slurm`). Training takes about 75–90 min
   per 40M-step run.
 
-### E9: Natural posture (anti-crabbing) continuation. PLANNED (after E8 finishes)
+### E9: Natural posture + potential-based turning. RUNNING (Amarel job 63983152, from E7 milestone 34M → 54M)
+- **Updated plan:** E9 starts from the E7 milestone (walls 83 %), not from E8, which froze at
+  walls. `turn_to_route` is replaced by `heading_progress` (potential-based, 0.5).
 - **Date:** 2026-11-16
 - **Why:** the group saw the walk looked slanted and unnatural.
 - **Measured:** every E7 policy crabs about 30° (body turned away from the direction of travel,

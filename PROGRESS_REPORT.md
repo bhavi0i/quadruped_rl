@@ -62,6 +62,47 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 7: 2026-11-16, E8 backfired (dog freezes at walls); E9 launched from the milestone
+
+### E8 at 50M steps
+
+| Run | Pace | Trot | Shin | Falls | Walls | Track error | Crab | Roll | Pitch |
+|---|---|---|---|---|---|---|---|---|---|
+| E8 seed 0 (51M) | ✅ 0.60 | ✅ 1.00 | ✅ 0.1 % | ✅ 0 % | ❌ **0 %** | ✅ 0.11 m | ❌ 25° | ✅ 1.3° | ✅ 1.6° |
+| E8 seed 1/2 (50M, identical runs) | ✅ 0.60 | ✅ 1.00 | ✅ 0.1 % | ✅ 0 % | ❌ **0 %** | ✅ 0.08 m | ❌ 27° | ✅ 1.6° | ✅ 1.7° |
+
+Frames, facing the wall head-on: the dog **stands completely still** for the full 10 s.
+![](docs/media/review_50M_20261116_2150/ring_e8_seed0/frames_wall.png)
+
+**What went wrong.** E8's `turn_to_route` reward was +1 for turning toward the route and −1 for
+turning away. Trotting in place makes the body wobble slightly in yaw, and half of that wobble
+counted as "turning away". So the cheapest behaviour at a wall became **freezing**. Wall pass
+rate fell from 17–83 % (E7) to 0 % everywhere.
+
+**What E8 got right**
+- `track_following` works: 1.2 m → **0.08–0.11 m** from the yellow line.
+- Lean and tilt are now within the goals: roll 1.3–1.6°, pitch 1.6–1.7°.
+- The crab improved slightly (31° → 25–27°), but nothing in E8 targets it directly.
+
+### Change: E9 launched now, in parallel (E8 left running to finish, no restart)
+- **Start point:** the E7 milestone policy (34M, walls 83 %), *not* E8. It keeps the best wall
+  skill and adds the line and posture rewards on top.
+- **New turn reward `heading_progress`** (potential-based) replaces `turn_to_route`. It is
+  (|heading error| before − after) / dt while more than 30° off the route. Turning toward the
+  route pays, and wobbling back and forth nets exactly zero, so freezing gains nothing. Unit
+  test: turning for 1 s earns +0.86, standing still +0.01.
+- Kept from E8: `track_following` 1.0, turn-practice 40 %.
+- Posture (from report 6): `body_alignment` 1.5, `lateral_velocity` −2, `orientation` −30,
+  ring look-ahead 0.25 rad.
+- Amarel job 63983152, 3 properly seeded runs (seed fix verified), 34M → 54M steps (~45 min).
+
+### Next
+- Review E9 at 40M, 45M and 50M. Success: walls ≥ 80 %, crab ≤ 10°, roll ≤ 3°, pitch ≤ 4°,
+  track error ≤ 0.5 m, and every walking goal.
+- E8 finishes at 60M. Its final policies get reviewed, then it is closed out in the log.
+
+---
+
 ## Report 6: 2026-11-16, the dog walks "slanted": crabbing found and E9 prepared; E8 at 45M
 
 ### What the group noticed
