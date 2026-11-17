@@ -41,7 +41,8 @@ def make_env(rank, args, difficulty):
                                  spawn_offset=args.spawn_offset, swing_height=args.swing_height,
                                  friction_model=args.friction_model,
                                  terrain_relative=args.terrain_relative_tilt,
-                                 ramp_spawn=args.ramp_spawn, section_weights=args.section_weights)
+                                 ramp_spawn=args.ramp_spawn, section_weights=args.section_weights,
+                                 terrain_aware_swing=args.terrain_aware_swing)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -186,6 +187,8 @@ def main():
                    help='[C10] spawn weights per course section, e.g. {"stairs": 3, "rubble": 2}')
     p.add_argument("--learning-rate", type=float, default=None,
                    help="[C12] override the learning rate of a continuation (original 3e-4); lower = more stable")
+    p.add_argument("--terrain-aware-swing", action="store_true",
+                   help="[C13] swing-foot lift measured against the step ahead (stairs)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")

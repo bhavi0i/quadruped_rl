@@ -171,7 +171,7 @@ class QuadrupedCourseEnv(gym.Env):
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
                  spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False,
-                 ramp_spawn=0.0, section_weights=None):
+                 ramp_spawn=0.0, section_weights=None, terrain_aware_swing=False):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -199,6 +199,7 @@ class QuadrupedCourseEnv(gym.Env):
         self.terrain_relative = terrain_relative  # [C6] orientation penalty relative to ground slope
         self.ramp_spawn = ramp_spawn         # [C9] share of course spawns placed partway up the ramp
         self.section_weights = dict(section_weights or {})  # [C10] relative spawn weight per section
+        self.terrain_aware_swing = terrain_aware_swing      # [C13] swing lift measured vs the step ahead
         # a number (all sections alike) or a dict per course section (C7 section curriculum)
         self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
         self.random_start = random_start
@@ -585,6 +586,16 @@ class QuadrupedCourseEnv(gym.Env):
         feet_pos = d.geom_xpos[self.foot_geoms]
         lift = np.array([feet_pos[i, 2] - self.cfg["foot_radius"] - self._ground_height(*feet_pos[i, :2])
                          for i in range(4)])
+        if self.terrain_aware_swing:
+            # [C13] measure swing lift against the higher of the ground under the foot and 12 cm ahead
+            #   of it, so "8 cm lift" means 8 cm above the NEXT step. Before, a rear foot over the lower
+            #   step was rewarded for 8 cm above *that* step - not enough to clear a 9 cm riser, which
+            #   fought the stumble penalty (C11/C12 stalled at the stairs, x = 15.1 m).
+            c, sn = np.cos(yaw), np.sin(yaw)
+            ahead = np.array([self._ground_height(feet_pos[i, 0] + 0.12 * c, feet_pos[i, 1] + 0.12 * sn)
+                              for i in range(4)])
+            lift_ahead = feet_pos[:, 2] - self.cfg["foot_radius"] - ahead
+            lift = np.where(~foot_contact, np.minimum(lift, lift_ahead), lift)
         swing = ~want_down
         clearance = float(np.sum(np.clip(lift / self.swing_height, 0, 1) * swing) / max(swing.sum(), 1))
         # [E11] same lift curve for every swinging foot (uniform steps across the four legs)

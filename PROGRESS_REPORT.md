@@ -74,6 +74,40 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 41: 2026-11-17, C12 holds the stage-2 skill; the stairs are the last wall → C13 (terrain-aware foot lift)
+
+### C12 (learning rate 1e-4), benchmark 0.5, 6 layouts
+
+| Review | seed 0 | seed 1 | seed 2 | Total |
+|---|---|---|---|---|
+| 220–222M | 0/6 | 2/6 (32.7, 48.5 s) | **3/6** (31.6, 32.5, 50.7 s) | 5/18 |
+| 225–228M | 0/6 | 2/6 (45.3, 46.4 s) | 2/6 (31.9, 42.3 s) | 4/18 |
+
+- **Working:** the lower learning rate keeps the skill without the collapse seen in C11 (so far).
+- **Not working:** **11 of the 14 failed runs stop at the stairs (x ≈ 15.1 m).**
+
+### Why the stairs still block: the step-shape reward fought the stumble penalty
+`swing_shape` (from E11/E12) pulls every swinging foot to an **8 cm lift, measured above the ground
+directly under that foot**. On stairs, a rear foot still over the lower step is "8 cm up" relative to
+*that* step. That is barely enough for a 6 cm riser (benchmark) and not enough for 9 cm (full).
+
+Measured on the stage-2 policy climbing the full-height stairs (348 swing-foot samples within 10 cm
+before a riser):
+
+| Lift measured against | Mean | Share below 3 cm |
+|---|---|---|
+| ground under the foot (old) | **11.5 cm**: the reward thinks it's fine | 9 % |
+| **the next step** (new) | **2.5 cm**: about to stub the riser | **48 %** |
+
+### Change: C13 (Amarel job 63991604, 3 seeds, from C12 seed 2 at 232M → 292M)
+- **`--terrain-aware-swing`**: a swinging foot's lift is measured against the **higher of the ground
+  under it and 12 cm ahead**, so the target means "8 cm above the next step". On flat ground nothing
+  changes.
+- Learning rate 1e-4 kept. Curriculum continues from C12 seed 2 (ramp 0.95, stairs 0.75).
+- Everything else as C12.
+
+---
+
 ## Report 40: 2026-11-17, 🏆 STAGE 2 BENCHMARK MET: the healthy Go1 crosses the course in 75 % of runs
 
 ### Checkpoint sweep: all 65 C11 checkpoints (199–225M), benchmark 0.5, 6 layouts

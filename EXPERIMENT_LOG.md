@@ -565,6 +565,16 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Change (one idea):** `--learning-rate 1e-4` (from 3e-4), against the post-peak collapse.
 - Curriculum starts at the milestone's levels {ramp 1.0, stairs 0.75, others 1.0}. Otherwise as
   C11.
+- **At 220–228M:** benchmark 5/18 then 4/18 (best seed 2: 3/6, then 2/6). No collapse so far.
+  11/14 failures stop at the stairs (15.1 m).
+
+### C13: Terrain-aware swing lift. RUNNING (Amarel job 63991604, from C12 seed 2 at 232M → 292M)
+- **Why:** `swing_shape` measured lift above the ground under the foot. Near a riser the old reading
+  was 11.5 cm, but relative to the next step it was only 2.5 cm (48 % under 3 cm), so the reward
+  fought `feet_stumble`.
+- **Change (one idea):** `--terrain-aware-swing`. Swing lift = foot height − max(ground under foot,
+  ground 12 cm ahead along the heading).
+- Learning rate 1e-4; otherwise as C12.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
