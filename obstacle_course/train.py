@@ -37,7 +37,7 @@ def make_env(rank, args, difficulty):
                                  course_seed=rank, robot=args.robot, arena=args.arena,
                                  target_speed=args.target_speed, reward_weights=args.reward_weights,
                                  turn_practice=args.turn_practice, ring_lookahead=args.ring_lookahead,
-                                 wall_spawn=args.wall_spawn)
+                                 wall_spawn=args.wall_spawn, max_steps=args.max_steps)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -124,6 +124,10 @@ def main():
                    help="ring steering target, radians ahead on the track (E7/E8 0.6, E9 0.25)")
     p.add_argument("--wall-spawn", type=float, default=0.0,
                    help="extra share of ring spawns 1 m from the wall facing it (E10: 0.3)")
+    p.add_argument("--max-steps", type=int, default=1500,
+                   help="episode length in 50 Hz steps (ring 1500 = 30 s; course 3000 = 60 s)")
+    p.add_argument("--curriculum-threshold", type=float, default=3.0,
+                   help="course: raise difficulty when mean distance per episode exceeds this (m)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
@@ -166,7 +170,8 @@ def main():
                     policy_kwargs=policy_kwargs, tensorboard_log=args.out, verbose=1,
                     device=args.device)
 
-    callbacks = [ProgressCallback(args.out, args.arena, start=difficulty),
+    callbacks = [ProgressCallback(args.out, args.arena, start=difficulty,
+                                  threshold=args.curriculum_threshold),
                  CheckpointCallback(save_freq=max(1, int(args.ckpt_freq) // args.envs), save_path=args.out,
                                     name_prefix="ckpt", save_vecnormalize=True)]
     # [FAILED, never run] done = model.num_timesteps if ckpt else 0  and  reset_num_timesteps=not ckpt

@@ -314,6 +314,33 @@ independent runs, not 3. It was left running (no-restart rule).
   contact 18.6 %, 0.48 m/s). Lesson confirmed: select policies by evaluation (milestones), not by
   the last checkpoint.
 
+### E11: Leg posture + uniform steps. RUNNING (Amarel job 63984256, milestone 3 at 51M → 66M)
+- **Date:** 2026-11-16
+- **Why:** the group saw slanted legs and uneven cadence.
+- **Measured on milestone 3:**
+  - stance feet 5–17 cm outside and 5–18 cm behind the hips
+  - rear-left hip splayed 18°
+  - step heights 15.5 / 10.0 / 9.3 / 6.5 cm, all steps timed exactly to the 0.5 s clock
+- **New goals:** sideways foot offset ≤ 5 cm, fore-aft ≤ 8 cm, step-height spread ≤ 20 %.
+  Milestone 3 scores 5.0 / 11.3 / 87 %.
+- **Change** (E10 rewards plus three terms):
+  - `foot_placement` −10 (stance feet vs the standing-pose position under the hip)
+  - `hip_abduction` −2
+  - `swing_shape` 1.0 (shared lift curve 8 cm × sin(π × swing progress))
+
+### C1: Stage 2, obstacle course (healthy robot). PREPARED (starts from the best E11 policy)
+- **Group instruction:** start at the beginning of the course and learn to reach the end
+  checkpoint.
+- **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
+- **Prerequisite fixes:**
+  - course episodes 60 s (`--max-steps 3000`)
+  - course test in `evaluate_policy.py` (goal rate, progress, sections, video)
+  - reviews evaluate course runs at their curriculum difficulty
+- **Setup:**
+  - `amarel/course_ppo.slurm`: curriculum from difficulty 0, +0.1 when mean distance > 5 m
+  - random section-start spawns
+  - gait rewards kept, `swing_shape` 0.5
+
 ---
 
 ## Open questions and ideas

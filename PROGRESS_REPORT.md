@@ -45,6 +45,18 @@ not leaning or crabbing. Every review now also measures:
 | level body | roll (sideways lean) | ≤ 3° |
 | level body | pitch (nose up/down) | ≤ 4° |
 
+**Leg posture and step uniformity goals (added 2026-11-16):**
+
+| Goal | Measure | Pass if |
+|---|---|---|
+| legs straight under the body | mean sideways stance-foot offset vs the standing pose | ≤ 5 cm |
+| legs not trailing or reaching | mean fore-aft stance-foot offset vs the standing pose | ≤ 8 cm |
+| uniform steps | (max − min) / mean of the four legs' step heights | ≤ 20 % |
+
+**Stage 2 goal (obstacle course):** start at the beginning of the course and reach the goal pad
+(goal rate ≥ 67 % over 3 runs), first at the curriculum difficulty, then at full difficulty
+(1.0), while keeping the natural-gait goals.
+
 **Decision rules for unattended tweaking:**
 - **No restarts (2026-11-16, group decision).** Running jobs are never stopped or restarted
   from scratch. Reward or setting changes are applied after a run finishes, by **continuing
@@ -59,6 +71,59 @@ not leaning or crabbing. Every review now also measures:
 - **Falls:** if falls rise above 10 % after 10M steps, investigate before changing anything.
 - **How changes are made:** one idea at a time. The old setting stays commented out in the
   code, failed runs are archived, and each change gets an entry in EXPERIMENT_LOG.md.
+
+---
+
+## Report 14: 2026-11-16, legs slanted and steps uneven → E11 launched; stage 2 prepared
+
+### What the group noticed
+Milestone 3 still walks "funny": the legs operate on a slant rather than perpendicular to the
+ground and torso, and the cadence looks non-uniform.
+
+### Measured on milestone 3 (front view below)
+
+| Leg | Foot vs hip, sideways | Foot vs hip, fore-aft | Hip splay | Step height |
+|---|---|---|---|---|
+| front-right | 7.7 cm out | 4.9 cm behind | −5° | **15.5 cm** |
+| front-left | 4.6 cm out | 8.5 cm behind | +3° | 10.0 cm |
+| rear-right | **12.1 cm out** | **18.4 cm behind** | −3° | 9.3 cm |
+| rear-left | **17.3 cm out** | **13.2 cm behind** | **+18°** | **6.5 cm** |
+
+- **Slant:** the rear feet are planted wide and trail behind the hips. Against the new goals:
+  fore-aft offset 11.3 cm ❌ (≤ 8), sideways splay 5.0 cm (borderline).
+- **"Uneven cadence" is uneven legs, not timing.** Every leg steps exactly every 0.50 s (locked
+  to the trot clock), but step heights range 6.5–15.5 cm (spread 87 % ❌, goal ≤ 20 %), so it
+  looks like a slight limp.
+- **Why:** nothing rewarded where the feet land, and `foot_clearance` only asks for *at least*
+  8 cm of lift, so any mix of heights scored the same.
+
+Front view of milestone 3 (legs angled outward, uneven lift):
+![](docs/media/e11_before_leg_posture/front_view_milestone3.png)
+
+### Change: E11 (Amarel job 63984256, 3 seeds, milestone 3 at 51M → 66M, no restart)
+- `foot_placement` −10: stance feet back under the hips, where they sit in the standing pose.
+- `hip_abduction` −2: no hip splay.
+- `swing_shape` 1.0: every swinging foot follows the same smooth 8 cm lift curve, timed by the
+  trot clock, so all four legs step alike.
+- All E10 rewards and wall practice are kept.
+
+### Stage 2 (obstacle course) prepared, starting after E11
+- Group instruction: the **healthy** robot starts at the beginning of the course and learns to
+  reach the end checkpoint.
+- **Baseline:** the ring policy placed at the course start, even at difficulty 0, does not move
+  (0.1 m) and falls in 3 of 3 runs. Walls on both sides of the lane look like "turn" situations
+  from the ring.
+  ![](docs/media/stage2_baseline_ring_policy_d0/course.gif)
+- Fixes before training:
+  - **Episodes 30 → 60 s.** 23.5 m at 0.6 m/s takes about 40 s, so the old episodes could never
+    reach the goal.
+  - **New course test** in the evaluator: run from the start; distance, sections cleared,
+    goal reached, falls, time and full-run video.
+- `amarel/course_ppo.slurm`:
+  - continues from the best E11 policy
+  - curriculum from difficulty 0 (+0.1 whenever the mean distance per episode exceeds 5 m)
+  - spawns at random section starts so every obstacle type is practised
+  - natural-gait rewards kept; `swing_shape` halved so it can lift higher for hurdles and steps
 
 ---
 

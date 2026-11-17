@@ -85,8 +85,13 @@ def review():
         dst = os.path.join(pp.PROGRESS, "ppo_" + run)
         os.makedirs(dst, exist_ok=True)
         pp.check_ppo_run(run, force=True)   # copies latest.zip / progress.json / config.json into dst
+        extra = []
+        cfg_f = os.path.join(src, "config.json")
+        if os.path.exists(cfg_f) and json.load(open(cfg_f)).get("arena") == "course":
+            prog = json.load(open(os.path.join(src, "progress.json")))
+            extra = ["--arena", "course", "--difficulty", str(prog.get("difficulty", 0.0))]
         r = subprocess.run([PY, "evaluate_policy.py", os.path.abspath(model), "--out",
-                            os.path.join(dst, "eval")], cwd=os.path.join(ROOT, "obstacle_course"),
+                            os.path.join(dst, "eval")] + extra, cwd=os.path.join(ROOT, "obstacle_course"),
                            capture_output=True, text=True)
         print(f"== {run}  ({os.path.basename(model)})\n{r.stdout}{r.stderr[-800:] if r.returncode else ''}")
         mfile = os.path.join(dst, "eval", "metrics.json")

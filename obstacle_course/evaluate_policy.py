@@ -46,6 +46,12 @@ GOALS = {  # what "walking naturally and handling walls" means, numerically
     "crab_angle_deg": ("<=", 10.0),     # |angle between body heading and direction of travel|
     "roll_deg": ("<=", 3.0),            # |mean sideways lean|
     "pitch_deg": ("<=", 4.0),           # |mean nose-up/down tilt|
+    # leg posture / step uniformity (added 2026-11-16: legs looked slanted, steps uneven)
+    "foot_splay_cm": ("<=", 5.0),       # mean |sideways| stance-foot offset from standing pose
+    "foot_fore_aft_cm": ("<=", 8.0),    # mean |fore-aft| stance-foot offset from standing pose
+    "step_height_spread": ("<=", 0.2),  # (max - min) / mean of the four legs' swing heights
+    # stage 2: obstacle course from the start
+    "goal_rate": (">=", 0.67),          # reached the goal pad in >= 2 of 3 runs from the start
 }
 
 
@@ -90,6 +96,7 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
     video = []
     speeds, trots, feet, body, lifts, falls, track_err = [], [], [], [], [], [], []
     crabs, rolls, pitches, vlat = [], [], [], []
+    rel_off, contacts_l, lifts_l = [], [], []
     frames = []
     for ep in range(episodes):
         env.random_start = True
@@ -101,6 +108,9 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
             swing = ~info["foot_contact"]
             if swing.any():
                 lifts.append(float(info["foot_lift"][swing].max()))
+            if t >= 100:
+                rel_off.append(info["foot_rel_hip"] - info["nominal_foot_rel"])
+                contacts_l.append(info["foot_contact"]); lifts_l.append(info["foot_lift"])
             if t >= 100:                                   # posture once walking has settled
                 _, lv, _, g, yaw = env._body_frame()
                 rolls.append(np.degrees(np.arctan2(g[1], -g[2])))
@@ -125,6 +135,19 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
              fall_rate=float(np.mean(falls)),
              track_error_m=float(np.mean(track_err)) if track_err else None)
     m["speed_err"] = abs(m["speed"] - env.target_speed)
+    if rel_off:
+        ro, cc, ll = np.array(rel_off), np.array(contacts_l), np.array(lifts_l)
+        per_leg = []
+        for k in range(4):                                # mean peak lift per leg
+            air = ~cc[:, k]
+            e = np.flatnonzero(np.diff(np.r_[0, air.astype(int), 0]))
+            pk = [ll[a:b, k].max() for a, b in zip(e[::2], e[1::2])]
+            per_leg.append(float(np.mean(pk)) if pk else 0.0)
+        per_leg = np.array(per_leg)
+        m.update(foot_splay_cm=float(100 * np.mean([np.abs(ro[cc[:, k], k, 1]).mean() for k in range(4) if cc[:, k].any()])),
+                 foot_fore_aft_cm=float(100 * np.mean([np.abs(ro[cc[:, k], k, 0]).mean() for k in range(4) if cc[:, k].any()])),
+                 step_height_spread=float((per_leg.max() - per_leg.min()) / max(per_leg.mean(), 1e-6)),
+                 step_height_per_leg_cm=[round(float(100 * x), 1) for x in per_leg])
     m.update(crab_angle_signed_deg=float(np.mean(crabs)) if crabs else 0.0,
              crab_angle_deg=abs(float(np.mean(crabs))) if crabs else 0.0,
              roll_deg=abs(float(np.mean(rolls))), pitch_deg=abs(float(np.mean(pitches))),
@@ -183,6 +206,34 @@ def save_video(frames, out, name):
     imageio.v3.imwrite(os.path.join(out, f"{name}.gif"), np.stack(small), duration=80, loop=0)
 
 
+def course_test(model, norm, env, episodes=3, seconds=60):
+    """Stage 2: start at the beginning of the course and try to reach the goal pad."""
+    import course as C
+    from quadruped_env import CHECKPOINT_X, SECTION_NAMES
+    runs, video = [], []
+    for ep in range(episodes):
+        env.random_start = False
+        obs, _ = env.reset(seed=300 + ep)
+        t, fell, reached = 0, False, False
+        while t < int(seconds / 0.02):
+            obs, _, term, trunc, info = env.step(act(model, norm, obs))
+            if ep == 0 and t % 4 == 0:
+                video.append(env.render())
+            t += 1
+            if term or trunc:
+                fell, reached = bool(info["fell"]), bool(info["reached_goal"])
+                break
+        x = float(env.max_x)
+        cleared = [n for n, cx in zip(SECTION_NAMES, CHECKPOINT_X) if x > cx]
+        runs.append(dict(max_x=round(x, 2), sections_cleared=cleared, reached_goal=reached, fell=fell,
+                         time_s=round(t * 0.02, 1), stopped_in=next((n for n, cx in zip(SECTION_NAMES, CHECKPOINT_X)
+                                                                     if x <= cx), "goal")))
+    return dict(goal_rate=float(np.mean([r["reached_goal"] for r in runs])),
+                mean_progress_m=float(np.mean([r["max_x"] for r in runs])),
+                course_progress=float(np.mean([r["max_x"] for r in runs]) / C.GOAL_X),
+                course_runs=runs), video
+
+
 def check(metrics):
     out = {}
     for k, (op, thr) in GOALS.items():
@@ -199,7 +250,7 @@ def main():
     p.add_argument("model")
     p.add_argument("--out", default="eval/latest")
     p.add_argument("--arena", choices=["ring", "course"], default="ring")
-    p.add_argument("--difficulty", type=float, default=0.0)
+    p.add_argument("--difficulty", type=float, default=0.0, help="course obstacle size 0..1")
     a = p.parse_args()
     os.makedirs(a.out, exist_ok=True)
 
@@ -211,6 +262,15 @@ def main():
     if a.arena == "ring":
         wall, f_wall, v_wall = wall_test(model, norm, env)
         metrics.update(wall_pass_rate=wall["wall_pass_rate"], wall_trials=wall["trials"])
+    else:
+        env.max_steps = 3000
+        crs, v_course = course_test(model, norm, env)
+        metrics.update(crs)
+        if v_course:                                      # frames every 4 steps = 12.5 fps real time
+            imageio.mimsave(os.path.join(a.out, "course.mp4"), v_course, fps=12.5, quality=7,
+                            macro_block_size=8)
+            small = [f[::2, ::2] for f in v_course[::2]][:190]   # GIF: 6.25 fps, up to ~30 s
+            imageio.v3.imwrite(os.path.join(a.out, "course.gif"), np.stack(small), duration=160, loop=0)
     metrics["goals"] = check(metrics)
     metrics["model"] = a.model
     contact_sheet(f_walk, os.path.join(a.out, "frames_walk.png"))
@@ -224,8 +284,13 @@ def main():
     for k, g in metrics["goals"].items():
         print(f"  {'PASS' if g['passed'] else 'FAIL'}  {k:<18} {g['value']:>8}   goal {g['goal']}")
     print(f"  crab {metrics['crab_angle_signed_deg']:+.1f} deg, sideways speed {metrics['sideways_speed']:+.2f} m/s")
+    if "step_height_per_leg_cm" in metrics:
+        print(f"  step height per leg (FR, FL, RR, RL) cm: {metrics['step_height_per_leg_cm']}")
     print(f"  swing lift {metrics['swing_lift_cm']:.1f} cm, speed {metrics['speed']:.2f} m/s, "
           f"track error {metrics['track_error_m']}")
+    if "course_runs" in metrics:
+        for r in metrics["course_runs"]:
+            print("   course", r)
     if "wall_trials" in metrics:
         for t in metrics["wall_trials"]:
             print("   wall", t)

@@ -46,6 +46,7 @@ def _go1_cfg():
         actuators=[f"go1/{l}_{p}" for l in LEG_NAMES for p in parts],
         injury_names=[f"{l}_{p}" for l in LEG_NAMES for p in parts],
         feet=[f"go1/{l}" for l in LEG_NAMES],
+        hips=[f"go1/{l}_hip" for l in LEG_NAMES],
         default_q=np.tile([0.0, 0.9, -1.8], 4),
         torso="go1/trunk",
         action_scale=np.tile([0.3, 0.6, 0.6], 4),
@@ -63,6 +64,7 @@ def _custom_cfg():
         actuators=[f"{l}_{p}_act" for l in legs for p in parts],
         injury_names=[f"{l}_{p}" for l in legs for p in parts],
         feet=[f"{l}_foot" for l in legs],
+        hips=[f"{l}_hip" for l in legs],
         default_q=np.array([course.DEFAULT_POSE[p] for _ in legs for p in parts]),
         torso="torso",
         action_scale=np.full(12, 0.5),
@@ -129,6 +131,16 @@ DEFAULT_REWARD_WEIGHTS = dict(
                            #   E7 policies all crabbed ~30 deg (body turned away from the direction of
                            #   travel, 0.4 m/s sideways) -> looked slanted/unnatural. 0 = off; E9 sets 1.5.
     lateral_velocity=0.0,  # [E9, opt-in] body-frame sideways speed^2 (walking diagonally). E9 sets -2.0.
+    foot_placement=0.0,    # [E11, opt-in] stance feet away from where they sit under the hip in the
+                           #   standing pose: sum over stance feet of (sideways^2 + fore-aft^2) in m^2.
+                           #   Milestone 3 planted rear feet 12-17 cm out and 13-18 cm behind the hips
+                           #   (legs visibly slanted). E11 sets -10.
+    hip_abduction=0.0,     # [E11, opt-in] sum of hip-abduction (splay) angle^2 vs the standing pose.
+                           #   Milestone 3 rear-left hip splayed +18 deg. E11 sets -2.
+    swing_shape=0.0,       # [E11, opt-in] every swinging foot follows the same lift curve
+                           #   swing_height * sin(pi * swing progress): exp(-err^2 / 3cm^2), averaged.
+                           #   Milestone 3 lifted 15.5 / 9.8 / 9.1 / 6.6 cm per leg (uneven, limp-like;
+                           #   the old foot_clearance only asks for >= 8 cm). E11 sets 1.0.
     # ---- one-off events ----
     checkpoint=10.0,       # bonus when the robot clears each course section (course only)
     goal=100.0,            # reaching the goal pad
@@ -148,7 +160,7 @@ class QuadrupedCourseEnv(gym.Env):
     def __init__(self, difficulty=0.0, random_start=True, target_speed=0.6,
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
-                 turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0):
+                 turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -168,6 +180,9 @@ class QuadrupedCourseEnv(gym.Env):
         # [E9] 0.25 rad -> ~7 deg.
         self.ring_lookahead = ring_lookahead
         self.wall_spawn = wall_spawn         # [E10] extra share of ring spawns facing the wall (0 = off)
+        # [stage 2] episode length in steps (50 Hz). Ring: 1500 (30 s). Course: 3000 (60 s), because
+        #   23.5 m at the natural 0.6 m/s takes ~40 s - a 30 s episode could never reach the goal.
+        self.max_steps = max_steps
         self.difficulty = float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
@@ -200,6 +215,14 @@ class QuadrupedCourseEnv(gym.Env):
         self.act_ids = np.array([m.actuator(a).id for a in c["actuators"]])
         self.torso_id = m.body(c["torso"]).id
         self.foot_geoms = np.array([m.geom(g).id for g in c["feet"]])
+        self.hip_bodies = np.array([m.body(h).id for h in c["hips"]])
+        self.abd_idx = np.array([0, 3, 6, 9])                  # first joint of each leg = hip splay
+        # nominal foot position relative to its hip (body frame) in the standing pose
+        tmp = mujoco.MjData(m)
+        tmp.qpos[self.qadr] = self.default_q
+        tmp.qpos[3:7] = [1, 0, 0, 0]
+        mujoco.mj_forward(m, tmp)
+        self.nominal_foot_rel = self._feet_rel_hips(tmp)
         # every geom on the robot = geoms whose body is the torso or one of its descendants
         robot_bodies = {b for b in range(m.nbody) if self._is_robot_body(b)}
         self.robot_geoms = {g for g in range(m.ngeom) if m.geom_bodyid[g] in robot_bodies}
@@ -214,6 +237,14 @@ class QuadrupedCourseEnv(gym.Env):
         self._ray_geomid = np.zeros(1, np.int32)
         self._scan_group = np.array([1, 0, 0, 0, 0, 0], np.uint8)   # terrain only (geom group 0)
         self._renderer = None
+
+    def _feet_rel_hips(self, d):
+        """(4, 2) foot minus hip position in the torso frame: [fore-aft, sideways]."""
+        R = d.xmat[self.torso_id].reshape(3, 3)
+        p0 = d.xpos[self.torso_id]
+        fb = (d.geom_xpos[self.foot_geoms] - p0) @ R
+        hb = (d.xpos[self.hip_bodies] - p0) @ R
+        return (fb - hb)[:, :2]
 
     def _is_robot_body(self, b):
         while b > 0:
@@ -372,7 +403,7 @@ class QuadrupedCourseEnv(gym.Env):
         self.last_qvel = self.data.qvel[self.vadr].copy()
 
         terminated = fell or reached
-        truncated = self.steps >= MAX_STEPS
+        truncated = self.steps >= self.max_steps
         sections = int(sum(self.max_x > cx for cx in CHECKPOINT_X)) if self.arena == "course" else self.laps
         info = {"x": self.progress_s, "arena": self.arena, "start_x": self.start_x, "max_x": self.max_x,
                 "difficulty": self.difficulty, "reached_goal": reached, "fell": fell,
@@ -474,6 +505,14 @@ class QuadrupedCourseEnv(gym.Env):
                          for i in range(4)])
         swing = ~want_down
         clearance = float(np.sum(np.clip(lift / self.swing_height, 0, 1) * swing) / max(swing.sum(), 1))
+        # [E11] same lift curve for every swinging foot (uniform steps across the four legs)
+        swing_prog = np.clip((foot_phase - 0.5) / 0.5, 0, 1)
+        z_ref = self.swing_height * np.sin(np.pi * swing_prog)
+        shape = float(np.sum(np.exp(-((lift - z_ref) ** 2) / 0.03 ** 2) * swing) / max(swing.sum(), 1))
+        # [E11] stance feet under the hips (as in the standing pose), and no hip splay
+        rel = self._feet_rel_hips(d) - self.nominal_foot_rel
+        placement = float(np.sum(np.sum(rel ** 2, axis=1) * foot_contact))
+        splay = float(np.sum((q[self.abd_idx] - self.default_q[self.abd_idx]) ** 2))
 
         # --- foot slip: horizontal foot speed while in contact
         slip = 0.0
@@ -530,6 +569,9 @@ class QuadrupedCourseEnv(gym.Env):
                                               ** 2) / (2 * np.deg2rad(10) ** 2)))
                                if np.linalg.norm(d.qvel[:2]) > 0.2 else 0.0),
             "lateral_velocity": float(lin_vel[1] ** 2),
+            "foot_placement": placement,
+            "hip_abduction": splay,
+            "swing_shape": shape,
             "track_following": (float(np.exp(-(np.linalg.norm(pos[:2] - np.array(course.RING_CENTER))
                                                - course.RING_TRACK_RADIUS) ** 2 / 0.25))
                                 if self.arena == "ring" else 0.0),
@@ -575,7 +617,8 @@ class QuadrupedCourseEnv(gym.Env):
             self.episode_sums[k] += r
         gait = {"foot_contact": foot_contact, "want_contact": want_down, "trot_match": trot_match,
                 "foot_lift": lift, "base_height": height, "body_contacts": n_collisions,
-                "v_fwd": v_fwd, "wall_hits": self.wall_hits, "min_wall_dist": float(lidar.min())}
+                "v_fwd": v_fwd, "wall_hits": self.wall_hits, "min_wall_dist": float(lidar.min()),
+                "foot_rel_hip": rel + self.nominal_foot_rel, "nominal_foot_rel": self.nominal_foot_rel}
         return reward, terms, fell, reached, gait
 
     # ---------------------------------------------------------------- rendering
