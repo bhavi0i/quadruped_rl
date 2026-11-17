@@ -92,8 +92,12 @@ def review():
         extra = []
         cfg_f = os.path.join(src, "config.json")
         if os.path.exists(cfg_f) and json.load(open(cfg_f)).get("arena") == "course":
-            prog = json.load(open(os.path.join(src, "progress.json")))
-            extra = ["--arena", "course", "--difficulty", json.dumps(prog.get("difficulty", 0.0))]
+            # [REPLACED] evaluated at the run's *current* curriculum level. With the per-section
+            #   curriculum every section sits at its ~60 % clear-rate frontier, so a full course run
+            #   succeeds only ~0.6^5 = 8 % of the time by design - not comparable across reviews.
+            # extra = ["--arena", "course", "--difficulty", json.dumps(prog.get("difficulty", 0.0))]
+            # [NEW] fixed benchmark: every section at 0.5, 6 rubble layouts (comparable over time).
+            extra = ["--arena", "course", "--difficulty", os.environ.get("COURSE_BENCH", "0.5")]
         r = subprocess.run([PY, "evaluate_policy.py", os.path.abspath(model), "--out",
                             os.path.join(dst, "eval")] + extra, cwd=os.path.join(ROOT, "obstacle_course"),
                            capture_output=True, text=True)
