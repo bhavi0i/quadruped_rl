@@ -14,6 +14,7 @@ commit/push are done afterwards (by Claude) so every push carries a written repo
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -82,7 +83,29 @@ def review():
                              wall_trials=m.get("wall_trials"))
     json.dump({"time": time.strftime("%Y-%m-%d %H:%M"), "runs": rows},
               open(os.path.join(pp.PROGRESS, "latest_review.json"), "w"), indent=1)
+    save_media(rows)
     return rows
+
+
+def save_media(rows):
+    """Keep this review's evidence for the report: contact sheets for every seed, videos
+    (mp4 + gif) for the best seed only, in docs/media/review_<steps>M_<date>/."""
+    if not rows:
+        return
+    score = lambda r: (sum(g["passed"] for g in rows[r]["goals"].values()),
+                       rows[r]["goals"].get("wall_pass_rate", {}).get("value", 0))
+    best = max(rows, key=score)
+    tag = f"review_{min(r['steps'] for r in rows.values()) // 1_000_000}M_{time.strftime('%Y%m%d_%H%M')}"
+    out = os.path.join(ROOT, "docs", "media", tag)
+    for run in rows:
+        src = os.path.join(pp.PROGRESS, "ppo_" + run, "eval")
+        dst = os.path.join(out, run)
+        os.makedirs(dst, exist_ok=True)
+        for f in os.listdir(src):
+            if f.endswith((".png", ".json")) or (run == best and f.endswith((".mp4", ".gif"))):
+                shutil.copy2(os.path.join(src, f), dst)
+    json.dump({"best_run": best, "runs": rows}, open(os.path.join(out, "summary.json"), "w"), indent=1)
+    print(f"media saved to {os.path.relpath(out, ROOT)} (videos: {best})")
 
 
 if __name__ == "__main__":

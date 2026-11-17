@@ -15,8 +15,10 @@ Two tests (deterministic policy):
    (6 trials, 10 s each). A pass means it never touched the wall, or touched it once and got
    away, and turned to walk at least 1.5 m around the ring (either direction).
 
-Writes metrics.json, a contact sheet of video frames (frames_walk.png, frames_wall.png) and
-prints a summary with PASS/FAIL against the goal thresholds.
+Writes metrics.json, contact sheets of frames (frames_walk.png, frames_wall.png), videos of the
+first walking episode and the head-on wall trial (walk.mp4 / wall.mp4 at 25 fps, plus small
+looping walk.gif / wall.gif that play inline on GitHub), and prints a summary with PASS/FAIL
+against the goal thresholds.
 """
 import argparse
 import glob
@@ -80,6 +82,7 @@ def contact_sheet(frames, path, cols=4):
 
 
 def walk_test(model, norm, env, episodes=5, steps=1000):
+    video = []
     speeds, trots, feet, body, lifts, falls, track_err = [], [], [], [], [], [], []
     frames = []
     for ep in range(episodes):
@@ -95,8 +98,10 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
             if env.arena == "ring":
                 xy = env.data.qpos[:2] - np.array(course.RING_CENTER)
                 track_err.append(abs(np.linalg.norm(xy) - course.RING_TRACK_RADIUS))
-            if ep == 0 and 100 <= t < 196 and t % 12 == 0:
-                frames.append(env.render())
+            if ep == 0 and t < 500 and t % 2 == 0:          # 10 s video at 25 fps
+                video.append(env.render())
+                if 100 <= t < 196 and t % 12 == 0:
+                    frames.append(video[-1])
             if term or trunc:
                 break
         falls.append(bool(info["fell"]))
@@ -106,12 +111,12 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
              fall_rate=float(np.mean(falls)),
              track_error_m=float(np.mean(track_err)) if track_err else None)
     m["speed_err"] = abs(m["speed"] - env.target_speed)
-    return m, frames
+    return m, frames, video
 
 
 def wall_test(model, norm, env, seconds=10):
     """Spawn 1 m from the ring wall facing it (0, +-30, +-60 deg off head-on) and watch."""
-    results, frames = [], []
+    results, frames, video = [], [], []
     angles = [0, 30, -30, 60, -60, 0]
     for k, off in enumerate(angles):
         env.random_start = False
@@ -137,8 +142,10 @@ def wall_test(model, norm, env, seconds=10):
             hits += int(now and not touching)
             steps_touching += int(now)
             touching = now
-            if k == 0 and t % 25 == 0 and len(frames) < 12:
-                frames.append(env.render())
+            if k == 0 and t % 2 == 0:                       # head-on trial: 10 s video
+                video.append(env.render())
+                if t % 25 == 0 and len(frames) < 12:
+                    frames.append(video[-1])
             if term:
                 break
         along = abs(env.progress_s - env.start_x)   # either direction counts as getting away
@@ -146,7 +153,16 @@ def wall_test(model, norm, env, seconds=10):
         results.append(dict(offset_deg=off, wall_touches=hits, steps_touching=steps_touching,
                             min_wall_dist=round(min_d, 3), metres_along_track=round(along, 2),
                             fell=bool(info["fell"]), passed=bool(passed)))
-    return dict(wall_pass_rate=float(np.mean([r["passed"] for r in results])), trials=results), frames
+    return dict(wall_pass_rate=float(np.mean([r["passed"] for r in results])), trials=results), frames, video
+
+
+def save_video(frames, out, name):
+    """Full-quality mp4 (25 fps) for presentations + small looping GIF that plays on GitHub."""
+    if not frames:
+        return
+    imageio.mimsave(os.path.join(out, f"{name}.mp4"), frames, fps=25, quality=7, macro_block_size=8)
+    small = [f[::2, ::2] for f in frames[::2]][:75]          # 320x240, 12.5 fps, 6 s
+    imageio.v3.imwrite(os.path.join(out, f"{name}.gif"), np.stack(small), duration=80, loop=0)
 
 
 def check(metrics):
@@ -171,16 +187,18 @@ def main():
 
     model, stats = load(a.model)
     env, norm = make(dict(arena=a.arena, difficulty=a.difficulty), stats)
-    walk, f_walk = walk_test(model, norm, env)
+    walk, f_walk, v_walk = walk_test(model, norm, env)
     metrics = dict(walk)
-    f_wall = []
+    f_wall, v_wall = [], []
     if a.arena == "ring":
-        wall, f_wall = wall_test(model, norm, env)
+        wall, f_wall, v_wall = wall_test(model, norm, env)
         metrics.update(wall_pass_rate=wall["wall_pass_rate"], wall_trials=wall["trials"])
     metrics["goals"] = check(metrics)
     metrics["model"] = a.model
     contact_sheet(f_walk, os.path.join(a.out, "frames_walk.png"))
     contact_sheet(f_wall, os.path.join(a.out, "frames_wall.png"))
+    save_video(v_walk, a.out, "walk")
+    save_video(v_wall, a.out, "wall")
     with open(os.path.join(a.out, "metrics.json"), "w") as f:
         json.dump(metrics, f, indent=2)
 

@@ -118,12 +118,22 @@ def check_ppo_run(run, force=False):
     if not force and milestone <= state["milestone"] and finished <= state["finished"]:
         return None
     os.makedirs(dst, exist_ok=True)
-    for f in os.listdir(src):        # keep only the newest checkpoint as latest.zip
-        if f.startswith("ckpt_vecnormalize_"):
-            shutil.copy2(os.path.join(src, f), os.path.join(dst, "latest_vecnormalize.pkl"))
-        elif f.startswith("ckpt_"):
-            shutil.copy2(os.path.join(src, f), os.path.join(dst, "latest.zip"))
-        elif f in ("progress.json", "config.json", "final.zip", "final_vecnormalize.pkl"):
+    # [FAILED] copied every ckpt_* in os.listdir order, so latest.zip could be an older checkpoint:
+    # for f in os.listdir(src):
+    #     if f.startswith("ckpt_vecnormalize_"): shutil.copy2(..., "latest_vecnormalize.pkl")
+    #     elif f.startswith("ckpt_"): shutil.copy2(..., "latest.zip")
+    # [NEW] newest checkpoint by step count
+    ckpts = sorted((f for f in os.listdir(src) if f.startswith("ckpt_") and f.endswith(".zip")),
+                   key=lambda f: int(f.split("_")[-2]))
+    if ckpts:
+        newest = ckpts[-1]
+        shutil.copy2(os.path.join(src, newest), os.path.join(dst, "latest.zip"))
+        vn = newest.replace("ckpt_", "ckpt_vecnormalize_").replace(".zip", ".pkl")
+        if os.path.exists(os.path.join(src, vn)):
+            shutil.copy2(os.path.join(src, vn), os.path.join(dst, "latest_vecnormalize.pkl"))
+        json.dump({"checkpoint": newest}, open(os.path.join(dst, "latest_checkpoint.json"), "w"))
+    for f in ("progress.json", "config.json", "final.zip", "final_vecnormalize.pkl"):
+        if os.path.exists(os.path.join(src, f)):
             shutil.copy2(os.path.join(src, f), dst)
     for f in os.listdir(src):       # drop stale checkpoints from the cache
         if f.startswith("ckpt_") and os.path.getmtime(os.path.join(src, f)) < time.time() - 3 * 3600:

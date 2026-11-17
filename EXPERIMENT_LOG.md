@@ -50,6 +50,12 @@ just by the return. RL finds loopholes ("reward hacking"), so a high return can 
 | falls | about 0 % |
 | wall contacts | about 0 |
 
+Every checkpoint review also saves pictures and videos for the presentation:
+- contact sheets for all seeds
+- for the best seed, a walking video and a head-on wall video (mp4 and gif)
+
+They go in `docs/media/review_<steps>M_<date>/`, and PROGRESS_REPORT.md embeds them.
+
 Training writes these to `progress.json` in each run folder. Every 5M steps,
 `tools/push_progress.py` pushes them and the latest policy to `progress/` on GitHub.
 
@@ -112,6 +118,7 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
 - **Still to verify:** that trained policies turn away and keep walking.
 
 ### E6: Ring v1, PPO. FAILED (reward hack: sprinting and bounding)
+- **Media:** `docs/media/e6_ring_v1_sprinting/` (walk.gif / walk.mp4: the bounding gait)
 - **Date:** 2026-11-16
 - **Run:** Amarel job 63980991, 3 seeds. Archived on Amarel as
   `obstacle_course/runs_archive/ring_v1_sprinting_seed*`.

@@ -1,0 +1,100 @@
+{
+  "speed": 0.6174351671601186,
+  "trot_match": 0.9681,
+  "feet_down": 1.8836,
+  "body_contact_rate": 0.003,
+  "swing_lift_cm": 10.855810663294987,
+  "fall_rate": 0.0,
+  "track_error_m": 1.0272858964994405,
+  "speed_err": 0.017435167160118614,
+  "wall_pass_rate": 0.16666666666666666,
+  "wall_trials": [
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.002,
+      "metres_along_track": 0.02,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 1.005,
+      "metres_along_track": 0.03,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": -30,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.994,
+      "metres_along_track": 0.04,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": 60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.941,
+      "metres_along_track": 0.1,
+      "fell": false,
+      "passed": false
+    },
+    {
+      "offset_deg": -60,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.999,
+      "metres_along_track": 4.88,
+      "fell": false,
+      "passed": true
+    },
+    {
+      "offset_deg": 0,
+      "wall_touches": 0,
+      "steps_touching": 0,
+      "min_wall_dist": 0.996,
+      "metres_along_track": 0.05,
+      "fell": false,
+      "passed": false
+    }
+  ],
+  "goals": {
+    "speed_err": {
+      "value": 0.017,
+      "goal": "<= 0.15",
+      "passed": true
+    },
+    "trot_match": {
+      "value": 0.968,
+      "goal": ">= 0.75",
+      "passed": true
+    },
+    "feet_down": {
+      "value": 1.884,
+      "goal": "between (1.6, 2.6)",
+      "passed": true
+    },
+    "body_contact_rate": {
+      "value": 0.003,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "fall_rate": {
+      "value": 0.0,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "wall_pass_rate": {
+      "value": 0.167,
+      "goal": ">= 0.8",
+      "passed": false
+    }
+  },
+  "model": "runs/demo/r2_seed1.zip"
+}

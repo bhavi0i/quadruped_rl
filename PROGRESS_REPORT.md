@@ -9,6 +9,21 @@ diagonal trot at about 0.6 m/s with no shin, knee or belly scraping and no falls
 walls**: it stops before hitting them and turns enough to keep walking. After that it moves on
 to the obstacle course.
 
+**Media.** Every review saves contact sheets of frames for all seeds, plus a walking video and
+a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the best seed, in
+`docs/media/review_<steps>M_<date>/`. Hand-made media for earlier stages is in `docs/media/`:
+`world/`, `e6_ring_v1_sprinting/`, `report1/`, `report2/`.
+
+### The training world
+
+| Whole world: obstacle course (left) and training ring | Go1 robot dog |
+|---|---|
+| ![world overview](docs/media/world/overview.png) | ![Go1](docs/media/world/go1_closeup.png) |
+
+| Rubble and hurdles | Ramp and stairs | Slalom gates and goal |
+|---|---|---|
+| ![](docs/media/world/course_rubble_hurdles.png) | ![](docs/media/world/course_ramp_stairs.png) | ![](docs/media/world/course_slalom_goal.png) |
+
 **How each checkpoint is judged** (`obstacle_course/evaluate_policy.py`, deterministic policy):
 
 | Goal | Measure | Pass if |
@@ -46,6 +61,24 @@ to the obstacle course.
 | seed 0 | 10.7M (10M) | ✅ 0.60 m/s | ✅ 0.97 | ✅ 1.88 | ✅ 0.3 % | ✅ 0 % | ❌ 33 % | 5 of 6 goals |
 | seed 1 | 14.1M (14M) | ✅ 0.62 m/s | ✅ 0.97 | ✅ 1.88 | ✅ 0.3 % | ✅ 0 % | ❌ 17 % | 5 of 6 goals |
 | seed 2 | 14.3M (14M) | ✅ 0.60 m/s | ✅ 0.98 | ✅ 1.92 | ✅ 0.2 % | ✅ 0 % | 🟡 67 % | 5 of 6 goals, walls close |
+
+**Media** (best seed: seed 2, 14M steps; full-quality video:
+[walk.mp4](docs/media/report2/seed2/walk.mp4), [wall.mp4](docs/media/report2/seed2/wall.mp4))
+
+| Walking: natural trot at 0.6 m/s | Facing the wall head-on: stops, turns, walks away |
+|---|---|
+| ![seed 2 walking](docs/media/report2/seed2/walk.gif) | ![seed 2 wall](docs/media/report2/seed2/wall.gif) |
+
+Frame sequences (left to right, top to bottom):
+- seed 2 walking: ![](docs/media/report2/seed2/frames_walk.png)
+- seed 2 at the wall (turns around): ![](docs/media/report2/seed2/frames_wall.png)
+- seed 0 at the wall (stops but stays stuck): ![](docs/media/report2/seed0/frames_wall.png)
+
+**For comparison, the failed sprinting policy (E6, ring v1 at 7M steps):** it bounds at
+2.7 m/s with about 1.3 feet down and shins scraping. Video:
+[walk.mp4](docs/media/e6_ring_v1_sprinting/walk.mp4)
+
+![E6 sprinting](docs/media/e6_ring_v1_sprinting/walk.gif)
 
 **What changed since report 1**
 - No reward or setting changes. Training simply continued (no restarts, per the group decision).
@@ -91,8 +124,11 @@ to the obstacle course.
 | seed 1 | 5.3M | ✅ 0.55 m/s | ✅ 0.84 | ✅ 2.28 | ❌ 12 % | ✅ 0 % | ❌ 0 % | 4 of 6 goals |
 | seed 2 | 5.2M | ✅ 0.51 m/s | ✅ 0.87 | ✅ 2.09 | ❌ 11 % | ✅ 0 % | ❌ 17 % | 4 of 6 goals |
 
-Evidence: `progress/ppo_ring_seed*/eval/` holds `metrics.json`, `frames_walk.png` (walking) and
-`frames_wall.png` (facing a wall).
+**Media** (frames at 5M steps; no videos were recorded yet at this stage)
+
+| Seed 2 walking | Seed 2 facing a wall: stops, then trots in place |
+|---|---|
+| ![](docs/media/report1/seed2/frames_walk.png) | ![](docs/media/report1/seed2/frames_wall.png) |
 
 **What changed since the last run**
 - Fixed the sprinting reward hack from ring v1 (E6):
