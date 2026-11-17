@@ -494,6 +494,18 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Start levels:** C8 seed 1's {rubble 1, hurdles 1, ramp 0.85, stairs 0.55, slalom 1}.
 - **Infra:** `--difficulty` accepts JSON; the job script quotes `$DIFF` (the first launch failed
   on word-splitting).
+- **At about 186–191M:** ramp level 0.85 → 0.45–0.6. Benchmark 0.5: seed 2 0/6 (crest stalls). No
+  benefit yet.
+
+### METHOD FIX: Course evaluation at a fixed benchmark
+- At the curriculum frontier each section clears about 60 %, so a whole-course run succeeds about
+  8 % by design. Reviews now evaluate course runs at a fixed `COURSE_BENCH` (0.5) over 6 layouts.
+- **Ramp diagnosis:**
+  - C8 seed 1 clears 5/7/9/11° ramps 3/3 from the run-up, and 19/20 from off-centre or yawed
+    starts.
+  - Crest stalls were frontier/variance effects.
+- **C8 seed 1 at 193M on the benchmark:** goal 2/6 (39.6 s, 49.7 s); rubble stalls 3/6.
+  Milestone `progress/milestones/c8_seed1_193M_bench05_2of6/`.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

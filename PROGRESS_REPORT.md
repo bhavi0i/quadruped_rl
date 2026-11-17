@@ -74,6 +74,51 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 34: 2026-11-17, measuring right: a fixed benchmark shows C8 completes 2 of 6; the rubble is the reliability gap
+
+### Why course completions looked so rare
+The per-section curriculum keeps **each obstacle at the edge of ability**: it raises a section
+whenever its clear rate passes 60 %. Testing the course at the curriculum's current levels
+therefore means each of 5 sections passes about 60 % of the time, and the whole course about
+**0.6⁵ ≈ 8 %** *by design*. Those numbers were not comparable between reviews or runs.
+
+**Fix:** reviews now test the course at a **fixed benchmark: every obstacle at 0.5, across 6
+rubble layouts** (`COURSE_BENCH`, default 0.5). The final test will be at 1.0.
+
+### Ramp diagnosis (resolved)
+- C8 seed 1 (193M), ramp-only from the run-up: **clears 5°, 7°, 9° and 11° ramps 3/3 each**, better
+  than its parent (C3 seed 1 final: 3, 3, 2, 1 out of 3).
+- Off-centre starts (y = 0, ±0.4, ±0.8, −1.0 m, up to 20° yaw): **19 of 20 cleared**. Wall
+  proximity is not a factor.
+- So the earlier crest stalls on the full course were curriculum-frontier effects (the ramp kept
+  being pushed to its edge) plus run-to-run variance, not a missing skill.
+
+### Benchmark results (all obstacles 0.5, 6 layouts)
+
+| Policy | Goals | Furthest points | Where it stops |
+|---|---|---|---|
+| **C8 seed 1 (193M)** | **2 / 6 (39.6 s, 49.7 s)** | 23.2, 23.2, 4.4, 20.0, 4.4, 3.0 | rubble ×3, slalom ×1 |
+| C9 seed 2 (191M) | 0 / 6 | 4.7, 10.9 ×5 | ramp crest ×5 |
+
+C8 seed 1 completing the benchmark course in **39.6 s** (layout 0):
+![](progress/milestones/c8_seed1_193M_bench05_2of6/course.gif)
+Video: [course.mp4](progress/milestones/c8_seed1_193M_bench05_2of6/course.mp4). Saved as milestone [`progress/milestones/c8_seed1_193M_bench05_2of6/`](progress/milestones/c8_seed1_193M_bench05_2of6).
+
+- **C8 seed 1 is the current best.** Its reliability gap on a fair test is the **rubble field**
+  (stalls 3.0–4.4 m in), not the ramp.
+- **C9 (mid-ramp spawns) hasn't helped yet:** its ramp level fell 0.85 → 0.45–0.6, and its course
+  runs stop at the crest. It is about 9M steps in and still running.
+
+### Next
+- C8 finishes at 210M, C9 at 242M. Reviews now use the fixed 0.5 benchmark.
+- If C8's rubble stalls persist, the next targeted tweak is for the rubble (e.g. rubble-entrance
+  practice, or a check of foot clearance over blocks).
+
+Note: an earlier commit (57c5e0f) carried this report's title but not its text, because a failed
+file copy stopped the step that writes it. This entry restores it.
+
+---
+
 ## Report 33: 2026-11-17, ramp level won't settle → C9 (practise the crest directly)
 
 ### C8 at 165–182M
