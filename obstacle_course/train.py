@@ -36,7 +36,7 @@ def make_env(rank, args, difficulty):
         env = QuadrupedCourseEnv(difficulty=difficulty, random_start=True, injury=args.injury,
                                  course_seed=rank, robot=args.robot, arena=args.arena,
                                  target_speed=args.target_speed, reward_weights=args.reward_weights,
-                                 turn_practice=args.turn_practice)
+                                 turn_practice=args.turn_practice, ring_lookahead=args.ring_lookahead)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -119,6 +119,8 @@ def main():
                    help='override reward weights, e.g. \'{"turn_to_route": 1.0}\' (see EXPERIMENT_LOG)')
     p.add_argument("--turn-practice", type=float, default=0.25,
                    help="share of spawns facing a random direction (wall/turn practice)")
+    p.add_argument("--ring-lookahead", type=float, default=0.6,
+                   help="ring steering target, radians ahead on the track (E7/E8 0.6, E9 0.25)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
@@ -146,7 +148,13 @@ def main():
             VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
         venv.training = True
         model = PPO.load(src, env=venv, tensorboard_log=args.out, device=args.device)
-        print(f"{'Resuming from' if ckpt else 'Initialised from'} {src} ({model.num_timesteps:,} steps)")
+        # [FAILED E8] PPO.load restores the *saved* seed and ignores --seed, so every continuation
+        #   seed got identical randomness (E8 seeds 1 and 2 produced identical runs).
+        # [NEW] re-seed continuations so each --seed explores differently (resumes keep the RNG
+        #   behaviour of a fresh process anyway).
+        if not ckpt:
+            model.set_random_seed(args.seed)
+        print(f"{'Resuming from' if ckpt else 'Initialised from'} {src} ({model.num_timesteps:,} steps, seed {args.seed})")
     else:
         venv = VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
         model = PPO("MlpPolicy", venv, n_steps=args.n_steps, batch_size=4096, n_epochs=5,

@@ -8,6 +8,7 @@ Two tests (deterministic policy):
 
 1. Natural walking (ring): 5 episodes of 20 s from normal track spawns. Measures speed vs the
    0.6 m/s target, trot match (feet follow the diagonal-trot clock), mean feet on the ground,
+   posture (crab angle = body heading vs direction of travel, roll, pitch),
    share of steps with shins/knees/belly touching the ground, swing foot lift, falls and how
    far it stays from the track line.
 
@@ -41,6 +42,10 @@ GOALS = {  # what "walking naturally and handling walls" means, numerically
     "body_contact_rate": ("<=", 0.05),
     "fall_rate": ("<=", 0.05),
     "wall_pass_rate": (">=", 0.8),
+    # posture / natural look (added 2026-11-16 after the group saw a slanted, crabbing walk)
+    "crab_angle_deg": ("<=", 10.0),     # |angle between body heading and direction of travel|
+    "roll_deg": ("<=", 3.0),            # |mean sideways lean|
+    "pitch_deg": ("<=", 4.0),           # |mean nose-up/down tilt|
 }
 
 
@@ -84,6 +89,7 @@ def contact_sheet(frames, path, cols=4):
 def walk_test(model, norm, env, episodes=5, steps=1000):
     video = []
     speeds, trots, feet, body, lifts, falls, track_err = [], [], [], [], [], [], []
+    crabs, rolls, pitches, vlat = [], [], [], []
     frames = []
     for ep in range(episodes):
         env.random_start = True
@@ -95,6 +101,14 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
             swing = ~info["foot_contact"]
             if swing.any():
                 lifts.append(float(info["foot_lift"][swing].max()))
+            if t >= 100:                                   # posture once walking has settled
+                _, lv, _, g, yaw = env._body_frame()
+                rolls.append(np.degrees(np.arctan2(g[1], -g[2])))
+                pitches.append(np.degrees(np.arctan2(-g[0], -g[2])))
+                vlat.append(lv[1])
+                v = env.data.qvel[:2]
+                if np.linalg.norm(v) > 0.2:
+                    crabs.append(np.degrees((np.arctan2(v[1], v[0]) - yaw + np.pi) % (2 * np.pi) - np.pi))
             if env.arena == "ring":
                 xy = env.data.qpos[:2] - np.array(course.RING_CENTER)
                 track_err.append(abs(np.linalg.norm(xy) - course.RING_TRACK_RADIUS))
@@ -111,6 +125,10 @@ def walk_test(model, norm, env, episodes=5, steps=1000):
              fall_rate=float(np.mean(falls)),
              track_error_m=float(np.mean(track_err)) if track_err else None)
     m["speed_err"] = abs(m["speed"] - env.target_speed)
+    m.update(crab_angle_signed_deg=float(np.mean(crabs)) if crabs else 0.0,
+             crab_angle_deg=abs(float(np.mean(crabs))) if crabs else 0.0,
+             roll_deg=abs(float(np.mean(rolls))), pitch_deg=abs(float(np.mean(pitches))),
+             sideways_speed=float(np.mean(vlat)))
     return m, frames, video
 
 
@@ -205,6 +223,7 @@ def main():
     print(f"model: {a.model}")
     for k, g in metrics["goals"].items():
         print(f"  {'PASS' if g['passed'] else 'FAIL'}  {k:<18} {g['value']:>8}   goal {g['goal']}")
+    print(f"  crab {metrics['crab_angle_signed_deg']:+.1f} deg, sideways speed {metrics['sideways_speed']:+.2f} m/s")
     print(f"  swing lift {metrics['swing_lift_cm']:.1f} cm, speed {metrics['speed']:.2f} m/s, "
           f"track error {metrics['track_error_m']}")
     if "wall_trials" in metrics:

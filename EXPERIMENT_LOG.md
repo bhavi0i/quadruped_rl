@@ -200,6 +200,10 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     - Keep milestone snapshots.
 
 ### E8: Ring continuation with an explicit turn reward. RUNNING (Amarel job 63982746, from E7 seed 1 final, 40M → 60M)
+- **At 45M:**
+  - **Track error fell from 1.2 m to 0.1–0.3 m:** `track_following` WORKS.
+  - Walls 0–33 %, not improved yet.
+  - Walking still perfect.
 - **Why:** in E7 the wall turning is unstable. Turning is only rewarded indirectly (heading +0.5)
   and only practised in 25 % of episodes.
 - **Change** (one idea plus more practice of it):
@@ -236,6 +240,31 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
   if this is revisited.
 - **Decision:** keep 32-core CPU nodes (`amarel/ring_ppo.slurm`). Training takes about 75–90 min
   per 40M-step run.
+
+### E9: Natural posture (anti-crabbing) continuation. PLANNED (after E8 finishes)
+- **Date:** 2026-11-16
+- **Why:** the group saw the walk looked slanted and unnatural.
+- **Measured:** every E7 policy crabs about 30° (body turned away from the direction of travel,
+  0.4 m/s sideways), with pitch up to 5–6°. This was present from the first walking policies.
+- **Causes:**
+  - no reward term on body direction
+  - the ring steering target sits about 17° inward of travel, and the heading reward pulls the
+    body toward it
+  - the tilt penalty is too weak for small angles
+- **New standing goals** (in `evaluate_policy.py`): crab ≤ 10°, roll ≤ 3°, pitch ≤ 4°.
+- **Change:**
+  - `body_alignment` +1.5: exp(−crab² / (2 × 10°²))
+  - `lateral_velocity` −2.0: body-frame sideways speed²
+  - `orientation` −1 → −30
+  - `--ring-lookahead` 0.6 → 0.25 rad
+  - keeps the E8 changes
+- **How:** continue from the best E8 final policy (`amarel/ring_e9.slurm`), 3 seeds, to 80M.
+- **Also fixed before E9:** continuation runs ignored `--seed` (E8 seeds 1 and 2 identical).
+  `train.py` now re-seeds after loading.
+
+### Note on E8 (bug)
+E8 seeds 1 and 2 are identical runs: PPO.load restored the saved seed. E8 is effectively 2
+independent runs, not 3. It was left running (no-restart rule).
 
 ---
 

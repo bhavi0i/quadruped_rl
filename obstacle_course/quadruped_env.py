@@ -103,7 +103,9 @@ DEFAULT_REWARD_WEIGHTS = dict(
     # ---- punishments (things we don't want) ----
     lin_vel_z=-2.0,        # bouncing up and down
     ang_vel_xy=-0.05,      # rolling / pitching rates
-    orientation=-1.0,      # body tilt (projected gravity off vertical)
+    orientation=-1.0,      # [ORIGINAL] body tilt (projected gravity off vertical). Too weak to fix small
+                           #   leans: 5 deg costs ~0.008/s. E9 continuation raises it to -30 via
+                           #   --reward-weights (5 deg -> ~0.23/s).
     base_height=-10.0,     # crouching or rearing far from nominal height above local terrain
     torque=-2e-4,          # energy use
     joint_acc=-2.5e-7,     # jerky motion
@@ -119,6 +121,10 @@ DEFAULT_REWARD_WEIGHTS = dict(
     track_following=0.0,   # [E8, opt-in] ring only: exp(-(distance from the yellow line)^2 / 0.25).
                            #   E7 seeds 0/1 drifted to walk ~1.1-1.4 m outside the line because
                            #   nothing rewarded staying on it. 0 = off (E7); E8 sets 1.0.
+    body_alignment=0.0,    # [E9, opt-in] exp(-crab^2 / (2 * 10deg^2)): body points where it moves.
+                           #   E7 policies all crabbed ~30 deg (body turned away from the direction of
+                           #   travel, 0.4 m/s sideways) -> looked slanted/unnatural. 0 = off; E9 sets 1.5.
+    lateral_velocity=0.0,  # [E9, opt-in] body-frame sideways speed^2 (walking diagonally). E9 sets -2.0.
     # ---- one-off events ----
     checkpoint=10.0,       # bonus when the robot clears each course section (course only)
     goal=100.0,            # reaching the goal pad
@@ -138,7 +144,7 @@ class QuadrupedCourseEnv(gym.Env):
     def __init__(self, difficulty=0.0, random_start=True, target_speed=0.6,
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
-                 turn_practice=0.25):
+                 turn_practice=0.25, ring_lookahead=0.6):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -152,6 +158,11 @@ class QuadrupedCourseEnv(gym.Env):
         assert arena in ("course", "ring")
         self.arena = arena
         self.turn_practice = turn_practice   # share of spawns facing a random way (E7: 0.25, E8: 0.4)
+        # Ring steering target: a point this many radians ahead on the yellow circle.
+        # [E7/E8] 0.6 rad -> the target sits ~17 deg inward of the travel direction, so "face the
+        #   target" (heading reward) pulled the body to angle inward (part of the crab).
+        # [E9] 0.25 rad -> ~7 deg.
+        self.ring_lookahead = ring_lookahead
         self.difficulty = float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
@@ -275,7 +286,7 @@ class QuadrupedCourseEnv(gym.Env):
 
     def _next_waypoint(self, xy):
         if self.arena == "ring":            # carrot 0.6 rad ahead on the track circle (CCW)
-            a = self._ring_angle(xy) + 0.6
+            a = self._ring_angle(xy) + self.ring_lookahead
             return np.array(course.RING_CENTER) + course.RING_TRACK_RADIUS * np.array([np.cos(a), np.sin(a)])
         while self.wp_idx < len(WAYPOINTS) - 1 and xy[0] > WAYPOINTS[self.wp_idx][0] - 0.1:
             self.wp_idx += 1
@@ -497,6 +508,10 @@ class QuadrupedCourseEnv(gym.Env):
             "wall_proximity": float(np.sum(np.clip(0.4 - lidar, 0, None) / 0.4)),
             "turn_to_route": (float(np.clip(ang_vel[2] * np.sign(heading_err), -1, 1))
                               if abs(heading_err) > np.deg2rad(45) else 0.0),
+            "body_alignment": (float(np.exp(-(((np.arctan2(d.qvel[1], d.qvel[0]) - yaw + np.pi) % (2 * np.pi) - np.pi)
+                                              ** 2) / (2 * np.deg2rad(10) ** 2)))
+                               if np.linalg.norm(d.qvel[:2]) > 0.2 else 0.0),
+            "lateral_velocity": float(lin_vel[1] ** 2),
             "track_following": (float(np.exp(-(np.linalg.norm(pos[:2] - np.array(course.RING_CENTER))
                                                - course.RING_TRACK_RADIUS) ** 2 / 0.25))
                                 if self.arena == "ring" else 0.0),

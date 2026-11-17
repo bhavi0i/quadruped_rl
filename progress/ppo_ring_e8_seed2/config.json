@@ -1,0 +1,21 @@
+{
+  "arena": "ring",
+  "robot": "go1",
+  "steps": 60000000.0,
+  "envs": 30,
+  "difficulty": 0.0,
+  "target_speed": 0.6,
+  "injury": null,
+  "seed": 2,
+  "out": "runs/ring_e8_seed2",
+  "init_from": "runs/ring_seed1/final.zip",
+  "torch_threads": 2,
+  "reward_weights": {
+    "turn_to_route": 1.0,
+    "track_following": 1.0
+  },
+  "turn_practice": 0.4,
+  "device": "auto",
+  "n_steps": 1024,
+  "ckpt_freq": 1000000.0
+}

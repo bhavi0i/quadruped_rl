@@ -35,6 +35,16 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 | stable | falls | ≤ 5 % |
 | walls | wall test: start 1 m from the wall facing it (6 trials); pass = no prolonged contact and walks ≥ 1.5 m away | ≥ 80 % of trials |
 
+**Standing requirement: a natural look for a professional demo (added 2026-11-16).** Passing the
+gait numbers is not enough. The dog must *look* natural: body pointing where it walks, level,
+not leaning or crabbing. Every review now also measures:
+
+| Goal | Measure | Pass if |
+|---|---|---|
+| no crabbing | crab angle (body heading vs direction of travel) | ≤ 10° |
+| level body | roll (sideways lean) | ≤ 3° |
+| level body | pitch (nose up/down) | ≤ 4° |
+
 **Decision rules for unattended tweaking:**
 - **No restarts (2026-11-16, group decision).** Running jobs are never stopped or restarted
   from scratch. Reward or setting changes are applied after a run finishes, by **continuing
@@ -49,6 +59,77 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 - **Falls:** if falls rise above 10 % after 10M steps, investigate before changing anything.
 - **How changes are made:** one idea at a time. The old setting stays commented out in the
   code, failed runs are archived, and each change gets an entry in EXPERIMENT_LOG.md.
+
+---
+
+## Report 6: 2026-11-16, the dog walks "slanted": crabbing found and E9 prepared; E8 at 45M
+
+### What the group noticed
+Watching the milestone policy, the body looked constantly slanted, with an odd drift: not
+natural enough for a professional demonstration.
+
+### What it is: crabbing (measured)
+The dog walks diagonally. Its body is turned about **30° away from the direction it moves**,
+with 0.4 m/s of sideways speed, and its nose is pitched down about 5°.
+
+| Policy | Crab angle | Sideways speed | Roll | Pitch |
+|---|---|---|---|---|
+| E7 seed 1 at 6M (early) | −30° | −0.34 m/s | −0.9° | 0.0° |
+| milestone (E7 seed 0, 34M) | **−31°** | −0.40 m/s | −2.8° | +5.4° |
+| E7 seed 0 final (40M) | **−31°** | −0.40 m/s | 2.6° | 5.9° |
+| E7 seed 1 final (E8 start) | **−33°** | −0.42 m/s | −2.0° | +1.5° |
+
+It has been there since the earliest walking policies; we just never measured it. Against the new
+posture goals, the milestone fails crab (31° vs ≤ 10°) and pitch (5.4° vs ≤ 4°).
+
+**Why:**
+1. No reward term checks which way the body points. Speed is measured along the direction of
+   travel, so walking diagonally earns full reward. The heading term (+0.5) loses only about
+   0.07/s for a 30° crab.
+2. A design flaw in the ring steering target: it sits 0.6 rad ahead on the circle, about 17°
+   *inward* of the travel direction, and the heading reward asks the body to face it. That pulls
+   the body to angle inward.
+3. The tilt penalty is too weak for small angles (5° costs about 0.008/s).
+
+### Fix: E9 (continuation after E8, no restart)
+- `body_alignment` reward 1.5: highest when the body points where it moves (10° tolerance).
+- `lateral_velocity` penalty −2.0: no sideways or diagonal walking.
+- `orientation` penalty −1 → −30: 5° of lean now costs about 0.23/s.
+- Ring steering target 0.6 → 0.25 rad ahead: only about 7° inward.
+- Keeps E8's turn reward, line following and 40 % wall practice.
+
+A 30° crab now loses about 1.8 reward per second (of about 6.7 for a good trot).
+
+### E8 at 45M steps (5M into the continuation)
+
+| Run | Pace | Trot | Shin contact | Falls | Walls | Track error |
+|---|---|---|---|---|---|---|
+| E8 seed 0 (46M) | ✅ 0.62 | ✅ 1.00 | ✅ 0.1 % | ✅ 0 % | ❌ 0 % | ✅ **0.11 m** |
+| E8 seed 1 (45M) | ✅ 0.61 | ✅ 1.00 | ✅ 0.1 % | ✅ 0 % | ❌ 33 % | ✅ **0.27 m** |
+| E8 seed 2 (45M) | identical to seed 1 (see bug below) | | | | | |
+
+(The E8 evaluations ran just before the posture metrics were added, so crab, roll and pitch will
+appear from the next review.)
+
+- **Line-following works:** distance from the yellow line fell from 1.2 m to 0.1–0.3 m within 5M
+  steps.
+- **Walls:** no improvement yet (0–33 %). Too early to judge E8's turn reward.
+- **Bug found: E8 seeds 1 and 2 are the same run** (identical training stats). Continuations
+  restored the saved random seed and ignored `--seed`. Fixed for E9 (`set_random_seed` after
+  loading; verified that two seeds now train to different weights). E8 is left running
+  (no-restart rule) as effectively 2 runs.
+
+Media: E7 seed 0 final at 40M: [walk.gif](docs/media/review_39M_20261116_2143/ring_seed0/walk.gif) ·
+[wall.gif](docs/media/review_39M_20261116_2143/ring_seed0/wall.gif) · [walk.mp4](docs/media/review_39M_20261116_2143/ring_seed0/walk.mp4). The crab is visible:
+the body points to the inside of the ring while the dog travels along it.
+
+![](docs/media/review_39M_20261116_2143/ring_seed0/walk.gif)
+
+### Next
+- E8 finishes at 60M (about 30 min). Then **E9** continues from the best E8 policy:
+  `amarel/ring_e9.slurm`, 3 properly-seeded runs, to 80M.
+- E9 success: all gait goals **and** crab ≤ 10°, roll ≤ 3°, pitch ≤ 4°, walls ≥ 80 %, track
+  error ≤ 0.5 m.
 
 ---
 
