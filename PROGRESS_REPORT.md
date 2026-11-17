@@ -37,6 +37,50 @@ to the obstacle course.
 
 ---
 
+## Report 2: 2026-11-16, ring v2 (E7) at 10–14M steps
+
+**Status at a glance**
+
+| Run | Steps (eval ckpt) | Pace | Trot | Feet down | Shin contact | Falls | Walls | Overall |
+|---|---|---|---|---|---|---|---|---|
+| seed 0 | 10.7M (10M) | ✅ 0.60 m/s | ✅ 0.97 | ✅ 1.88 | ✅ 0.3 % | ✅ 0 % | ❌ 33 % | 5 of 6 goals |
+| seed 1 | 14.1M (14M) | ✅ 0.62 m/s | ✅ 0.97 | ✅ 1.88 | ✅ 0.3 % | ✅ 0 % | ❌ 17 % | 5 of 6 goals |
+| seed 2 | 14.3M (14M) | ✅ 0.60 m/s | ✅ 0.98 | ✅ 1.92 | ✅ 0.2 % | ✅ 0 % | 🟡 67 % | 5 of 6 goals, walls close |
+
+**What changed since report 1**
+- No reward or setting changes. Training simply continued (no restarts, per the group decision).
+- Tooling:
+  - `play.py` now plays policies at real time in a loop, for watching the gait.
+  - Checkpoint reviews now trigger when the slowest run passes a milestone.
+- Hardware decided: keep 32-core CPU nodes. 64 cores gave the same speed (EXPERIMENT_LOG H1).
+
+**What's working**
+- **Natural walking is solved for all 3 seeds:**
+  - pace within 0.02 m/s of the 0.6 m/s target
+  - trot match 0.97–0.98, about 1.9 feet down (a clean diagonal pair)
+  - shin contact down from 11–12 % to 0.2–0.3 %
+  - 9–11 cm foot lift and no falls
+- **Walls: "stop before the wall" is solved.** Across all 18 wall trials the dog never touched
+  the wall once. It always stops about 1 m short.
+- **Walls: "turn and keep going" is emerging on its own.** Seed 2 turns around from a head-on
+  start and trots away along the track in 4 of 6 trials (`progress/ppo_ring_seed2/eval/frames_wall.png`):
+  it faces the wall, turns in place for about 2 s, then walks off.
+
+**What's not working yet**
+- **Turning is still unreliable.** Seeds 0 and 1 often stand and trot in place when facing the
+  wall (33 % and 17 %). Each seed tends to turn only one way: seed 1 passed only the −60° trial,
+  and seed 0 only +30° and +60°. When the "easy" turn direction is the wrong one, it gets stuck.
+
+**Next**
+- Training continues to 40M steps (about 25 more minutes). Walls are improving without changes,
+  so no tweak yet.
+- At 40M, by the decision rules: if wall pass rate is < 50 % for the best seed, continue from
+  that policy with the "turn toward the route" reward (E8).
+- If the walls pass (seed 2 is close), next comes stage 2: the obstacle course, continuing from
+  the best ring policy.
+
+---
+
 ## Report 1: 2026-11-16, ring v2 (E7) at about 5M steps
 
 **Status at a glance**

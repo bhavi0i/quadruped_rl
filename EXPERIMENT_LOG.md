@@ -160,6 +160,12 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     but does not turn.
   - Seed 0 is behind (0.12 m/s).
   - Details: PROGRESS_REPORT.md, report 1.
+- **Result at 10–14M steps:** WORKS for natural walking on all 3 seeds.
+  - 0.60–0.62 m/s, trot match 0.97–0.98, shin contact 0.2–0.3 %, no falls.
+  - Walls: the dog never touches the wall (it stops about 1 m short). Turning away is emerging
+    without reward changes (seed 2: 67 %; seeds 0 and 1: 33 % and 17 %, each favouring one turn
+    direction).
+  - Details: PROGRESS_REPORT.md, report 2.
 
 ### H1: Hardware for RL training (CPU vs GPU on Amarel). DECIDED: keep 32 CPU cores
 - **Date:** 2026-11-16
