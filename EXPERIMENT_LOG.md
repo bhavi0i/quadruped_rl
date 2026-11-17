@@ -471,6 +471,11 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Fixes applied:** elliptic friction, terrain-relative tilt, section curriculum (start 0.3).
 - **Not applied:** C4's swing 0.10 and collision −4.
 - Ent 0.002, run-up spawns.
+- **At about 148–152M (8–12M in): WORKS.**
+  - Seed 0 levels: hurdles, ramp and slalom 1.0; rubble 0.75–0.85; stairs 0.5–0.55.
+  - From the start at those levels: goal 1/3 in 55.2 s.
+  - Milestone: `progress/milestones/c8_seed0_152M_full_ramp_hurdles_slalom/`.
+  - Remaining issues: rubble-entrance stalls, stairs height, shin contact about 72 %.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

@@ -141,7 +141,8 @@ def check_ppo_run(run, force=False):
     h = hist[-1]
     summary = (f"ppo {run} @ {steps / 1e6:.1f}M steps: {h['distance']:.1f} m/episode, "
                f"{h['speed']:.2f} m/s, falls {h['fall_rate']:.0%}, trot match {h['trot_match']:.2f}, "
-               f"difficulty {h['difficulty']:.1f}" + (" [FINISHED]" if finished else ""))
+               f"difficulty {h['difficulty'] if isinstance(h['difficulty'], dict) else format(h['difficulty'], '.1f')}"
+               + (" [FINISHED]" if finished else ""))
     json.dump({"milestone": milestone, "finished": finished, "steps": steps}, open(state_f, "w"))
     return summary
 

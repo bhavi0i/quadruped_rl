@@ -74,6 +74,52 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 30: 2026-11-17, 🏁 C8 crosses the course with FULL-SIZE hurdles, ramp and slalom
+
+### C8 per-section curriculum after about 8–12M steps (training)
+
+| | rubble | hurdles | ramp | stairs | slalom | goal rate (training) |
+|---|---|---|---|---|---|---|
+| **C8 seed 0** | 0.75 → 0.85 | **1.0** | **1.0 (15°)** | 0.50–0.55 | **1.0** | 29 % |
+| C8 seed 1 | 0.60 | **1.0** | 0.50 | 0.35 | 0.90 | 13 % |
+| C8 seed 2 | 0.55 | 0.80 | 0.85 | 0.55 | 0.95 | 28 % |
+| C7 (wrong parent) | 1.0 | 0.9–1.0 | **0.0–0.05** | **0.0–0.05** | 0.65–0.95 | 7–15 % |
+
+**The parent-branch finding is confirmed.** From C3 seed 1, the ramp went to full 15° within
+about 10M steps. From C3 seed 0 (C7), the curriculum had to lower the ramp all the way to 0.
+
+### Course from the start (C8 seed 0, 152M, at its own section levels)
+**Reached the goal in 55.2 s** with full 11 cm hurdles, the full 15° ramp and full slalom gates
+(rubble 0.85, stairs 0.55). In the evaluation's 3 runs: 1 goal, 1 fall in the slalom at 21.2 m,
+1 stall at the rubble entrance.
+
+![](progress/milestones/c8_seed0_152M_full_ramp_hurdles_slalom/course_goal.gif)
+
+Video: [course_goal.mp4](progress/milestones/c8_seed0_152M_full_ramp_hurdles_slalom/course_goal.mp4). Frames:
+![](progress/milestones/c8_seed0_152M_full_ramp_hurdles_slalom/course_goal_frames.png)
+
+Saved as milestone [`progress/milestones/c8_seed0_152M_full_ramp_hurdles_slalom/`](progress/milestones/c8_seed0_152M_full_ramp_hurdles_slalom) (policy, normalisation, its section difficulties, videos).
+
+### Still to fix
+- **Reliability:** 1 in 3 from the start. The rubble entrance stalls in some runs (C8 seed 2 at
+  2.4–2.6 m in all 3).
+- **Stairs** at 0.5–0.55 of full height; **rubble** at 0.55–0.85.
+- **Gait while crossing:** crab 4.9° (✅), but shin/knee contact about 72 %, so it scrapes the
+  obstacles.
+- All C1–C7 runs are superseded by C8. They keep running to completion under the no-restart rule.
+
+### Bug fixed
+The progress summary crashed on per-section difficulty (a dict). That's why C7/C8 were missing
+from one review. Fixed and re-reviewed.
+
+### Next
+- C8 keeps training. The curriculum should push stairs and rubble up.
+- Reviews test the full course from the start at the current levels.
+- After that: reliability (3/3), the course gait (shin contact), and a final test at full
+  difficulty everywhere.
+
+---
+
 ## Report 29: 2026-11-17, per-obstacle curriculum isolates the problem; the climbing skill was in the other branch → C8
 
 ### C7: what the per-section curriculum shows (about 4–6M steps in)
