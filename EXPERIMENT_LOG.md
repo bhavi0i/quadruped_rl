@@ -356,6 +356,12 @@ independent runs, not 3. It was left running (no-restart rule).
   reviews). **Walking stage COMPLETE.**
 
 ### C1: Stage 2, obstacle course (healthy robot). RUNNING (Amarel job 63985544, from milestone 4 at 66M → 126M)
+- **First review (67–68M, difficulty 0):**
+  - Clears rubble and hurdles (9.5 m) in most runs from the start (baseline 0.1 m).
+  - Stops at x ≈ 9.2–9.5 m, before the ramp: turns 45° and stands. Not touching a wall.
+  - Gait degraded on the course (roll/pitch 8–12°, shin contact 22–32 %).
+  - Distance per episode 3.4 m (< 5 m threshold), difficulty 0.
+  - Candidate tweak if it persists: pre-ramp and pre-stairs spawns.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

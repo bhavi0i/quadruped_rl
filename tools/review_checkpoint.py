@@ -30,7 +30,7 @@ PY = sys.executable
 
 def remote_status():
     out = pp.sh("ssh", "-o", "ConnectTimeout=20", pp.REMOTE,
-                "squeue -u bpa29 -h -o %j | grep -c ring; cd rl_quadruped/obstacle_course/runs 2>/dev/null && "
+                "squeue -u bpa29 -h -o %j | grep -cE 'ring|course'; cd rl_quadruped/obstacle_course/runs 2>/dev/null && "
                 "for d in */; do test -f $d/final.zip && continue; "   # only runs still training
                 "python3 -c \"import json,sys; h=json.load(open(sys.argv[1]))['history']; "
                 "print(sys.argv[1].split('/')[0], h[-1]['timesteps'] if h else 0)\" $d/progress.json 2>/dev/null; done",
@@ -118,7 +118,8 @@ def save_media(rows):
         return
     score = lambda r: (sum(g["passed"] for g in rows[r]["goals"].values()),
                        rows[r]["goals"].get("wall_pass_rate", {}).get("value", 0))
-    best = max(rows, key=score)
+    course_runs = [r for r in rows if r.startswith("course")]
+    best = max(course_runs or rows, key=score)   # stage 2: videos come from the course runs
     tag = f"review_{min(r['steps'] for r in rows.values()) // 1_000_000}M_{time.strftime('%Y%m%d_%H%M')}"
     out = os.path.join(ROOT, "docs", "media", tag)
     for run in rows:

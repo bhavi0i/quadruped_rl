@@ -1,0 +1,42 @@
+{
+ "arena": "course",
+ "difficulty": 0.0,
+ "history": [
+  {
+   "timesteps": 66405000,
+   "time": "2026-11-17 00:51",
+   "difficulty": 0.0,
+   "distance": 0.9456066257465672,
+   "fall_rate": 0.56,
+   "goal_rate": 0.0,
+   "sections_or_laps": 1.72,
+   "speed": 0.011811958082350171,
+   "trot_match": 0.6102241608637822,
+   "body_contact_rate": 0.23752966643194326
+  },
+  {
+   "timesteps": 66825180,
+   "time": "2026-11-17 00:52",
+   "difficulty": 0.0,
+   "distance": 1.6612641238172716,
+   "fall_rate": 0.46,
+   "goal_rate": 0.0,
+   "sections_or_laps": 1.875,
+   "speed": 0.0292502939276036,
+   "trot_match": 0.6445160407444429,
+   "body_contact_rate": 0.15962206673330478
+  },
+  {
+   "timesteps": 67296420,
+   "time": "2026-11-17 00:54",
+   "difficulty": 0.0,
+   "distance": 2.0396988298460923,
+   "fall_rate": 0.32,
+   "goal_rate": 0.0,
+   "sections_or_laps": 2.375,
+   "speed": 0.031423121491741084,
+   "trot_match": 0.6494509167303285,
+   "body_contact_rate": 0.1944126135302606
+  }
+ ]
+}

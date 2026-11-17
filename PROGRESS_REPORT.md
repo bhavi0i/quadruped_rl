@@ -74,6 +74,48 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 19: 2026-11-17, stage 2 first review: rubble and hurdles cleared; stops at the foot of the ramp
+
+Course from the start, difficulty 0 (1–2M steps into C1):
+
+| Run | Furthest point (3 runs) | Sections cleared | Goal | Falls (course runs) |
+|---|---|---|---|---|
+| C1 seed 0 (67M) | 9.49 / 7.55 / 9.49 m | rubble, hurdles | 0/3 | 1/3 |
+| C1 seed 1 (67M) | 7.41 / 9.49 / 9.50 m | rubble, hurdles | 0/3 | 1/3 |
+| C1 seed 2 (68M) | 9.49 / 9.49 / 9.48 m | rubble, hurdles | 0/3 | 1/3 |
+
+**Big step from the baseline:** before stage 2 the dog moved 0.1 m and fell. Now it trots through
+the rubble and over the hurdles (about 0.63 m/s) in most runs.
+
+| Before stage 2 (ring policy) | After 1–2M course steps |
+|---|---|
+| ![](docs/media/stage2_baseline_ring_policy_d0/course.gif) | ![](docs/media/review_67M_20261117_0100/course_c1_seed0/course.gif) |
+
+Full-run video: [course.mp4](docs/media/review_67M_20261117_0100/course_c1_seed0/course.mp4)
+
+**Where it gets stuck:** in every run it stops at x ≈ 9.2–9.5 m, just before the ramp (starts at
+9.6 m). It turns about 45° to the left and stands still until time runs out. It is not touching a
+wall (nearest 1.4 m). Traced step by step: speed drops from 0.65 to 0 m/s as the slope appears in
+its height scan, which it never saw in the ring.
+![](docs/media/review_67M_20261117_0100/course_c1_seed0/stuck_at_ramp.png)
+
+**Gait on the course has degraded** (expected this early): roll/pitch 8–12°, shin contact 22–32 %,
+speed in the random-section walking test about 0.01–0.07 m/s (mostly standing). Natural gait has
+to be won back on the course.
+
+**Training stats:** distance per episode 3.4–3.5 m, still below the 5 m curriculum threshold, so
+difficulty is still 0. 9–14 % of training episodes already reach the goal (those spawned at later
+sections).
+
+**Decision:** no reward change yet. It is only 1–2M steps in, and the ramp foot is a rare training
+moment (ramp-section spawns start *on* the slope). If the ramp is still a wall at the next review,
+the tweak is to add spawns just before the ramp (and before the stairs).
+
+**Tooling fixes:** the watcher now counts course jobs as running. Review videos now come from the
+course runs.
+
+---
+
 ## Report 18: 2026-11-17, ✅ final walking policy (milestone 4) + 🚀 STAGE 2 (obstacle course) launched
 
 ### Stability: all 6 runs pass all 12 goals (review at 65–69M)
