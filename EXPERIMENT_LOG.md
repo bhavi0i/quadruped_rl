@@ -187,8 +187,19 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     "wait" behaviour that keeps the dense trot and alive rewards beats it. E8 adds a direct
     turning payoff.
   - Details: PROGRESS_REPORT.md, report 4.
+- **Result at 34–40M steps:**
+  - **Seed 0 at 34M is the first all-goals policy.** Walls 83 %, turning both ways, never touching
+    the wall; walking perfect; track error 1.21 m. Saved to
+    .
+  - Seed 1 final (40M): walking perfect, walls 17 %, track error 1.17 m.
+  - Seed 2 final (40M): walking slipped (shin contact 10 %, 0.48 m/s); walls 17 %.
+  - **Status: WORKS for walking. Walls inconsistent across seeds and checkpoints.**
+  - Lessons:
+    - Wall skill drifts in and out without a direct reward.
+    - Long training can erode a good gait.
+    - Keep milestone snapshots.
 
-### E8: Ring continuation with an explicit turn reward. PLANNED (after E7 finishes)
+### E8: Ring continuation with an explicit turn reward. RUNNING (Amarel job 63982746, from E7 seed 1 final, 40M → 60M)
 - **Why:** in E7 the wall turning is unstable. Turning is only rewarded indirectly (heading +0.5)
   and only practised in 25 % of episodes.
 - **Change** (one idea plus more practice of it):

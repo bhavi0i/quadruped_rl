@@ -52,6 +52,68 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 
 ---
 
+## Report 5: 2026-11-16, E7 finished (seeds 1 and 2) + first all-goals policy + E8 launched
+
+### Milestone: first policy that meets every Phase 1 ring goal 🎉
+**E7 seed 0 at 34M steps** passes all six goals. It is saved as
+[](progress/milestones/e7_seed0_34M_all_six_goals)
+(policy + normalisation stats + metrics + videos).
+
+| Pace | Trot | Feet down | Shin contact | Falls | Walls | Track error |
+|---|---|---|---|---|---|---|
+| ✅ 0.59 m/s | ✅ 0.99 | ✅ 2.0 | ✅ 0.6 % | ✅ 0 % | ✅ **83 %** (5/6) | 1.21 m (not a goal) |
+
+Wall trials: head-on twice, +30°, −30° and +60° all passed. It turned away within about 1 s and
+walked 4.1–6.1 m along the ring, never touching the wall (closest 0.64 m). It turns **both ways**
+now. It failed only −60° (stuck, 0.35 m).
+
+| Walking | Facing the wall head-on: turns away and walks off |
+|---|---|
+| ![](docs/media/review_34M_20261116_2128/ring_seed0/walk.gif) | ![](docs/media/review_34M_20261116_2128/ring_seed0/wall.gif) |
+
+Videos: [walk.mp4](docs/media/review_34M_20261116_2128/ring_seed0/walk.mp4), [wall.mp4](docs/media/review_34M_20261116_2128/ring_seed0/wall.mp4).
+Frames: ![](docs/media/review_34M_20261116_2128/ring_seed0/frames_wall.png)
+
+Caveat: after turning, it walks alongside the outer wall instead of returning to the yellow
+line (track error 1.2 m).
+
+### E7 final results (40M steps)
+
+| Run | Pace | Trot | Shin contact | Falls | Walls | Track error | Note |
+|---|---|---|---|---|---|---|---|
+| seed 0 | (still training, 34M → 40M) | | | | | | milestone above |
+| seed 1 final | ✅ 0.59 | ✅ 1.00 | ✅ 0.1 % | ✅ 0 % | ❌ 17 % | 1.17 m | best walker, stuck at walls |
+| seed 2 final | ✅ 0.48 | ✅ 0.92 | ❌ 10 % | ✅ 0 % | ❌ 17 % | 0.45 m | walking slipped late in training |
+
+Media: , .
+
+**What this tells us**
+- The same reward gives very different wall behaviour per seed and per checkpoint. The skill
+  appears and disappears (seed 0: 33 → 17 → 17 → 83 %; seed 1: 17 → 67 → 0 → 17 %).
+  "Stop and wait at the wall" and "turn and go" earn similar reward in E7, so training drifts
+  between them. A direct turning reward should make "turn and go" clearly better: that is E8.
+- Long training can also erode walking (seed 2: shin contact 0.5 % → 10 % from 27M to 40M).
+  Keeping milestone snapshots matters.
+
+### What changed
+- **E8 launched** (Amarel job 63982746, 3 seeds, 40M → 60M steps). It continues from **E7
+  seed 1 final**, the best walker, which was stuck at walls and off the line:
+  -  reward 1.0
+  -  reward 1.0
+  - wall/turn-practice spawns 25 % → 40 %
+  - walking rewards unchanged
+- Fixed  continuations keeping the 40M step count (it would have restarted the
+  counter).
+
+### Next
+- Review E8 at each 5M milestone. Success: walls ≥ 80 % in both turn directions, track error
+  ≤ 0.5 m, and the walking goals still passing.
+- E7 seed 0 finishes 40M untouched.
+- Once a policy meets all goals including track error, move to **stage 2: the obstacle
+  course**, continuing from it.
+
+---
+
 ## Report 4: 2026-11-16, ring v2 (E7) at 21–27M steps
 
 **Status at a glance** (new column: track error = average distance from the yellow line)
