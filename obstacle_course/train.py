@@ -36,7 +36,8 @@ def make_env(rank, args, difficulty):
         env = QuadrupedCourseEnv(difficulty=difficulty, random_start=True, injury=args.injury,
                                  course_seed=rank, robot=args.robot, arena=args.arena,
                                  target_speed=args.target_speed, reward_weights=args.reward_weights,
-                                 turn_practice=args.turn_practice, ring_lookahead=args.ring_lookahead)
+                                 turn_practice=args.turn_practice, ring_lookahead=args.ring_lookahead,
+                                 wall_spawn=args.wall_spawn)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -121,6 +122,8 @@ def main():
                    help="share of spawns facing a random direction (wall/turn practice)")
     p.add_argument("--ring-lookahead", type=float, default=0.6,
                    help="ring steering target, radians ahead on the track (E7/E8 0.6, E9 0.25)")
+    p.add_argument("--wall-spawn", type=float, default=0.0,
+                   help="extra share of ring spawns 1 m from the wall facing it (E10: 0.3)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")

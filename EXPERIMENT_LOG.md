@@ -259,6 +259,8 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
     seed 1 83 → 100 %, seed 2 100 → 0 %. Seed 2 turns away, then stands still. The wall skill
     is still not stable across checkpoints (same as E7). Candidate E10: wall-test-like spawns
     plus a "keep moving" term.
+  - **At 46–50M:** walls 100 / 17 / 0 %, and seed 0 falls in 20 % of walking episodes. Posture
+    still holds. This triggered E10.
   - What worked:
     - the alignment reward plus the lateral-velocity penalty (anti-crab)
     - potential-based heading progress (no freezing)
@@ -289,6 +291,16 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
 ### Note on E8 (bug)
 E8 seeds 1 and 2 are identical runs: PPO.load restored the saved seed. E8 is effectively 2
 independent runs, not 3. It was left running (no-restart rule).
+
+### E10: Practise the exact wall situation. RUNNING (Amarel job 63983457, from milestone 2 at 39M → 59M)
+- **Date:** 2026-11-16
+- **Why:** E9 walls drifted. At 46–50M: seed 0 100 %, seed 1 17 %, seed 2 0 %.
+  - Trap: turning right at the wall leaves the dog facing backwards along the route, where it
+    stands still.
+  - The decision at the wall is rarely practised: turn-practice spawns face random directions.
+- **Change (one idea):** `--wall-spawn 0.5`, so about 30 % of all episodes start 0.8–1.2 m from
+  the ring wall, facing it within ±60°. All E9 rewards are unchanged.
+- **Success:** walls ≥ 80 % on all seeds at consecutive reviews (stable), all other goals passing.
 
 ---
 

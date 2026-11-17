@@ -148,7 +148,7 @@ class QuadrupedCourseEnv(gym.Env):
     def __init__(self, difficulty=0.0, random_start=True, target_speed=0.6,
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
-                 turn_practice=0.25, ring_lookahead=0.6):
+                 turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -167,6 +167,7 @@ class QuadrupedCourseEnv(gym.Env):
         #   target" (heading reward) pulled the body to angle inward (part of the crab).
         # [E9] 0.25 rad -> ~7 deg.
         self.ring_lookahead = ring_lookahead
+        self.wall_spawn = wall_spawn         # [E10] extra share of ring spawns facing the wall (0 = off)
         self.difficulty = float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
@@ -331,6 +332,14 @@ class QuadrupedCourseEnv(gym.Env):
                 r = self.np_random.uniform(course.RING_TRACK_RADIUS, course.RING_RADIUS - 0.5)
                 qpos[0] = course.RING_CENTER[0] + r * np.cos(a)
                 qpos[1] = course.RING_CENTER[1] + r * np.sin(a)
+            # [E10, opt-in] exact wall-test situation: 0.8-1.2 m from the wall, facing it +-60 deg.
+            #   E7/E9 wall skill drifted between checkpoints; most turn-practice spawns above are not
+            #   actually facing the wall, so the "turn left toward the route" decision was rare.
+            if self.random_start and not turn_practice and self.np_random.random() < self.wall_spawn:
+                r = course.RING_RADIUS - self.np_random.uniform(0.8, 1.2)
+                qpos[0] = course.RING_CENTER[0] + r * np.cos(a)
+                qpos[1] = course.RING_CENTER[1] + r * np.sin(a)
+                yaw = a + self.np_random.uniform(-np.pi / 3, np.pi / 3)   # a = facing the wall
             self.ring_theta, self.ring_last_a = 0.0, a
         qpos[3:7] = [np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)]
         qpos[self.qadr] = self.default_q + self.np_random.uniform(-0.1, 0.1, 12)

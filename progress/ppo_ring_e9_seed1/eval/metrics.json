@@ -1,52 +1,52 @@
 {
-  "speed": 0.6026756946890139,
-  "trot_match": 0.9852,
-  "feet_down": 1.9552,
-  "body_contact_rate": 0.0052,
-  "swing_lift_cm": 7.482905508102716,
+  "speed": 0.6084378459194992,
+  "trot_match": 0.98445,
+  "feet_down": 1.9566,
+  "body_contact_rate": 0.0024,
+  "swing_lift_cm": 7.313742735524438,
   "fall_rate": 0.0,
-  "track_error_m": 0.20438304993143455,
-  "speed_err": 0.0026756946890139632,
-  "crab_angle_signed_deg": -0.2795766438723898,
-  "crab_angle_deg": 0.2795766438723898,
-  "roll_deg": 0.1896249374334833,
-  "pitch_deg": 3.331029304716024,
-  "sideways_speed": -0.004118445640026619,
-  "wall_pass_rate": 1.0,
+  "track_error_m": 0.12628583255051654,
+  "speed_err": 0.008437845919499254,
+  "crab_angle_signed_deg": -0.5417038736080473,
+  "crab_angle_deg": 0.5417038736080473,
+  "roll_deg": 0.023521367109786126,
+  "pitch_deg": 1.2312732381606517,
+  "sideways_speed": -0.00615227121509031,
+  "wall_pass_rate": 0.16666666666666666,
   "wall_trials": [
     {
       "offset_deg": 0,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.951,
-      "metres_along_track": 5.09,
+      "min_wall_dist": 0.949,
+      "metres_along_track": 0.05,
       "fell": false,
-      "passed": true
+      "passed": false
     },
     {
       "offset_deg": 30,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.952,
-      "metres_along_track": 5.42,
+      "min_wall_dist": 0.893,
+      "metres_along_track": 0.03,
       "fell": false,
-      "passed": true
+      "passed": false
     },
     {
       "offset_deg": -30,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.787,
-      "metres_along_track": 4.03,
+      "min_wall_dist": 0.992,
+      "metres_along_track": 0.04,
       "fell": false,
-      "passed": true
+      "passed": false
     },
     {
       "offset_deg": 60,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.979,
-      "metres_along_track": 5.54,
+      "min_wall_dist": 0.909,
+      "metres_along_track": 5.35,
       "fell": false,
       "passed": true
     },
@@ -54,39 +54,39 @@
       "offset_deg": -60,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.735,
-      "metres_along_track": 2.52,
+      "min_wall_dist": 0.999,
+      "metres_along_track": 0.02,
       "fell": false,
-      "passed": true
+      "passed": false
     },
     {
       "offset_deg": 0,
       "wall_touches": 0,
       "steps_touching": 0,
-      "min_wall_dist": 0.86,
-      "metres_along_track": 4.34,
+      "min_wall_dist": 0.952,
+      "metres_along_track": 0.05,
       "fell": false,
-      "passed": true
+      "passed": false
     }
   ],
   "goals": {
     "speed_err": {
-      "value": 0.003,
+      "value": 0.008,
       "goal": "<= 0.15",
       "passed": true
     },
     "trot_match": {
-      "value": 0.985,
+      "value": 0.984,
       "goal": ">= 0.75",
       "passed": true
     },
     "feet_down": {
-      "value": 1.955,
+      "value": 1.957,
       "goal": "between (1.6, 2.6)",
       "passed": true
     },
     "body_contact_rate": {
-      "value": 0.005,
+      "value": 0.002,
       "goal": "<= 0.05",
       "passed": true
     },
@@ -96,25 +96,25 @@
       "passed": true
     },
     "wall_pass_rate": {
-      "value": 1.0,
+      "value": 0.167,
       "goal": ">= 0.8",
-      "passed": true
+      "passed": false
     },
     "crab_angle_deg": {
-      "value": 0.28,
+      "value": 0.542,
       "goal": "<= 10.0",
       "passed": true
     },
     "roll_deg": {
-      "value": 0.19,
+      "value": 0.024,
       "goal": "<= 3.0",
       "passed": true
     },
     "pitch_deg": {
-      "value": 3.331,
+      "value": 1.231,
       "goal": "<= 4.0",
       "passed": true
     }
   },
-  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_e9_seed1/ckpt_42999570_steps.zip"
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/ring_e9_seed1/ckpt_49999500_steps.zip"
 }

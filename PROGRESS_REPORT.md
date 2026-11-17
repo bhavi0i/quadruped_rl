@@ -62,6 +62,39 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 10: 2026-11-16, E9 walls regress on 2 seeds → E10 launched (practise the exact wall situation)
+
+| Run | Walls (39M → 43M → now) | Falls | Crab | Track error |
+|---|---|---|---|---|
+| E9 seed 0 (46M) | 100 → 67 → ✅ **100 %** | ❌ **20 %** (1 of 5 walking episodes) | ✅ 0.5° | 0.39 m |
+| E9 seed 1 (50M) | 83 → 100 → ❌ **17 %** | ✅ 0 % | ✅ 0.5° | 0.13 m |
+| E9 seed 2 (50M) | 100 → 0 → ❌ **0 %** | ✅ 0 % | ✅ 0.7° | 0.16 m |
+
+**Still working:** the posture fix holds on every seed (crab ≤ 0.7°).
+
+**Poor progress on walls → decision rule triggered** (2 seeds regressed).
+
+**Diagnosis: the "wrong-way" trap.** At the wall the route is 90° to the dog's *left*. If a
+policy turns *right* instead, it ends up facing backwards along the route. From there, turning
+either way scores the same, and walking backwards along the route earns nothing, so it stands
+still (seed 2's frames). Which way each seed turns flips between checkpoints because training
+rarely recreates that exact moment: most turn-practice spawns are *not* facing the wall.
+
+**Change: E10** (Amarel job 63983457, 3 seeds, from milestone 2 at 39M → 59M). One change:
+`--wall-spawn 0.5`, so about 30 % of all training episodes start exactly like the wall test
+(0.8–1.2 m from the wall, facing it within ±60°). Verified over 400 spawns: 33 %. All E9 rewards
+are unchanged.
+
+Also watching: seed 0's 20 % fall rate (new; the first falls since E6).
+
+Media (seed 0, 46M, walls 100 %): [wall.mp4](docs/media/review_46M_20261116_2226/ring_e9_seed0/wall.mp4)
+![](docs/media/review_46M_20261116_2226/ring_e9_seed0/wall.gif)
+
+**Next:** review E10 every 5M. Success = walls ≥ 80 % on all seeds **at consecutive reviews**
+(stability), plus all posture and walking goals. E9 finishes at 54M and is then closed out.
+
+---
+
 ## Report 9: 2026-11-16, E9 at 41–44M: posture fix holds; wall skill drifts between checkpoints again
 
 | Run | Walls (39M → now) | Crab | Pitch | Track error | Pace |
