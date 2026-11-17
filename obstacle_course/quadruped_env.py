@@ -166,7 +166,7 @@ class QuadrupedCourseEnv(gym.Env):
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
-                 spawn_offset=0.8, friction_model="pyramidal"):
+                 spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -191,6 +191,7 @@ class QuadrupedCourseEnv(gym.Env):
         self.max_steps = max_steps
         self.spawn_offset = spawn_offset     # course section spawns: section start + this (m)
         self.friction_model = friction_model # "pyramidal" (E1-E13, C1-C4: slippery) or "elliptic" (C5+)
+        self.terrain_relative = terrain_relative  # [C6] orientation penalty relative to ground slope
         self.difficulty = float(difficulty)
         self.random_start = random_start
         self.target_speed = target_speed
@@ -317,6 +318,16 @@ class QuadrupedCourseEnv(gym.Env):
         self.ring_theta += (a - self.ring_last_a + np.pi) % (2 * np.pi) - np.pi   # unwrap
         self.ring_last_a = a
         return float(self.ring_theta * course.RING_TRACK_RADIUS)
+
+    def _terrain_relative_tilt(self, pos, yaw, grav):
+        """Roll^2 + (pitch - ground pitch)^2, ground pitch from heights 0.3 m ahead / behind."""
+        c, s = np.cos(yaw), np.sin(yaw)
+        h_f = self._ground_height(pos[0] + 0.3 * c, pos[1] + 0.3 * s)
+        h_b = self._ground_height(pos[0] - 0.3 * c, pos[1] - 0.3 * s)
+        ground_pitch = np.arctan2(h_f - h_b, 0.6)              # + = uphill ahead
+        body_pitch = np.arctan2(-grav[0], -grav[2])            # + = nose up (checked on the 9 deg ramp)
+        roll = np.arctan2(grav[1], -grav[2])
+        return float(roll ** 2 + (body_pitch - ground_pitch) ** 2)
 
     def _lidar(self, pos, yaw):
         """Horizontal distances (m) from the torso to walls/obstacles, fanned left to right."""
@@ -564,7 +575,13 @@ class QuadrupedCourseEnv(gym.Env):
             "foot_clearance": clearance,
             "lin_vel_z": lin_vel[2] ** 2,
             "ang_vel_xy": float(np.sum(ang_vel[:2] ** 2)),
-            "orientation": float(np.sum(grav[:2] ** 2)),
+            # [ORIGINAL/E9] tilt relative to gravity. On slopes this forces the body horizontal: front
+            #   legs stretched, rear legs crouched, rear shins hitting the ramp, calf motors at 100 %
+            #   (C3-C5 stalled near the 9 deg ramp top).
+            # "orientation": float(np.sum(grav[:2] ** 2)),
+            # [C6, opt-in terrain_relative] tilt relative to the local ground slope along the heading
+            "orientation": (self._terrain_relative_tilt(pos, yaw, grav) if self.terrain_relative
+                            else float(np.sum(grav[:2] ** 2))),
             "base_height": (height - self.cfg["base_height"]) ** 2,
             "torque": float(np.sum(torque ** 2)),
             "joint_acc": float(np.sum(((qvel - self.last_qvel) / dt) ** 2)),

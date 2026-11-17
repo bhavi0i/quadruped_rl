@@ -39,7 +39,8 @@ def make_env(rank, args, difficulty):
                                  turn_practice=args.turn_practice, ring_lookahead=args.ring_lookahead,
                                  wall_spawn=args.wall_spawn, max_steps=args.max_steps,
                                  spawn_offset=args.spawn_offset, swing_height=args.swing_height,
-                                 friction_model=args.friction_model)
+                                 friction_model=args.friction_model,
+                                 terrain_relative=args.terrain_relative_tilt)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -140,6 +141,8 @@ def main():
                    help="target foot lift above local terrain (m); C4 course 0.10 to clear stair risers")
     p.add_argument("--friction-model", choices=["pyramidal", "elliptic"], default="pyramidal",
                    help="contact friction: pyramidal (E1-C4, slippery on slopes) or elliptic (Menagerie, C5+)")
+    p.add_argument("--terrain-relative-tilt", action="store_true",
+                   help="[C6] penalise body tilt relative to the ground slope, not gravity")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")

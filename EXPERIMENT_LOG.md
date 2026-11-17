@@ -427,6 +427,17 @@ independent runs, not 3. It was left running (no-restart rule).
 
 ### C5: Realistic friction. RUNNING (Amarel job 63987102, from C4 seed 1 at 124M → 190M)
 - **Changes:** `--friction-model elliptic`, curriculum starting at `DIFF=0.4`. Otherwise as C4.
+- **At 131–135M (about 7M in):** still stalls about 10.75 m (upper ramp). Shin contact 63–78 %,
+  crab 19–26°. Pitch only 1.5–2.6° on a 9° ramp: the body is held level.
+
+### C6: Terrain-relative body tilt. RUNNING (Amarel job 63987272, from C5 seed 1 at 135M → 195M)
+- **Cause:** E9's `orientation` penalty (−30) is relative to gravity. On slopes it forces a
+  horizontal body (front legs long, rear legs crouched), so rear shins hit the ramp and calf
+  motors saturate.
+- **Change (one idea):** `--terrain-relative-tilt`. Penalise roll² + (pitch − ground pitch)², with
+  the ground pitch from heights ±0.3 m along the heading. Verified 0 for "parallel to ground" on
+  up, flat and down slopes.
+- Everything else as C5.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

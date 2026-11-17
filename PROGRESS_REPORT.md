@@ -74,6 +74,40 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 27: 2026-11-17, real friction alone isn't enough → second flat-ground assumption fixed (C6)
+
+### C5 first review (realistic friction, difficulty 0.4, about 7M steps in)
+
+| Run | Furthest point | Crab | Shin contact | Roll / pitch |
+|---|---|---|---|---|
+| C5 seed 0 (132M) | 10.7 / 4.6 (fell) m | 21° | 78 % | 0.4° / 1.5° |
+| C5 seed 1 (135M) | 10.75 / 10.75 m | 19° | 63 % | 0.6° / 2.5° |
+| C5 seed 2 (131M) | 3.1 / 8.9 m | 26° | 64 % | 2.1° / 2.6° |
+
+Still stalls just below the ramp top (about 10.75 m), even with real grip. So slipping was not the
+whole story.
+
+### Second cause: the posture penalty assumed flat ground
+E9's `orientation` penalty (weight −30) punishes any body tilt **relative to gravity**. On the 9°
+ramp a real dog's body follows the slope, but ours is forced to stay **horizontal**: front legs
+stretched, rear legs crouched. That matches what the traces showed: calf motors at 100 % of their
+force limit and rear shins scraping the ramp (63–78 % shin contact), stalling where the slope is
+steepest. The very low pitch numbers (1.5–2.6° on a 9° ramp) show how strongly it holds the body
+level.
+
+### Change: C6 (Amarel job 63987272, 3 seeds, from C5 seed 1 at 135M → 195M, no restart)
+- **`--terrain-relative-tilt`**: body roll and pitch are penalised relative to the **local ground
+  slope** along the heading (heights 0.3 m ahead and behind), not gravity.
+- Verified: body parallel to the ground scores 0 on the up-ramp, flat ground and the down-ramp.
+  A level body on the 9° ramp is now the penalised pose.
+- Flat-ground behaviour is unchanged (the ground pitch is 0).
+- Everything else as C5: real friction, 10 cm foot lift, collision −4, entropy 0.002, difficulty
+  0.4, run-up spawns. The old gravity-relative line is kept commented with the reason.
+
+C1–C4 (slippery physics) keep running to completion. C3 has finished.
+
+---
+
 ## Report 26: 2026-11-17, 🐞 physics bug found: the ramp was nearly frictionless → C5 with realistic friction
 
 ### What the reviews showed
