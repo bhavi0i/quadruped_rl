@@ -621,6 +621,16 @@ independent runs, not 3. It was left running (no-restart rule).
   - Benchmark 0.5: 4/6, 2/6, 4/6.
   - **Stall fix CONFIRMED in training.** Validation job 63994608 (`amarel/validate.slurm`,
     0.5/0.75/1.0 × 12 layouts).
+- **Validation (job 63994608, 12 layouts):**
+  - Seed 0 222M: **11/12 · 9/12 · 7/12** at 0.5 · 0.75 · 1.0.
+  - Seed 1 226M: 8 · 7 · **9/12**. Seed 2 228M: 10 · 9 · 7.
+  - **First full-difficulty crossings of the project. SUCCESS.**
+  - New stage-2 milestone: `progress/milestones/STAGE2b_c14_seed0_222M_full_course_7of12/`.
+  - Remaining full-difficulty failures, all checkpoints: stairs 53, rubble 51, slalom 25,
+    hurdles 19, ramp 9.
+  - Gait on the course: trot 0.71, contact 0.50, fore-aft 11 cm. A quality pass is needed.
+  - Lesson: **a reward paid at zero speed creates a stall attractor.** One diagnosis
+    (`tools/stall_diagnosis.py`) beat ~100M steps of curriculum and spawn tweaks (C8–C13).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

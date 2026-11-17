@@ -74,6 +74,56 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 47: 2026-11-17, 🏁 first crossings of the FULL-difficulty course (C14 validation)
+
+Validation job 63994608: 20 C14 checkpoints × 3 difficulties × 12 layouts.
+
+| Policy | 0.5 | 0.75 | **1.0 (full)** |
+|---|---|---|---|
+| **C14 seed 0 at 222M (new stage-2 policy)** | **11 / 12** | **9 / 12** | **7 / 12** |
+| C14 seed 2 at 228M | 10 / 12 | 9 / 12 | 7 / 12 |
+| C14 seed 1 at 226M | 8 / 12 | 7 / 12 | **9 / 12** |
+| C14 seed 0 at 220M | 10 / 12 | 10 / 12 | 3 / 12 |
+| *previous stage-2 policy (C11 seed 2 at 214M)* | *9 / 12* | *1 / 12* | *0 / 12* |
+| *best C13 (terrain-aware lift only)* | *5 / 12* | *1 / 12* | *0 / 12* |
+
+- **Working:**
+  - Before C14, no policy crossed the full course: 15° ramp, 9 cm stairs, 11 cm hurdles,
+    full rubble and slalom. Now **every C14 seed does**, within 6–14M steps of the stall fix
+    (report 45).
+  - Crossings take 28–45 s (C13: 34–58 s).
+- **Milestone:** [`progress/milestones/STAGE2b_c14_seed0_222M_full_course_7of12/`](progress/milestones/STAGE2b_c14_seed0_222M_full_course_7of12).
+  - Policy, config, the 0.5 benchmark evaluation (`bench05/`) and a full-difficulty
+    evaluation (`full_difficulty/`).
+  - **Full-difficulty crossing video** (layout 4, goal in 41.4 s, made with
+    `tools/record_course.py`):
+
+![](progress/milestones/STAGE2b_c14_seed0_222M_full_course_7of12/full_difficulty/crossing_layout4.gif)
+
+- **Not working yet:**
+  - At full difficulty the remaining failures, over all C14 checkpoints, are stairs 53,
+    rubble 51, slalom 25, hurdles 19 and ramp 9. The ramp is essentially solved; the stairs
+    and the full rubble are next.
+  - **Gait quality on the course slipped** (full-difficulty evaluation of the new policy):
+
+    | Goal | Value | Target |
+    |---|---|---|
+    | trot match | 0.71 | ≥ 0.75 |
+    | knee/shin contact rate | 0.50 | |
+    | stance fore-aft spread | 11 cm | ≤ 8 cm |
+    | swing-height spread between legs | 0.41 | ≤ 0.2 |
+
+    Posture is still good: crab 5°, roll 2.2°, pitch 0.8°, feet under the hips (3.5 cm).
+  - Training falls are 38–49 %.
+- **Next:**
+  1. Let C14 keep training (to 274M) and re-validate.
+  2. Then a quality pass continuing from this milestone: restore the trot (≥ 0.75) and cut
+     knee/shin contact without bringing back the stall. For example, a stronger collision
+     penalty only while moving, now that standing still earns nothing.
+  3. After that, Phase 1's last item: the injured-leg baseline on this policy.
+
+---
+
 ## Report 46: 2026-11-17, C14 (no reward for trotting in place): training reaches full difficulty within 10M steps
 
 **Training curriculum** (per-section difficulty, 100-attempt clear rates):
