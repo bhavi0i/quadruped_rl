@@ -171,7 +171,8 @@ class QuadrupedCourseEnv(gym.Env):
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
                  spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False,
-                 ramp_spawn=0.0, section_weights=None, terrain_aware_swing=False):
+                 ramp_spawn=0.0, section_weights=None, terrain_aware_swing=False,
+                 motion_gate=0.0):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -200,6 +201,13 @@ class QuadrupedCourseEnv(gym.Env):
         self.ramp_spawn = ramp_spawn         # [C9] share of course spawns placed partway up the ramp
         self.section_weights = dict(section_weights or {})  # [C10] relative spawn weight per section
         self.terrain_aware_swing = terrain_aware_swing      # [C13] swing lift measured vs the step ahead
+        # [C14] gait rewards paid in proportion to forward speed. 0 = off (E1-C13). With x > 0 the
+        #   trot / foot-lift / step-shape / air-time / heading rewards are scaled by
+        #   clip(v_fwd / (x * target_speed), 0, 1). Found 2026-11-17: the stage-2 policy stalls
+        #   on the 15 deg ramp trotting in place, and that stall earns MORE per step (+0.053)
+        #   than walking over rough ground (+0.013), because these rewards were paid even at
+        #   zero speed. Stopping in front of any hard obstacle was a stable local optimum.
+        self.motion_gate = motion_gate
         # a number (all sections alike) or a dict per course section (C7 section curriculum)
         self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
         self.random_start = random_start
@@ -680,6 +688,10 @@ class QuadrupedCourseEnv(gym.Env):
                                 if self.arena == "ring" else 0.0),
             "checkpoint": 0.0, "goal": 0.0, "fall": 0.0,
         }
+        if self.motion_gate:                         # [C14] no gait reward for trotting in place
+            g = float(np.clip(v_fwd / (self.motion_gate * self.target_speed), 0.0, 1.0))
+            for k in ("trot", "foot_clearance", "swing_shape", "feet_air_time", "heading"):
+                terms[k] *= g
         self.max_x = max(self.max_x, s)
         self.last_heading_err = heading_err
 

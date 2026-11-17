@@ -74,6 +74,65 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 45: 2026-11-17, validation corrects reports 42 and 44; root cause of the stalls found; C14 launched
+
+### 1. Validation of C13 (Amarel job 63992889, 12 layouts per difficulty)
+
+| C13 seed 0 checkpoint | 0.5 | 0.75 | 1.0 (full) |
+|---|---|---|---|
+| best (237, 245, 246, 249M) | **5 / 12** | 0 / 12 | 0 / 12 |
+| 240–242M, 256M | 2–3 / 12 | 1 / 12 | 0 / 12 |
+| 253M (the "5/6" of report 44) | 3 / 12 | 0 / 12 | 0 / 12 |
+| *stage-2 milestone, C11 seed 2 at 214M (report 39)* | ***9 / 12*** | *1 / 12* | *0 / 12* |
+
+- **Correction:** the 4/6 and 5/6 in reports 42 and 44 did not hold up. The 6-layout sweep
+  gives the same checkpoints 2/6, and validation gives 3–5 of 12. Results swing a lot with
+  start conditions, so only multi-layout validation counts.
+  - Likely cause: the review evaluates the course right after the gait and wall tests in the
+    same environment.
+- **The stage-2 policy stays `progress/milestones/STAGE2_c11_seed2_214M_bench05_9of12/`.**
+  - Terrain-aware lift (C13) did not beat it. Full sweep: `progress/sweeps/sweep_c13.json`.
+- **Full difficulty** is 0/12 for every policy. At 1.0 the robot stops at 9–11 m, on the 15° ramp.
+
+### 2. Root cause: trotting in place pays better than climbing
+
+Trace of the stage-2 policy at full difficulty (layout 0):
+- It walks onto the ramp and stops at x ≈ 10.75 m, halfway up.
+- It then trots in place for 40 s: trot match 0.93, forward speed about 0. It is not
+  slipping.
+- It is not short of torque: 4 % of actuators at their limit, peak 22 of 23.7 Nm.
+
+Per-step reward from `tools/stall_diagnosis.py` (weighted terms per second):
+
+| | walking (rough start) | stalled on the ramp |
+|---|---|---|
+| **total** | **+0.013** | **+0.053** |
+| trot (gait clock) | +1.37 | **+1.84** |
+| heading | +0.20 | +0.48 |
+| foot clearance + step shape | +0.45 | +0.61 |
+| progress + speed tracking | +1.19 | +0.14 |
+| orientation + collisions | −1.60 | −0.14 |
+
+The trot, foot-lift, step-shape, air-time and heading rewards were paid even at zero speed. So
+whenever the terrain got hard (ramp crest, first stair, rubble), **stopping and trotting in place
+paid more than pushing on**. This explains the plateau since C8 and the stalls in every review
+(x ≈ 15.15 at the stairs, x ≈ 10.8 on the ramp, x ≈ 3–5 m in rubble).
+
+### 3. C14 (Amarel job 63993445, 3 seeds, from the stage-2 milestone at 214M → 274M)
+
+- **`--motion-gate 0.5`:** those five gait rewards are multiplied by
+  `clip(v_fwd / (0.5 × target_speed), 0, 1)`. Full credit from 0.3 m/s; nothing for trotting
+  in place.
+- **`progress` 2 → 4:** with the gate alone, the stall still paid +0.007 vs +0.003 for
+  walking over rubble. Progress is capped at the target speed, so the old sprint hack is not
+  possible.
+- **Unchanged:** everything else as C13 (terrain-aware lift, lr 1e-4, stairs/rubble practice
+  weights, elliptic friction).
+- **Watch at reviews:** the stall rate, falls (pushing on may mean more falls), and that the
+  gait stays a clean trot.
+
+---
+
 ## Report 44: 2026-11-17, C13 seed 0 at 253M: 5 of 6 on the benchmark, the stairs cleared every time
 
 Benchmark 0.5, 6 layouts:

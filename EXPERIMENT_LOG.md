@@ -590,6 +590,29 @@ independent runs, not 3. It was left running (no-restart rule).
   - Milestone: `progress/milestones/c13_seed0_253M_bench05_5of6/`.
   - Validation at 0.5/0.75/1.0 (12 layouts) and a full C13 sweep:
     `amarel/validate_c13.slurm`, job 63992889.
+- **Validation result (12 layouts):**
+  - Best 5/12 at 0.5, ≤ 1/12 at 0.75, 0/12 at 1.0. The 253M "5/6" scored 3/12.
+  - **FAILED to beat the stage-2 milestone (9/12).**
+  - Single 6-layout reviews are too noisy to pick policies; use validation.
+
+### C14: Motion-gated gait rewards + double progress. RUNNING (Amarel job 63993445, from the stage-2 milestone C11 seed 2 at 214M → 274M)
+- **Why (diagnosis, `tools/stall_diagnosis.py`):** at full difficulty the policy trots in place
+  halfway up the 15° ramp. That earns +0.053/step vs +0.013/step for walking over rough
+  ground.
+  - trot, heading, foot_clearance, swing_shape and feet_air_time were paid at zero speed.
+  - Orientation and collision costs only apply when moving.
+  - Not slipping, not torque-limited (4 % saturation).
+  - Stalling at any hard obstacle was a stable local optimum. This explains the plateau since
+    C8.
+- **Change:**
+  - `--motion-gate 0.5`: the five gait terms are scaled by
+    `clip(v_fwd / (0.5·target_speed), 0, 1)`.
+  - `progress` 2 → 4 (still capped at target speed). With the gate alone the stall still paid
+    +0.007 vs +0.003 walking.
+- **Unchanged:** as C13 (terrain-aware swing, lr 1e-4, section weights stairs 3 / rubble 2,
+  ent_coef 0.002, start difficulty ramp 0.85 / stairs 0.65 / others 1.0).
+- **Success test:** validation (12 layouts) beats 9/12 at 0.5, and > 0/12 at 0.75 and 1.0,
+  with the trot and posture goals intact.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
