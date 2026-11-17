@@ -659,6 +659,28 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Success test:**
   - validation at 1.0 > 7/12, fewer rubble failures
   - trot ≥ 0.75, fore-aft ≤ 8 cm, shin contact ≤ 0.05
+
+### C16: Course-adaptive reward (group request). RUNNING (Amarel job 63995822, from STAGE2b milestone C14 seed 0 at 222M → 282M)
+- **Why:**
+  - Group feedback: the crossing looks aimless.
+  - `tools/path_audit.py` on the stage-2 policy at 1.0: rubble 30.7 s/run with 70 % hesitation,
+    32 % backing up and a path 3.3× the forward distance.
+  - Hurdles and stairs: about a third hesitating, a fifth backing up.
+  - Hind-knee bend −80 to −84° on every section (no adaptation).
+  - Friction ruled out: μ 0.8/1.0, elliptic; no sliding in the ramp trace.
+- **Changes (a package, by group decision; C15 = graze-only control):**
+  - `--obstacle-style 0.25`: trot, swing_shape, swing_overshoot, foot_placement, hip_abduction,
+    base_height, lin_vel_z and ang_vel_xy at ¼ weight for 2.2 ≤ x < 18.7.
+  - `alive` −0.5 (time cost).
+  - New `backward` term −2.0.
+  - `feet_stumble` −3, `wall_proximity` −2.
+  - `--foot-graze-radius 0.04`.
+  - Section weights rubble 3 / stairs 3 / hurdles 2; ent_coef 0.003.
+  - Curriculum from 1.0.
+- **Success test:**
+  - path audit: rubble < 10 s; hesitation and backing < 15 % per section; path ratio < 1.3;
+    hind-knee adaptation
+  - validation at 1.0 ≥ 7/12; shin contact ≤ 0.05; trot ≥ 0.75 on flat sections
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

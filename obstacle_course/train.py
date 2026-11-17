@@ -44,7 +44,8 @@ def make_env(rank, args, difficulty):
                                  ramp_spawn=args.ramp_spawn, section_weights=args.section_weights,
                                  terrain_aware_swing=args.terrain_aware_swing,
                                  motion_gate=args.motion_gate,
-                                 foot_graze_radius=args.foot_graze_radius)
+                                 foot_graze_radius=args.foot_graze_radius,
+                                 obstacle_style=args.obstacle_style)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -195,6 +196,8 @@ def main():
                    help="[C14] scale gait rewards by clip(v_fwd / (x * target_speed), 0, 1); 0 = off")
     p.add_argument("--foot-graze-radius", type=float, default=0.0,
                    help="[C15] calf contacts within this distance of a foot are not collisions (0 = off)")
+    p.add_argument("--obstacle-style", type=float, default=1.0,
+                   help="[C16] scale of flat-ground gait-style terms on obstacle sections (1 = off)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")

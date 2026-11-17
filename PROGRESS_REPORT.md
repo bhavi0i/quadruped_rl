@@ -74,6 +74,86 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 49: 2026-11-17, group review: the crossing works but looks aimless; course-adaptive reward (C16)
+
+**Group feedback (on the full-course crossing in the viewer):**
+- The robot "walks aimlessly, taking random steps" until it gets through.
+- It should cross in an organic, near-optimal way, with different walks for different parts of
+  the course:
+  - crouch the hind legs on the stairs
+  - push with the hind legs up the ramp instead of keeping the 4-leg trot
+  - step or jump cleanly over the red hurdles instead of stumbling
+  - adjust step length to the terrain
+  - steer away from walls with the sensors before touching them
+- Fix slipperiness if that is a cause.
+
+### 1. Measured (`tools/path_audit.py`, stage-2 policy, full difficulty, 6 layouts)
+
+| Section | time / run | hesitating (< 0.1 m/s) | backing up | path ÷ forward distance | stride (variation) | hind-knee bend |
+|---|---|---|---|---|---|---|
+| start (flat) | 1.7 s | 0 % | 0 % | 1.02 | 28 cm (0.63) | −80° |
+| **rubble** | **30.7 s** | **70 %** | **32 %** | **3.29** | 11 cm (0.93) | −83° |
+| hurdles | 5.3 s | 32 % | 22 % | 1.42 | 16 cm (0.85) | −84° |
+| ramp | 3.6 s | 0 % | 0 % | 1.03 | 26 cm (0.59) | −82° |
+| stairs | 6.6 s | 36 % | 21 % | 1.37 | 17 cm (0.88) | −80° |
+| slalom | 4.5 s | 12 % | 4 % | 1.60 | 24 cm (0.69) | −80° |
+
+- **The group's impression is right.**
+  - Half of each run is spent shuffling back and forth in the rubble.
+  - The robot hesitates or backs up on the hurdles and stairs.
+  - The leg posture is the same on every section: no crouch on the stairs, no hind-leg push
+    on the ramp.
+- **Slipperiness is not the cause:**
+  - Contacts use the Menagerie friction model (elliptic, impratio 100) with feet μ 0.8 and
+    terrain μ 1.0, fixed in C5 when slipping was a real problem.
+  - The ramp trace in report 45 showed no sliding back.
+- **Walls:** touches are already rare on the course (≤ 0.1 % of steps). The closest approach
+  is 0.19 m in the slalom.
+
+### 2. Why: the rewards were written for flat-ground walking in the ring
+
+| Term | What it enforces on obstacles |
+|---|---|
+| `trot` clock | one diagonal-trot rhythm |
+| `foot_placement`, `hip_abduction` | feet under the hips |
+| `base_height` | constant body height above the terrain |
+| `swing_shape` | equal step heights |
+| `lin_vel_z`, `ang_vel_xy` | no vertical or pitching motion |
+
+These terms forbid exactly the movements the obstacles need. Two more problems:
+- Reversing was free: progress counts only new ground.
+- Time had no cost: a small *positive* per-step bonus.
+
+### 3. C16: course-adaptive reward (Amarel job 63995822, 3 seeds, from the stage-2 milestone at 222M → 282M)
+
+| Change | Purpose |
+|---|---|
+| `--obstacle-style 0.25`: the style terms above at ¼ weight between the rubble start (2.2 m) and the slalom start (18.7 m); full weight on flat ground | different walks per section (crouch, push, high/uneven steps, hops) while the start, slalom and finish keep the natural trot |
+| `alive` +0.5 → **−0.5** (a time cost) | finish quickly and directly ("optimal"); the fall penalty (−50) stays far larger than the maximum time cost (−30) |
+| new `backward` −2 × reverse speed | no shuffling back and forth |
+| `feet_stumble` −1 → −3 | lift the feet over hurdle tops and stair edges instead of stubbing them |
+| `wall_proximity` −1 → −2 | steer away from walls earlier using the lidar |
+| `--foot-graze-radius 0.04` (as C15) | stop charging for the calf-next-to-foot artifact (report 48) |
+| practice weights: rubble 3, stairs 3, hurdles 2; ent_coef 0.003 | more practice where it hesitates; a little more exploration for new gaits |
+
+**C15 (graze fix only) runs alongside as the control.**
+
+**Success test** (path audit + 12-layout validation):
+- rubble time < 10 s, with hesitation and backing up < 15 % on every section
+- path ratio < 1.3
+- hind-knee bend changes on the stairs and ramp
+- shin contact ≤ 0.05
+- full-difficulty goals ≥ 7/12
+- trot ≥ 0.75 on flat sections
+
+### 4. Compute and records
+- **Compute:** all training is on Amarel's `main` CPU partition, 32 cores per run, no GPU
+  (checked with squeue: GRES null).
+- **Records:** every change so far is pushed: 67 commits since 2026-11-16, 0 unpushed,
+  reports 1–49, 29 experiment entries, 14 milestones, 55 media folders.
+
+---
+
 ## Report 48: 2026-11-17, C14 keeps improving at full difficulty; "shin contact" was mostly a model artifact; C15 launched
 
 ### 1. C14 at 230–240M

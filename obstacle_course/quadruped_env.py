@@ -143,6 +143,9 @@ DEFAULT_REWARD_WEIGHTS = dict(
                            #   the old foot_clearance only asks for >= 8 cm). E11 sets 1.0.
                            #   [LIMIT found in E12] the bell curve is ~0 once a foot is > 6 cm off, so
                            #   it gives no pull on a leg lifting 14-15 cm (FR) -> see swing_overshoot.
+    backward=0.0,          # [C16, opt-in] max(0, -v_fwd): backing up. Path audit 2026-11-17: the stage-2
+                           #   policy backed up 27-32 % of its time in rubble, 20 % on stairs, 22 % on hurdles
+                           #   (max_x-based progress made reversing free). C16 sets -2.0.
     feet_stumble=0.0,      # [C11, opt-in] feet hitting vertical faces (stair risers, hurdle sides):
                            #   count of feet whose contact force is mostly horizontal (|F_xy| > 2 |F_z|).
                            #   Stairs trace (C10, 0.5): rear feet stubbed into the riser at 14.9 m
@@ -172,7 +175,7 @@ class QuadrupedCourseEnv(gym.Env):
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
                  spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False,
                  ramp_spawn=0.0, section_weights=None, terrain_aware_swing=False,
-                 motion_gate=0.0, foot_graze_radius=0.0):
+                 motion_gate=0.0, foot_graze_radius=0.0, obstacle_style=1.0):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -216,6 +219,14 @@ class QuadrupedCourseEnv(gym.Env):
         #   (> 4 cm from a foot) are rare: 11 % on hurdles, ~1 % on stairs, 0 elsewhere. The penalty
         #   charged ~-2.6/s for these grazes in rubble, making rubble an expensive place to move.
         self.foot_graze_radius = foot_graze_radius
+        # [C16] course-adaptive gait: on obstacle sections (rubble start 2.2 m -> slalom start 18.7 m) the
+        #   flat-ground "style" terms are multiplied by this factor (1.0 = off, E1-C15). Those terms were
+        #   designed for the ring (one trot rhythm, feet under the hips, constant body height, equal step
+        #   heights, no vertical/pitch motion) and forbid what the obstacles need: pushing with the hind
+        #   legs up the ramp, crouching on stairs, high/uneven steps or a hop over hurdles. Path audit
+        #   2026-11-17: hind-knee bend identical on every section (-80..-84 deg), rubble 70-79 % hesitation.
+        #   Flat sections (start, slalom, goal) keep the full natural-trot terms for the demo look.
+        self.obstacle_style = obstacle_style
         self.shin_contacts = 0                       # true shin/thigh/torso contacts (> 4 cm from a foot)
         # a number (all sections alike) or a dict per course section (C7 section curriculum)
         self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
@@ -705,6 +716,12 @@ class QuadrupedCourseEnv(gym.Env):
                                 if self.arena == "ring" else 0.0),
             "checkpoint": 0.0, "goal": 0.0, "fall": 0.0,
         }
+        terms["backward"] = max(0.0, -v_fwd)         # [C16] (weight 0 unless set)
+        if self.obstacle_style != 1.0 and self.arena == "course" and \
+                course.SECTION_STARTS["rubble"] <= pos[0] < course.SECTION_STARTS["slalom"]:
+            for k in ("trot", "swing_shape", "swing_overshoot", "foot_placement", "hip_abduction",
+                      "base_height", "lin_vel_z", "ang_vel_xy"):
+                terms[k] *= self.obstacle_style
         if self.motion_gate:                         # [C14] no gait reward for trotting in place
             g = float(np.clip(v_fwd / (self.motion_gate * self.target_speed), 0.0, 1.0))
             for k in ("trot", "foot_clearance", "swing_shape", "feet_air_time", "heading"):
