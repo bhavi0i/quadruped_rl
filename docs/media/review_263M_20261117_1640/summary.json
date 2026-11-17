@@ -1,0 +1,419 @@
+{
+ "best_run": "course_c16_seed1",
+ "runs": {
+  "course_c15_seed0": {
+   "steps": 281916390,
+   "checkpoint": "final.zip",
+   "goals": {
+    "speed_err": {
+     "value": 0.089,
+     "goal": "<= 0.15",
+     "passed": true
+    },
+    "trot_match": {
+     "value": 0.74,
+     "goal": ">= 0.75",
+     "passed": false
+    },
+    "feet_down": {
+     "value": 1.584,
+     "goal": "between (1.6, 2.6)",
+     "passed": false
+    },
+    "shin_contact_rate": {
+     "value": 0.005,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "fall_rate": {
+     "value": 0.0,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "crab_angle_deg": {
+     "value": 9.203,
+     "goal": "<= 10.0",
+     "passed": true
+    },
+    "roll_deg": {
+     "value": 0.489,
+     "goal": "<= 3.0",
+     "passed": true
+    },
+    "pitch_deg": {
+     "value": 1.186,
+     "goal": "<= 4.0",
+     "passed": true
+    },
+    "foot_splay_cm": {
+     "value": 3.829,
+     "goal": "<= 5.0",
+     "passed": true
+    },
+    "foot_fore_aft_cm": {
+     "value": 9.236,
+     "goal": "<= 8.0",
+     "passed": false
+    },
+    "step_height_spread": {
+     "value": 0.384,
+     "goal": "<= 0.2",
+     "passed": false
+    },
+    "goal_rate": {
+     "value": 0.5,
+     "goal": ">= 0.67",
+     "passed": false
+    }
+   },
+   "swing_lift_cm": 13.84890966820515,
+   "speed": 0.5108801123390733,
+   "wall_trials": null
+  },
+  "course_c15_seed1": {
+   "steps": 281777640,
+   "checkpoint": "final.zip",
+   "goals": {
+    "speed_err": {
+     "value": 0.106,
+     "goal": "<= 0.15",
+     "passed": true
+    },
+    "trot_match": {
+     "value": 0.731,
+     "goal": ">= 0.75",
+     "passed": false
+    },
+    "feet_down": {
+     "value": 1.669,
+     "goal": "between (1.6, 2.6)",
+     "passed": true
+    },
+    "shin_contact_rate": {
+     "value": 0.008,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "fall_rate": {
+     "value": 0.2,
+     "goal": "<= 0.05",
+     "passed": false
+    },
+    "crab_angle_deg": {
+     "value": 7.122,
+     "goal": "<= 10.0",
+     "passed": true
+    },
+    "roll_deg": {
+     "value": 1.382,
+     "goal": "<= 3.0",
+     "passed": true
+    },
+    "pitch_deg": {
+     "value": 1.109,
+     "goal": "<= 4.0",
+     "passed": true
+    },
+    "foot_splay_cm": {
+     "value": 3.714,
+     "goal": "<= 5.0",
+     "passed": true
+    },
+    "foot_fore_aft_cm": {
+     "value": 10.238,
+     "goal": "<= 8.0",
+     "passed": false
+    },
+    "step_height_spread": {
+     "value": 0.831,
+     "goal": "<= 0.2",
+     "passed": false
+    },
+    "goal_rate": {
+     "value": 0.667,
+     "goal": ">= 0.67",
+     "passed": false
+    }
+   },
+   "swing_lift_cm": 14.978664360670804,
+   "speed": 0.49422985082714815,
+   "wall_trials": null
+  },
+  "course_c15_seed2": {
+   "steps": 263709690,
+   "checkpoint": "ckpt_263025900_steps.zip",
+   "goals": {
+    "speed_err": {
+     "value": 0.145,
+     "goal": "<= 0.15",
+     "passed": true
+    },
+    "trot_match": {
+     "value": 0.741,
+     "goal": ">= 0.75",
+     "passed": false
+    },
+    "feet_down": {
+     "value": 1.859,
+     "goal": "between (1.6, 2.6)",
+     "passed": true
+    },
+    "shin_contact_rate": {
+     "value": 0.007,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "fall_rate": {
+     "value": 0.0,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "crab_angle_deg": {
+     "value": 2.901,
+     "goal": "<= 10.0",
+     "passed": true
+    },
+    "roll_deg": {
+     "value": 3.31,
+     "goal": "<= 3.0",
+     "passed": false
+    },
+    "pitch_deg": {
+     "value": 1.275,
+     "goal": "<= 4.0",
+     "passed": true
+    },
+    "foot_splay_cm": {
+     "value": 3.896,
+     "goal": "<= 5.0",
+     "passed": true
+    },
+    "foot_fore_aft_cm": {
+     "value": 13.086,
+     "goal": "<= 8.0",
+     "passed": false
+    },
+    "step_height_spread": {
+     "value": 0.823,
+     "goal": "<= 0.2",
+     "passed": false
+    },
+    "goal_rate": {
+     "value": 0.667,
+     "goal": ">= 0.67",
+     "passed": false
+    }
+   },
+   "swing_lift_cm": 12.682860738265026,
+   "speed": 0.455029314200394,
+   "wall_trials": null
+  },
+  "course_c16_seed0": {
+   "steps": 281846760,
+   "checkpoint": "final.zip",
+   "goals": {
+    "speed_err": {
+     "value": 0.043,
+     "goal": "<= 0.15",
+     "passed": true
+    },
+    "trot_match": {
+     "value": 0.743,
+     "goal": ">= 0.75",
+     "passed": false
+    },
+    "feet_down": {
+     "value": 1.547,
+     "goal": "between (1.6, 2.6)",
+     "passed": false
+    },
+    "shin_contact_rate": {
+     "value": 0.012,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "fall_rate": {
+     "value": 0.0,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "crab_angle_deg": {
+     "value": 0.249,
+     "goal": "<= 10.0",
+     "passed": true
+    },
+    "roll_deg": {
+     "value": 1.03,
+     "goal": "<= 3.0",
+     "passed": true
+    },
+    "pitch_deg": {
+     "value": 0.309,
+     "goal": "<= 4.0",
+     "passed": true
+    },
+    "foot_splay_cm": {
+     "value": 3.864,
+     "goal": "<= 5.0",
+     "passed": true
+    },
+    "foot_fore_aft_cm": {
+     "value": 10.671,
+     "goal": "<= 8.0",
+     "passed": false
+    },
+    "step_height_spread": {
+     "value": 0.705,
+     "goal": "<= 0.2",
+     "passed": false
+    },
+    "goal_rate": {
+     "value": 0.833,
+     "goal": ">= 0.67",
+     "passed": true
+    }
+   },
+   "swing_lift_cm": 14.555186162493733,
+   "speed": 0.6429282252180002,
+   "wall_trials": null
+  },
+  "course_c16_seed1": {
+   "steps": 281837670,
+   "checkpoint": "final.zip",
+   "goals": {
+    "speed_err": {
+     "value": 0.096,
+     "goal": "<= 0.15",
+     "passed": true
+    },
+    "trot_match": {
+     "value": 0.723,
+     "goal": ">= 0.75",
+     "passed": false
+    },
+    "feet_down": {
+     "value": 1.952,
+     "goal": "between (1.6, 2.6)",
+     "passed": true
+    },
+    "shin_contact_rate": {
+     "value": 0.005,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "fall_rate": {
+     "value": 0.0,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "crab_angle_deg": {
+     "value": 2.109,
+     "goal": "<= 10.0",
+     "passed": true
+    },
+    "roll_deg": {
+     "value": 0.672,
+     "goal": "<= 3.0",
+     "passed": true
+    },
+    "pitch_deg": {
+     "value": 2.076,
+     "goal": "<= 4.0",
+     "passed": true
+    },
+    "foot_splay_cm": {
+     "value": 4.323,
+     "goal": "<= 5.0",
+     "passed": true
+    },
+    "foot_fore_aft_cm": {
+     "value": 11.805,
+     "goal": "<= 8.0",
+     "passed": false
+    },
+    "step_height_spread": {
+     "value": 0.484,
+     "goal": "<= 0.2",
+     "passed": false
+    },
+    "goal_rate": {
+     "value": 1.0,
+     "goal": ">= 0.67",
+     "passed": true
+    }
+   },
+   "swing_lift_cm": 12.731779919745561,
+   "speed": 0.5036360150791432,
+   "wall_trials": null
+  },
+  "course_c16_seed2": {
+   "steps": 274023570,
+   "checkpoint": "ckpt_273025800_steps.zip",
+   "goals": {
+    "speed_err": {
+     "value": 0.048,
+     "goal": "<= 0.15",
+     "passed": true
+    },
+    "trot_match": {
+     "value": 0.767,
+     "goal": ">= 0.75",
+     "passed": true
+    },
+    "feet_down": {
+     "value": 1.533,
+     "goal": "between (1.6, 2.6)",
+     "passed": false
+    },
+    "shin_contact_rate": {
+     "value": 0.017,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "fall_rate": {
+     "value": 0.0,
+     "goal": "<= 0.05",
+     "passed": true
+    },
+    "crab_angle_deg": {
+     "value": 5.82,
+     "goal": "<= 10.0",
+     "passed": true
+    },
+    "roll_deg": {
+     "value": 1.103,
+     "goal": "<= 3.0",
+     "passed": true
+    },
+    "pitch_deg": {
+     "value": 1.102,
+     "goal": "<= 4.0",
+     "passed": true
+    },
+    "foot_splay_cm": {
+     "value": 4.435,
+     "goal": "<= 5.0",
+     "passed": true
+    },
+    "foot_fore_aft_cm": {
+     "value": 10.626,
+     "goal": "<= 8.0",
+     "passed": false
+    },
+    "step_height_spread": {
+     "value": 0.796,
+     "goal": "<= 0.2",
+     "passed": false
+    },
+    "goal_rate": {
+     "value": 0.333,
+     "goal": ">= 0.67",
+     "passed": false
+    }
+   },
+   "swing_lift_cm": 14.297335186186455,
+   "speed": 0.6480883263665577,
+   "wall_trials": null
+  }
+ }
+}

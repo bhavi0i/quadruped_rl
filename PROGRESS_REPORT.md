@@ -74,6 +74,37 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 51: 2026-11-17, C15 and C16 finished (282M): C16 seed 1 crosses 6 of 6 at the benchmark
+
+### Review (benchmark 0.5, 6 layouts)
+
+| Run | Goals | Goal times | Trot | Crab |
+|---|---|---|---|---|
+| **C16 seed 1 (final, 282M)** | **6 / 6** ✅ | 25.6–48.3 s | 0.72 | 2.1° |
+| C16 seed 0 (final) | 5 / 6 | 27.5–43.1 s | 0.74 | 0.2° |
+| C16 seed 2 (273M, still training) | 2 / 6 | 32–33 s | **0.77** | 5.8° |
+| C15 seeds 0 / 1 (final) | 3 / 6 · 4 / 6 | 25.6–41.9 s | 0.73–0.74 | 7–9° |
+| C15 seed 2 (263M, still training) | 4 / 6 | 25.7–41.8 s | 0.74 | 2.9° |
+
+- **Training:**
+  - C15: falls fell to 0.27–0.28, goal rate about 0.60.
+  - C16: falls still 0.39–0.47 with the new course-adaptive reward, goal rate 0.39–0.46.
+- **Real shin contact** is 0.5–1.7 % for every run.
+
+Media: [`docs/media/review_263M_20261117_1640/`](docs/media/review_263M_20261117_1640). Video of C16 seed 1:
+![](docs/media/review_263M_20261117_1640/course_c16_seed1/course.gif)
+
+### Next: choose by validation, not one review
+
+Validation job 64000968 tests every third checkpoint from 230M of all six C15 and C16 runs on
+12 layouts at 0.5, 0.75 and 1.0. The top candidates then get the path audit. The final healthy
+course policy must:
+- cross at full difficulty at least as often as the current stage-2 policy (7/12)
+- **look purposeful:** little hesitation or backing up, straight paths, per-section posture
+- keep the trot, posture and shin goals
+
+---
+
 ## Report 50: 2026-11-17, first look at C15 and C16: less shuffling, first sign of per-section gait
 
 ### Review (benchmark 0.5, 6 layouts)

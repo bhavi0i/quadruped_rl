@@ -691,6 +691,11 @@ independent runs, not 3. It was left running (no-restart rule).
 - **C15 at 227–235M:**
   - Seed 1 **5/6, trot 0.761** (the first course policy to pass the trot goal).
   - Rubble 18.7 s, path ratio 1.54; stairs worse (12.5 s).
+- **Finals (282M) / latest, benchmark 0.5:**
+  - C16: seed 1 **6/6**, seed 0 5/6, seed 2 2/6 at 273M.
+  - C15: seeds 0/1/2 3/6, 4/6, 4/6.
+  - Training falls: C15 0.27–0.28, C16 0.39–0.47.
+  - Validation job 64000968 (`results/validate_c15_c16.json`).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
