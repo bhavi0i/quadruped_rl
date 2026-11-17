@@ -1453,6 +1453,42 @@
    "speed": 0.06818878508378445,
    "trot_match": 0.8242571315372424,
    "body_contact_rate": 0.1809429477020602
+  },
+  {
+   "timesteps": 124543050,
+   "time": "2026-11-17 04:36",
+   "difficulty": 0.0,
+   "distance": 4.150657362316318,
+   "fall_rate": 0.045,
+   "goal_rate": 0.185,
+   "sections_or_laps": 2.665,
+   "speed": 0.06867741942826033,
+   "trot_match": 0.8259478744633246,
+   "body_contact_rate": 0.1748805708411441
+  },
+  {
+   "timesteps": 125035950,
+   "time": "2026-11-17 04:38",
+   "difficulty": 0.0,
+   "distance": 4.050367629459805,
+   "fall_rate": 0.06,
+   "goal_rate": 0.16,
+   "sections_or_laps": 2.605,
+   "speed": 0.07483213421560764,
+   "trot_match": 0.8329341651450598,
+   "body_contact_rate": 0.13788395212010549
+  },
+  {
+   "timesteps": 125533500,
+   "time": "2026-11-17 04:40",
+   "difficulty": 0.0,
+   "distance": 3.9751688439204247,
+   "fall_rate": 0.05,
+   "goal_rate": 0.16,
+   "sections_or_laps": 2.56,
+   "speed": 0.0651685130455796,
+   "trot_match": 0.8376213445884836,
+   "body_contact_rate": 0.13408702642950457
   }
  ]
 }

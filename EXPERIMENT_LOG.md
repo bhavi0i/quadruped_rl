@@ -454,6 +454,23 @@ independent runs, not 3. It was left running (no-restart rule).
   - `course.course_xml` accepts a per-section dict.
   - The env reports `section_results` at episode end; evaluation accepts a JSON difficulty.
 - Otherwise as C6.
+- **At about 152–155M:**
+  - Section levels: rubble/hurdles 0.6–0.75 ↑, slalom 0.45–0.5, ramp 0.05–0.2 ↓ (clear 0–13 %),
+    stairs 0.15–0.25 ↓ (clear 0–5 %).
+  - Trace: stalls 0.5 m below the crest even at 5.5°.
+
+### FINDING: Wrong parent branch for C4–C7
+- C4 continued from C3 seed 0 (chosen because it "reached the stairs" at the 111M review). It
+  never mastered the ramp.
+- C3 seed 1 final (140M) clears the ramp at 5/7/9° (2/2 each with slippery physics; with
+  realistic friction 2/2, 2/2, 1/2). It reaches the goal at difficulty 0.3, and gets past the 15°
+  ramp at difficulty 1.0 once.
+- Lesson: choose continuation parents by targeted skill tests.
+
+### C8: Climbing lineage + verified fixes. RUNNING (Amarel job 63987675, from C3 seed 1 final at 140M → 210M)
+- **Fixes applied:** elliptic friction, terrain-relative tilt, section curriculum (start 0.3).
+- **Not applied:** C4's swing 0.10 and collision −4.
+- Ent 0.002, run-up spawns.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

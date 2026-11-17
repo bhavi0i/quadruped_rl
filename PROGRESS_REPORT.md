@@ -74,6 +74,56 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 29: 2026-11-17, per-obstacle curriculum isolates the problem; the climbing skill was in the other branch → C8
+
+### C7: what the per-section curriculum shows (about 4–6M steps in)
+
+| Obstacle | Level (seeds 0 / 1 / 2) | Clear rate |
+|---|---|---|
+| rubble | **0.75 / 0.60 / 0.60** ↑ | 71–78 % |
+| hurdles | **0.75 / 0.60 / 0.60** ↑ | 73–79 % |
+| slalom | 0.45 / 0.45 / 0.50 | 53–79 % |
+| ramp | **0.05 / 0.20 / 0.15** ↓ | 0–13 % |
+| stairs | **0.15 / 0.25 / 0.25** ↓ | 0–5 % |
+
+Freed from the ramp, rubble and hurdles rose quickly. The ramp and stairs kept being *lowered*,
+but were rarely cleared even at their easiest. A trace confirmed it: even at a 5.5° ramp the C7
+policy stalls about 0.5 m below the crest, and on the stairs it stalls at the first step.
+
+### Finding: the climbing skill lives in a different branch
+The C4 → C5 → C6 → C7 line was continued from **C3 seed 0**. Testing **C3 seed 1** instead,
+starting on the ramp run-up and checking whether it clears the ramp:
+
+| Policy | Physics | 5° ramp | 7° ramp | 9° ramp |
+|---|---|---|---|---|
+| C3 seed 1 at 90M (milestone) | slippery / realistic | ✅✅ / ✅✅ | ❌ / ❌ | ❌ / ❌ |
+| **C3 seed 1 final (140M)** | slippery | ✅✅ | ✅✅ | ✅✅ |
+| **C3 seed 1 final (140M)** | **realistic** | ✅✅ | ✅✅ | ✅ (1 of 2) |
+
+C3 seed 1 **learned to climb during its last 50M steps**, after I had already branched C4 from
+seed 0, which never had the skill. Choosing the branch by "reached the stairs at that review" was
+the wrong criterion.
+
+Full course, C3 seed 1 final with realistic friction:
+- difficulty 0.3: one run reaches the goal
+- difficulty 1.0: one run gets past the full 15° ramp (13.6 m)
+- weak spots: **rubble at larger sizes** (stalls about 4.5 m) and **the stairs** (about 15 m)
+
+### Change: C8 (Amarel job 63987675, 3 seeds, from C3 seed 1 final at 140M → 210M, no restart)
+- Start from the lineage that can climb.
+- Apply only the verified or principled fixes:
+  - **realistic friction** (bug fix)
+  - **terrain-relative tilt**
+  - **per-section curriculum** (all obstacles start at 0.3; each moves ±0.05 by its own clear
+    rate)
+- C4's unproven changes (10 cm lift, collision −4) are **left out**, so C8 vs C7 also tests them.
+- C7 keeps running as the comparison.
+
+**Lesson (logged):** when branching a continuation, pick the parent by testing the specific skill
+(e.g. ramp clear rate per slope), not by one course run. Skills can appear late in a run.
+
+---
+
 ## Report 28: 2026-11-17, every policy stalls at the same spot → per-obstacle curriculum (C7)
 
 ### Review at 141–160M (C5, C6, difficulty 0.4)
