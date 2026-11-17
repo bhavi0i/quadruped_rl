@@ -56,7 +56,7 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 
 ### Milestone: first policy that meets every Phase 1 ring goal 🎉
 **E7 seed 0 at 34M steps** passes all six goals. It is saved as
-[](progress/milestones/e7_seed0_34M_all_six_goals)
+[`progress/milestones/e7_seed0_34M_all_six_goals/`](progress/milestones/e7_seed0_34M_all_six_goals)
 (policy + normalisation stats + metrics + videos).
 
 | Pace | Trot | Feet down | Shin contact | Falls | Walls | Track error |
@@ -85,7 +85,7 @@ line (track error 1.2 m).
 | seed 1 final | ✅ 0.59 | ✅ 1.00 | ✅ 0.1 % | ✅ 0 % | ❌ 17 % | 1.17 m | best walker, stuck at walls |
 | seed 2 final | ✅ 0.48 | ✅ 0.92 | ❌ 10 % | ✅ 0 % | ❌ 17 % | 0.45 m | walking slipped late in training |
 
-Media: , .
+Media: `docs/media/e7_final/seed1`, `docs/media/e7_final/seed2`.
 
 **What this tells us**
 - The same reward gives very different wall behaviour per seed and per checkpoint. The skill
@@ -98,11 +98,11 @@ Media: , .
 ### What changed
 - **E8 launched** (Amarel job 63982746, 3 seeds, 40M → 60M steps). It continues from **E7
   seed 1 final**, the best walker, which was stuck at walls and off the line:
-  -  reward 1.0
-  -  reward 1.0
+  - `turn_to_route` reward 1.0
+  - `track_following` reward 1.0
   - wall/turn-practice spawns 25 % → 40 %
   - walking rewards unchanged
-- Fixed  continuations keeping the 40M step count (it would have restarted the
+- Fixed `--init-from` continuations keeping the 40M step count (it would have restarted the
   counter).
 
 ### Next

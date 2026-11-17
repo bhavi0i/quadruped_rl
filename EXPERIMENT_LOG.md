@@ -190,7 +190,7 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
 - **Result at 34–40M steps:**
   - **Seed 0 at 34M is the first all-goals policy.** Walls 83 %, turning both ways, never touching
     the wall; walking perfect; track error 1.21 m. Saved to
-    .
+    `progress/milestones/e7_seed0_34M_all_six_goals/`.
   - Seed 1 final (40M): walking perfect, walls 17 %, track error 1.17 m.
   - Seed 2 final (40M): walking slipped (shin contact 10 %, 0.48 m/s); walls 17 %.
   - **Status: WORKS for walking. Walls inconsistent across seeds and checkpoints.**
