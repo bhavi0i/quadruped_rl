@@ -293,7 +293,7 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
 E8 seeds 1 and 2 are identical runs: PPO.load restored the saved seed. E8 is effectively 2
 independent runs, not 3. It was left running (no-restart rule).
 
-### E10: Practise the exact wall situation. RUNNING (Amarel job 63983457, from milestone 2 at 39M → 59M)
+### E10: Practise the exact wall situation. WORKS: STAGE 1 COMPLETE (Amarel job 63983457, from milestone 2 at 39M → 59M)
 - **Date:** 2026-11-16
 - **Why:** E9 walls drifted. At 46–50M: seed 0 100 %, seed 1 17 %, seed 2 0 %.
   - Trap: turning right at the wall leaves the dog facing backwards along the route, where it
@@ -304,6 +304,12 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Success:** walls ≥ 80 % on all seeds at consecutive reviews (stable), all other goals passing.
 - **At 44–46M (first review):** all 3 seeds pass all 9 goals, with walls 100 % on every seed and
   crab 1.0–1.6°. Stability check pending at the next review.
+- **At 50–52M (second review): STABLE. WORKS.**
+  - All seeds still pass all 9 goals (walls 100 / 100 / 83 %).
+  - **Stage 1 complete.** Final policy = milestone 3:
+    `progress/milestones/e10_seed1_51M_stage1_final/`
+    - walls 100 %, crab 0.1°, roll 0.3°, pitch 2.3°, trot 0.985, 0.59 m/s
+    - shin contact 0.6 %, no falls, track error 0.14 m
 
 ---
 

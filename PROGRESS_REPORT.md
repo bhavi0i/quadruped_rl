@@ -62,6 +62,64 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 12: 2026-11-16, ✅ STAGE 1 COMPLETE: stable, natural trot with wall handling
+
+**Stability confirmed.** At the second consecutive review (50–52M), every E10 seed still passes
+all 9 goals.
+
+| Run | Walls (44–46M → 50–52M) | Crab | Track error | Speed |
+|---|---|---|---|---|
+| E10 seed 0 (52M) | 100 → 100 % | 1.4° | 0.09 m | 0.60 m/s |
+| **E10 seed 1 (51M)** | 100 → **100 %** | **0.1°** | 0.14 m | 0.59 m/s |
+| E10 seed 2 (50M) | 100 → 83 % | 0.1° | 0.12 m | 0.59 m/s |
+
+### Final stage 1 policy: milestone 3, [`progress/milestones/e10_seed1_51M_stage1_final/`](progress/milestones/e10_seed1_51M_stage1_final)
+E10 seed 1 at 51M steps:
+
+| Goal | Result |
+|---|---|
+| pace (target 0.6 m/s) | ✅ 0.59 m/s |
+| trot match | ✅ 0.985 |
+| feet on the ground | ✅ 1.96 |
+| shin/knee/belly contact | ✅ 0.6 % |
+| falls | ✅ 0 % |
+| wall test | ✅ **100 %** (6/6) |
+| crab (body vs. travel direction) | ✅ **0.1°** |
+| roll / pitch | ✅ 0.3° / 2.3° |
+| distance from the yellow line | 0.14 m |
+| foot lift | 8.2 cm |
+
+| Walking | Facing the wall: turns, rejoins the line, trots on |
+|---|---|
+| ![](progress/milestones/e10_seed1_51M_stage1_final/walk.gif) | ![](progress/milestones/e10_seed1_51M_stage1_final/wall.gif) |
+
+Videos for slides: [walk.mp4](progress/milestones/e10_seed1_51M_stage1_final/walk.mp4) · [wall.mp4](progress/milestones/e10_seed1_51M_stage1_final/wall.mp4).
+Frames: ![](progress/milestones/e10_seed1_51M_stage1_final/frames_wall.png)
+
+Watch it in MuJoCo:
+`cd obstacle_course && mjpython play.py ../progress/milestones/e10_seed1_51M_stage1_final/policy.zip --arena ring --wall-test --episodes 0`
+
+### How we got here (summary for the presentation)
+
+| Step | Problem | Change | Result |
+|---|---|---|---|
+| E6 | — | course reward in the ring | ❌ sprinting/bounding at 3 m/s (reward hack) |
+| E7 | uncapped progress, lap bonus | capped progress, trot ×2 | ✅ natural trot; walls drift 0–83 % |
+| E8 | walls | signed turn reward, line following | ❌ dog freezes at walls; ✅ on the line |
+| E9 | 30° crab (body slanted) | body alignment, potential-based turning, closer target | ✅ crab 0.1°; walls drift again |
+| E10 | "wrong-way" trap at walls | practise the exact wall situation (30 % of episodes) | ✅ **all goals, stable** |
+
+Milestones kept along the way: `e7_seed0_34M_all_six_goals` (first wall-capable, but crabbing),
+`e9_seed2_39M_all_nine_goals` (first natural posture), `e10_seed1_51M_stage1_final`.
+
+### Next
+- E10 finishes at 59M on its own (final review then).
+- **Stage 2: obstacle course.** Continue from milestone 3 with the difficulty curriculum. It still
+  needs a decision on when to start.
+- Phase 1 baseline: injured-leg evaluation of the final healthy policy.
+
+---
+
 ## Report 11: 2026-11-16, ✅ E10: every seed passes every goal, walls 100 % (first review; stability to confirm)
 
 E10 at 44–46M steps (5–7M into the continuation from milestone 2):
