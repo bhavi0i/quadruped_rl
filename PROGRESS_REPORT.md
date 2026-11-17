@@ -74,6 +74,57 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 50: 2026-11-17, first look at C15 and C16: less shuffling, first sign of per-section gait
+
+### Review (benchmark 0.5, 6 layouts)
+
+| Run | Goals | Trot | Real shin contact | Training falls |
+|---|---|---|---|---|
+| **C15 seed 1 (235M)** | **5 / 6** | **0.761 ✅** | 0.01 | 0.32 |
+| C15 seeds 0 / 2 | 4 / 6 · 4 / 6 | 0.73 | 0.01–0.03 | 0.31–0.35 |
+| C16 seeds 0 / 1 / 2 (225–228M, 3–6M in) | 3 / 6 · 4 / 6 · 1 / 6 | 0.68–0.75 | 0.01 | 0.40–0.49 |
+
+C15 seed 1 is the first course policy to pass the trot goal (≥ 0.75) since stage 2 began.
+
+### Path audit at full difficulty (6 layouts; files in `progress/audits/`)
+
+| Section | Baseline (stage-2 policy) | C15 seed 1 (graze fix only) | C16 seed 0 (course-adaptive, 6M in) |
+|---|---|---|---|
+| **rubble**: time / hesitating / backing up / path ratio | 30.7 s / 70 % / 32 % / 3.29 | 18.7 s / 70 % / 21 % / 1.54 | **17.0 s / 72 % / 12 % / 1.39** |
+| **hurdles**: time / hesitating / backing up | 5.3 s / 32 % / 22 % | **4.1 s / 13 % / 8 %** | 7.5 s / 35 % / 20 % |
+| **ramp**: time / hesitating / hind-knee bend | 3.6 s / 0 % / −82° | 5.1 s / 15 % / −82° | 6.9 s / 37 % / **−90°** |
+| **stairs**: time / hesitating / backing up | 6.6 s / 36 % / 21 % | 12.5 s / 53 % / 30 % | **3.7 s / 12 % / 6 %** |
+| **slalom**: wall touches / closest | 0 % / 0.19 m | 1.0 % / 0.21 m | 1.8 % / 0.26 m |
+| goals at 1.0 (this audit) | 2 / 6 | 3 / 6 | 2 / 6 |
+
+**Better:**
+- Both new runs roughly halve the rubble time. The back-and-forth shuffle is mostly gone: the
+  path ratio falls from 3.3 to about 1.4–1.5, and backing up from 32 % to 12 % in C16.
+  - "Hesitating" stays near 70 % in the rubble. That counts time below 0.1 m/s, and the robot
+    now picks through the blocks slowly but forwards.
+- C16 climbs the stairs in 3.7 s (baseline 6.6 s) and rarely backs up there.
+- **C16 shows the first section-specific posture:** the hind knees bend 8° deeper on the ramp
+  (−90° vs −82° on flat ground). This is the "push with the hind legs" adaptation the group
+  asked for, beginning to appear.
+
+**Worse:**
+- C16 is slower on the ramp (37 % hesitation) and the hurdles, and seed 2 trips at the hurdles.
+- Slalom wall touches rose to 1–2 %.
+- C16 training falls are 40–49 %.
+
+These are typical while the gait is being relearned, but they are watch items for the next
+review.
+
+**Decision:** no changes yet; C16 is only 6M steps into its new reward. The next review repeats
+this audit. If the hurdle and ramp hesitation and the slalom touches don't improve by about
+240M, the candidate tweak is the wall-proximity range or weight, plus a hurdle-specific step
+reward.
+
+Media: [`docs/media/review_225M_20261117_1619/`](docs/media/review_225M_20261117_1619). Best-seed video (C15 seed 1):
+![](docs/media/review_225M_20261117_1619/course_c15_seed1/course.gif)
+
+---
+
 ## Report 49: 2026-11-17, group review: the crossing works but looks aimless; course-adaptive reward (C16)
 
 **Group feedback (on the full-course crossing in the viewer):**

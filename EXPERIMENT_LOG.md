@@ -681,6 +681,16 @@ independent runs, not 3. It was left running (no-restart rule).
   - path audit: rubble < 10 s; hesitation and backing < 15 % per section; path ratio < 1.3;
     hind-knee adaptation
   - validation at 1.0 ≥ 7/12; shin contact ≤ 0.05; trot ≥ 0.75 on flat sections
+- **At 225–228M (3–6M in), path audit of seed 0 vs baseline:**
+  - rubble 17.0 s vs 30.7 s; backing up 12 % vs 32 %; path ratio 1.39 vs 3.29
+  - stairs 3.7 s vs 6.6 s
+  - hind knee −90° on the ramp vs −82° on flat ground: first per-section adaptation
+  - Worse: ramp time 6.9 s, hurdle hesitation 35 %, slalom wall touches 1.8 %, training falls
+    0.40–0.49.
+  - Benchmark 0.5: 3/6, 4/6, 1/6.
+- **C15 at 227–235M:**
+  - Seed 1 **5/6, trot 0.761** (the first course policy to pass the trot goal).
+  - Rubble 18.7 s, path ratio 1.54; stairs worse (12.5 s).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
