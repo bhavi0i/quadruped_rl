@@ -74,6 +74,42 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 32: 2026-11-17, fair 6-layout test: C8 reaches the slalom; the ramp crest is the bottleneck
+
+Course from the start, 6 rubble layouts each, at each run's section levels:
+
+| Run | Levels (rubble/hurdles/ramp/stairs/slalom) | Furthest points (layouts 0–5) | Falls |
+|---|---|---|---|
+| **C8 seed 1 (171M)** | 1.0 / 1.0 / 0.60 / 0.35 / 1.0 | 11.0, 3.5, **20.7**, 15.1, **21.0**, 15.2 | 0/6 |
+| C8 seed 0 (169M) | 1.0 / 1.0 / 0.65 / 0.35 / 1.0 | 15.3, 10.8, 7.4, 6.5, 6.9, 15.1 | 1/6 |
+| C8 seed 2 (160M) | 1.0 / 1.0 / 0.35 / 0.25 / 1.0 | 10.7 ×5, 6.9 | 1/6 |
+
+- **Working:** C8 seed 1 reaches the **slalom** in 2 of 6 runs and the stairs in 3, with **no falls**,
+  at full-size rubble, hurdles and slalom.
+- **Not working:** no completions at these levels yet.
+
+Video (C8 seed 1): [course.mp4](docs/media/review_160M_20261117_0641/course_c8_seed1/course.mp4)
+
+**Slow or stuck?** Most runs ended exactly at the 60 s limit, so I re-ran 4 layouts with 120 s.
+Section clear times:
+
+| Layout | rubble | hurdles | ramp | then |
+|---|---|---|---|---|
+| 2 | 7 s | 15 s | 58 s | fell at 14.2 m |
+| 3 | 7 s | 16 s | — | stuck at the crest (11.0 m) until 120 s |
+| 4 | 8 s | 17 s | 119 s | |
+| 5 | 7 s | 13 s | — | stuck at the crest (11.0 m) until 120 s |
+
+**The ramp crest is the bottleneck** (11° at level 0.6). Rubble and hurdles are fast. The dog
+then spends 40–100 s on the ramp or never crests it. That's why the curriculum keeps moving the
+ramp level up and down (0.35–0.7).
+
+**Decision:** no change yet; the curriculum is still adapting. If the ramp hasn't stabilised by the
+next review, the next tweak (C9) is **spawning some episodes partway up the ramp**. Every ramp
+attempt now starts at the bottom, so cresting the top only gets practised after a full climb.
+
+---
+
 ## Report 31: 2026-11-17, rubble, hurdles and slalom at full size; evaluation made fairer (6 rubble layouts)
 
 ### C8 curriculum (161–169M)

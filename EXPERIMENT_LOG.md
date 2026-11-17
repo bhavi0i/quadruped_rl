@@ -481,6 +481,10 @@ independent runs, not 3. It was left running (no-restart rule).
   - **Eval fix:** course test over 6 rubble layouts (one fixed layout was misleading: the same
     policy reached the goal on layout 3 and fell early on 0 and 2).
   - Reviews evaluate only active prefixes (`runs/_active_prefixes.json` = `["course_c8"]`).
+- **At 160–171M (6-layout test):** seed 1 reaches the slalom 2/6 and the stairs 3/6, no falls.
+  - With 120 s: rubble about 7 s, hurdles about 15 s, then the ramp takes 40–100 s or never
+    crests (11.0 m). The ramp crest (11° at level 0.6) is the bottleneck.
+  - Candidate C9: mid-ramp spawns.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
