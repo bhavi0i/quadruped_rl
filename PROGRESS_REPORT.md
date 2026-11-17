@@ -74,6 +74,42 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 25: 2026-11-17, stairs and shin scraping not improving → C4 (higher steps, stronger shin penalty)
+
+Course from the start at each run's curriculum difficulty (C3 now at 0.3–0.4):
+
+| Run | Furthest point (3 runs) | Goal | Shin contact |
+|---|---|---|---|
+| C3 seed 0 (111M) | **14.9 / 15.4 / 17.3 m** (stairs; 1 fall) | 0/3 | 50 % |
+| C3 seed 1 (111M) | 17.6 / 4.7 / 4.6 m | 0/3 | 66 % |
+| C3 seed 2 (111M) | 10.9 ×3 (ramp top) | 0/3 | 46 % |
+| C2 seeds 1–2 | 10.6 ×3 | 0/3 | 42–59 % |
+| C1 ×3, C2 seed 0 | 6.7–9.95 | 0/3 | 25–28 % |
+
+- **Working:** C3 seed 0 now reaches the stairs in every run at difficulty 0.3.
+- **Not working:**
+  - The stairs stop or topple it.
+  - Shin contact on the course is 46–66 %: legs hit obstacle edges, especially stair risers.
+  - No completions at the higher difficulty.
+
+This is the trigger from report 24 (stair falls and shin scraping not improving).
+
+Video (C3 seed 0, reaching the stairs): [course.mp4](docs/media/review_95M_20261117_0254/course_c3_seed0/course.mp4)
+![](docs/media/review_95M_20261117_0254/course_c3_seed0/course.gif)
+
+**Change: C4** (Amarel job 63986196, 3 seeds, from C3 seed 0 at 111M → 170M, no restart):
+- **Foot lift target 8 → 10 cm** (`--swing-height 0.10`), so swing feet clear stair risers and
+  hurdle bars.
+- **Shin/knee/belly contact penalty −2 → −4** (`collision`): hitting edges with the legs costs
+  more; stepping over pays.
+- Entropy bonus 0.002 kept (no exploration reset). Run-up spawns kept. Other rewards unchanged.
+- Note: C4's curriculum restarts at difficulty 0 (the job script default). It should re-climb
+  quickly. A `DIFF` option now lets later continuations start at the source run's level.
+
+C1 (no exploration fix) is still stuck at the ramp foot after 30M course steps. It ends at 126M.
+
+---
+
 ## Report 24: 2026-11-17, curriculum rising (difficulty 0.3): obstacles grow, stairs now the hard part
 
 Course from the start, each run tested at its **own current curriculum difficulty**:

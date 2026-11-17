@@ -402,6 +402,13 @@ independent runs, not 3. It was left running (no-restart rule).
   - Shin contact rising to 49–62 %; training falls 18–30 %.
   - No change yet (curriculum dip). Candidate: course-gait tweak (obstacle swing height, or a
     shin-edge collision penalty).
+- **At 111M:**
+  - Difficulty 0.3–0.4. Seed 0 reaches the stairs 3/3 (14.9–17.3 m) but stalls or falls.
+  - No completions; shin contact 46–66 %. This triggered C4.
+
+### C4: Course gait for obstacles. RUNNING (Amarel job 63986196, from C3 seed 0 at 111M → 170M)
+- **Changes:** `--swing-height 0.10` (8 → 10 cm) and `collision` −2 → −4. Ent 0.002 kept, no reset.
+- **Note:** the curriculum restarted at 0 (job default); `DIFF` was added for future continuations.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
