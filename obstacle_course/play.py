@@ -15,7 +15,7 @@ import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
-from quadruped_env import QuadrupedCourseEnv
+from quadruped_env import QuadrupedCourseEnv, MAX_STEPS
 
 
 def place_facing_wall(env, ang, off_deg, dist=1.0):
@@ -54,8 +54,18 @@ def main():
     if injury and injury not in ("random", "random_leg"):
         injury = {k: float(v) for k, v in (s.split("=") for s in injury.split(","))}
     mode = "rgb_array" if a.video else "human"
+    # [REPLACED 2026-11-17] env built with the defaults (pyramidal friction, default episode
+    #   length), not the settings the course policies (C5+) were trained with:
+    # env = QuadrupedCourseEnv(difficulty=a.difficulty, random_start=False, injury=injury,
+    #                          render_mode=mode, arena=a.arena, robot=a.robot)
+    # [NEW] use the run's config.json (next to the model) for friction and episode length
+    import json
+    cfg_f = os.path.join(os.path.dirname(os.path.abspath(a.model)), "config.json") if a.model else ""
+    cfg = json.load(open(cfg_f)) if cfg_f and os.path.exists(cfg_f) else {}
     env = QuadrupedCourseEnv(difficulty=a.difficulty, random_start=False, injury=injury,
-                             render_mode=mode, arena=a.arena, robot=a.robot)
+                             render_mode=mode, arena=a.arena, robot=a.robot,
+                             friction_model=cfg.get("friction_model", "pyramidal"),
+                             max_steps=cfg.get("max_steps") or MAX_STEPS)
 
     norm = None
     if a.model and not a.random:
