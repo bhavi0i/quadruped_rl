@@ -1,32 +1,32 @@
 {
-  "speed": 0.02533217148088481,
-  "trot_match": 0.65735,
-  "feet_down": 2.9518,
-  "body_contact_rate": 0.2446,
-  "swing_lift_cm": 7.611163355675983,
+  "speed": 0.04041904080439843,
+  "trot_match": 0.67615,
+  "feet_down": 3.0426,
+  "body_contact_rate": 0.2354,
+  "swing_lift_cm": 5.551276799715172,
   "fall_rate": 0.0,
   "track_error_m": null,
-  "speed_err": 0.5746678285191151,
-  "foot_splay_cm": 3.7969561347416176,
-  "foot_fore_aft_cm": 7.9759335153519375,
-  "step_height_spread": 0.6294519571821634,
+  "speed_err": 0.5595809591956016,
+  "foot_splay_cm": 3.0063872495077852,
+  "foot_fore_aft_cm": 8.648652847578841,
+  "step_height_spread": 0.7562629632267561,
   "step_height_per_leg_cm": [
-    6.9,
-    9.3,
-    6.3,
-    5.0
+    5.1,
+    8.2,
+    4.0,
+    5.1
   ],
-  "crab_angle_signed_deg": 2.8596810785968807,
-  "crab_angle_deg": 2.8596810785968807,
-  "roll_deg": 3.65159491930231,
-  "pitch_deg": 5.571048602671048,
-  "sideways_speed": 0.007628061588453347,
+  "crab_angle_signed_deg": 1.646671854699037,
+  "crab_angle_deg": 1.646671854699037,
+  "roll_deg": 0.7840674949348868,
+  "pitch_deg": 2.428162601688222,
+  "sideways_speed": 0.0037720976517236276,
   "goal_rate": 0.0,
-  "mean_progress_m": 9.5,
-  "course_progress": 0.40425531914893614,
+  "mean_progress_m": 9.616666666666665,
+  "course_progress": 0.4092198581560283,
   "course_runs": [
     {
-      "max_x": 9.5,
+      "max_x": 9.62,
       "sections_cleared": [
         "rubble",
         "hurdles"
@@ -37,7 +37,7 @@
       "stopped_in": "ramp"
     },
     {
-      "max_x": 9.5,
+      "max_x": 9.61,
       "sections_cleared": [
         "rubble",
         "hurdles"
@@ -48,7 +48,7 @@
       "stopped_in": "ramp"
     },
     {
-      "max_x": 9.5,
+      "max_x": 9.62,
       "sections_cleared": [
         "rubble",
         "hurdles"
@@ -61,22 +61,22 @@
   ],
   "goals": {
     "speed_err": {
-      "value": 0.575,
+      "value": 0.56,
       "goal": "<= 0.15",
       "passed": false
     },
     "trot_match": {
-      "value": 0.657,
+      "value": 0.676,
       "goal": ">= 0.75",
       "passed": false
     },
     "feet_down": {
-      "value": 2.952,
+      "value": 3.043,
       "goal": "between (1.6, 2.6)",
       "passed": false
     },
     "body_contact_rate": {
-      "value": 0.245,
+      "value": 0.235,
       "goal": "<= 0.05",
       "passed": false
     },
@@ -86,32 +86,32 @@
       "passed": true
     },
     "crab_angle_deg": {
-      "value": 2.86,
+      "value": 1.647,
       "goal": "<= 10.0",
       "passed": true
     },
     "roll_deg": {
-      "value": 3.652,
+      "value": 0.784,
       "goal": "<= 3.0",
-      "passed": false
+      "passed": true
     },
     "pitch_deg": {
-      "value": 5.571,
+      "value": 2.428,
       "goal": "<= 4.0",
-      "passed": false
+      "passed": true
     },
     "foot_splay_cm": {
-      "value": 3.797,
+      "value": 3.006,
       "goal": "<= 5.0",
       "passed": true
     },
     "foot_fore_aft_cm": {
-      "value": 7.976,
+      "value": 8.649,
       "goal": "<= 8.0",
-      "passed": true
+      "passed": false
     },
     "step_height_spread": {
-      "value": 0.629,
+      "value": 0.756,
       "goal": "<= 0.2",
       "passed": false
     },
@@ -121,5 +121,5 @@
       "passed": false
     }
   },
-  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/course_c1_seed1/ckpt_70021530_steps.zip"
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/course_c1_seed1/ckpt_77021460_steps.zip"
 }

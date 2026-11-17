@@ -74,6 +74,43 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 21: 2026-11-17, ramp still blocks every run → root cause: exploration had collapsed → C3 launched
+
+### Review at 76–80M (C1 and C2, difficulty 0)
+Every run of all six policies stops at **x = 9.61–9.69 m**, the ramp foot (the ramp starts at 9.6 m).
+That includes C2, which practised that exact approach for 6–14M steps. Rubble and hurdles stay
+reliable (no falls). Trot is 0.68–0.75 (seed 1 of C2 passes 0.75), pitch now ≤ 4° on 5 of 6 runs,
+shin contact about 24 %.
+
+![](docs/media/review_75M_20261117_0140/course_c2_seed1/course.gif)
+
+### Investigation (each hypothesis tested, in order)
+
+| Hypothesis | Test | Result |
+|---|---|---|
+| Physical step at the ramp edge | ray-cast ground profile and box corners | ❌ the ramp starts flush at 0 cm, 5° slope |
+| Reward makes standing better | per-term reward: walking vs stuck | ❌ walking 6.3/s vs stuck 2.5/s: reward clearly prefers moving |
+| Deterministic evaluation hides a solution | 4 runs with training-style random actions | ❌ stuck at 9.7 m every time |
+| Observation normaliser saturated by terrain | normalised height-scan inputs at the ramp | ❌ within ±2.7 (no clipping) |
+| Actions saturated | raw action values while stuck | ❌ only 1 of 12 joints at its limit |
+| **Exploration collapsed** | policy log std | ✅ **about −2.8, i.e. noise of ±0.06** on a ±1 action scale |
+
+**Root cause.** PPO here has no entropy bonus (`ent_coef = 0`, as in the original course setup).
+After about 80M steps the policy became almost deterministic. On flat ground that is fine, but at
+the ramp it never tries a meaningfully different leg movement, so it can never discover how to
+step up. Ramp practice alone (C2) could not help.
+
+At the ramp foot the dog freezes mid-stride, standing on one diagonal pair of feet (front-right
+on the ramp, rear-left on the floor) with the front-left foot held 8.6 cm up.
+
+### Change: C3 (Amarel job 63986078, 3 seeds, from C2 seed 1 at 86M → 140M, no restart)
+- `--reset-log-std -1.2`: exploration noise back to about ±0.3
+- `--ent-coef 0.002`: a small entropy bonus so it doesn't collapse again
+- Run-up spawns (C2) and all rewards unchanged. C1 and C2 keep running.
+- Expect the gait to get noisier briefly while it explores.
+
+---
+
 ## Report 20: 2026-11-17, still stopping at the ramp → C2 launched (spawn-position bug fixed)
 
 C1 at 70M (4–5M course steps, difficulty 0):

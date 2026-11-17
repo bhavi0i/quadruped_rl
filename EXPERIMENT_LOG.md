@@ -371,6 +371,17 @@ independent runs, not 3. It was left running (no-restart rule).
   ground was never trained.
 - **Change (one idea):** `--spawn-offset 0.15`. All feet are on the flat run-up before each
   obstacle (verified). Rewards are unchanged from C1.
+- **At 76–80M:** C1 and C2 all stop at x = 9.61–9.69 m (ramp foot). Spawns alone did not help.
+  - Investigation (see PROGRESS_REPORT report 21) ruled out: ramp geometry, reward balance
+    (walking 6.3/s vs stuck 2.5/s), determinism, observation saturation and action saturation.
+  - **Root cause: exploration collapse** (log std about −2.8, i.e. ±0.06; `ent_coef` was 0).
+
+### C3: Exploration reset. RUNNING (Amarel job 63986078, from C2 seed 1 at 86M → 140M)
+- **Change:** `--reset-log-std -1.2` (noise about ±0.3) and `--ent-coef 0.002`. Everything else as C2.
+- **Note:** the init file is named `c2s1_78M.zip` on Amarel but is the 86M checkpoint (the newest at
+  copy time).
+- **Lesson:** with `ent_coef = 0`, long PPO training makes the policy nearly deterministic. New
+  skills in a later stage need exploration restored.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

@@ -131,6 +131,10 @@ def main():
                    help="course: raise difficulty when mean distance per episode exceeds this (m)")
     p.add_argument("--spawn-offset", type=float, default=0.8,
                    help="course: spawn at section start + this (C1 0.8 put ramp/stairs spawns ON them; C2 0.15)")
+    p.add_argument("--reset-log-std", type=float, default=None,
+                   help="continuations: reset the policy's exploration noise (log std), e.g. -1.2")
+    p.add_argument("--ent-coef", type=float, default=None,
+                   help="entropy bonus (original 0.0); keeps exploration from collapsing")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
@@ -164,6 +168,15 @@ def main():
         #   behaviour of a fresh process anyway).
         if not ckpt:
             model.set_random_seed(args.seed)
+            # [C3] after ~80M steps with ent_coef 0 the exploration noise had collapsed (log std
+            #   ~ -2.8, i.e. +-0.06 on a +-1 action scale), so the course policy never tried a new way
+            #   onto the ramp. Optionally reset it for the continuation.
+            if args.reset_log_std is not None:
+                with torch.no_grad():
+                    model.policy.log_std.fill_(args.reset_log_std)
+                print(f"exploration reset: log_std = {args.reset_log_std}")
+        if args.ent_coef is not None:
+            model.ent_coef = args.ent_coef
         print(f"{'Resuming from' if ckpt else 'Initialised from'} {src} ({model.num_timesteps:,} steps, seed {args.seed})")
     else:
         venv = VecNormalize(venv, norm_obs=True, norm_reward=True, clip_obs=10.0, gamma=0.99)
