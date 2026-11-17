@@ -1,0 +1,902 @@
+{
+ "difficulty": 0.5,
+ "layouts": 6,
+ "results": [
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_198026550_steps.zip",
+   "steps": 198026550,
+   "goals": 2,
+   "layouts": 6,
+   "mean_distance": 18.46,
+   "distances": [
+    15.2,
+    17.1,
+    15.1,
+    23.2,
+    17.0,
+    23.2
+   ],
+   "goal_times": [
+    34.7,
+    49.7
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_218026350_steps.zip",
+   "steps": 218026350,
+   "goals": 2,
+   "layouts": 6,
+   "mean_distance": 18.12,
+   "distances": [
+    15.2,
+    15.2,
+    23.2,
+    23.2,
+    16.8,
+    15.2
+   ],
+   "goal_times": [
+    49.3,
+    42.3
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_196026570_steps.zip",
+   "steps": 196026570,
+   "goals": 2,
+   "layouts": 6,
+   "mean_distance": 17.94,
+   "distances": [
+    6.5,
+    15.2,
+    23.2,
+    23.2,
+    20.8,
+    18.7
+   ],
+   "goal_times": [
+    53.3,
+    41.7
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_200026530_steps.zip",
+   "steps": 200026530,
+   "goals": 2,
+   "layouts": 6,
+   "mean_distance": 15.38,
+   "distances": [
+    23.2,
+    18.2,
+    4.9,
+    7.5,
+    23.2,
+    15.2
+   ],
+   "goal_times": [
+    47.1,
+    57.9
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_197026560_steps.zip",
+   "steps": 197026560,
+   "goals": 2,
+   "layouts": 6,
+   "mean_distance": 14.71,
+   "distances": [
+    4.8,
+    23.2,
+    10.9,
+    15.2,
+    23.2,
+    10.9
+   ],
+   "goal_times": [
+    51.5,
+    37.1
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_199026540_steps.zip",
+   "steps": 199026540,
+   "goals": 2,
+   "layouts": 6,
+   "mean_distance": 14.43,
+   "distances": [
+    4.9,
+    2.9,
+    23.2,
+    17.2,
+    15.2,
+    23.2
+   ],
+   "goal_times": [
+    44.4,
+    56.1
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_202026510_steps.zip",
+   "steps": 202026510,
+   "goals": 1,
+   "layouts": 6,
+   "mean_distance": 16.35,
+   "distances": [
+    15.2,
+    14.2,
+    15.2,
+    15.2,
+    23.2,
+    15.2
+   ],
+   "goal_times": [
+    44.6
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_198026550_steps.zip",
+   "steps": 198026550,
+   "goals": 1,
+   "layouts": 6,
+   "mean_distance": 15.93,
+   "distances": [
+    4.7,
+    23.2,
+    20.1,
+    15.2,
+    17.2,
+    15.1
+   ],
+   "goal_times": [
+    59.1
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_203026500_steps.zip",
+   "steps": 203026500,
+   "goals": 1,
+   "layouts": 6,
+   "mean_distance": 15.62,
+   "distances": [
+    15.1,
+    15.2,
+    23.2,
+    21.5,
+    15.3,
+    3.5
+   ],
+   "goal_times": [
+    46.7
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_217026360_steps.zip",
+   "steps": 217026360,
+   "goals": 1,
+   "layouts": 6,
+   "mean_distance": 14.71,
+   "distances": [
+    5.0,
+    23.2,
+    10.8,
+    22.9,
+    15.4,
+    10.9
+   ],
+   "goal_times": [
+    52.6
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_198026550_steps.zip",
+   "steps": 198026550,
+   "goals": 1,
+   "layouts": 6,
+   "mean_distance": 14.36,
+   "distances": [
+    15.1,
+    7.6,
+    7.9,
+    12.5,
+    23.2,
+    19.8
+   ],
+   "goal_times": [
+    47.6
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_201026520_steps.zip",
+   "steps": 201026520,
+   "goals": 1,
+   "layouts": 6,
+   "mean_distance": 12.53,
+   "distances": [
+    3.2,
+    15.2,
+    15.1,
+    23.2,
+    3.3,
+    15.2
+   ],
+   "goal_times": [
+    44.0
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_210026430_steps.zip",
+   "steps": 210026430,
+   "goals": 1,
+   "layouts": 6,
+   "mean_distance": 12.36,
+   "distances": [
+    3.2,
+    10.9,
+    10.8,
+    23.2,
+    10.9,
+    15.2
+   ],
+   "goal_times": [
+    39.8
+   ]
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_197026560_steps.zip",
+   "steps": 197026560,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 15.15,
+   "distances": [
+    15.2,
+    15.2,
+    15.1,
+    15.1,
+    15.2,
+    15.1
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_203026500_steps.zip",
+   "steps": 203026500,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 14.43,
+   "distances": [
+    15.1,
+    11.0,
+    15.1,
+    15.1,
+    15.1,
+    15.1
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_196026570_steps.zip",
+   "steps": 196026570,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 14.41,
+   "distances": [
+    15.1,
+    3.0,
+    22.7,
+    15.2,
+    15.2,
+    15.2
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_200026530_steps.zip",
+   "steps": 200026530,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 14.36,
+   "distances": [
+    15.2,
+    15.2,
+    2.9,
+    22.5,
+    15.2,
+    15.2
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_215026380_steps.zip",
+   "steps": 215026380,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 13.67,
+   "distances": [
+    9.8,
+    15.2,
+    10.9,
+    10.9,
+    20.9,
+    14.3
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_207026460_steps.zip",
+   "steps": 207026460,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 13.64,
+   "distances": [
+    15.1,
+    10.9,
+    15.1,
+    15.1,
+    14.6,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_203026500_steps.zip",
+   "steps": 203026500,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 13.47,
+   "distances": [
+    10.9,
+    15.2,
+    5.0,
+    15.1,
+    15.1,
+    19.6
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_196026570_steps.zip",
+   "steps": 196026570,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 13.29,
+   "distances": [
+    5.0,
+    15.2,
+    20.1,
+    16.9,
+    19.6,
+    2.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_212026410_steps.zip",
+   "steps": 212026410,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 13.15,
+   "distances": [
+    15.1,
+    10.9,
+    11.8,
+    10.9,
+    15.1,
+    15.1
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_199026540_steps.zip",
+   "steps": 199026540,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 13.01,
+   "distances": [
+    10.9,
+    10.9,
+    10.9,
+    15.1,
+    15.1,
+    15.2
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_208026450_steps.zip",
+   "steps": 208026450,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 12.29,
+   "distances": [
+    4.4,
+    10.9,
+    15.2,
+    15.1,
+    10.9,
+    17.3
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_200026530_steps.zip",
+   "steps": 200026530,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 12.15,
+   "distances": [
+    15.1,
+    11.9,
+    15.2,
+    4.7,
+    15.1,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_216026370_steps.zip",
+   "steps": 216026370,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.92,
+   "distances": [
+    15.2,
+    15.1,
+    4.3,
+    10.9,
+    10.8,
+    15.2
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_199026540_steps.zip",
+   "steps": 199026540,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.88,
+   "distances": [
+    4.1,
+    13.8,
+    15.2,
+    19.1,
+    3.9,
+    15.2
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_204026490_steps.zip",
+   "steps": 204026490,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.83,
+   "distances": [
+    15.1,
+    15.1,
+    15.1,
+    10.9,
+    3.8,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_204026490_steps.zip",
+   "steps": 204026490,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.58,
+   "distances": [
+    10.9,
+    10.9,
+    15.2,
+    10.8,
+    10.8,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_207026460_steps.zip",
+   "steps": 207026460,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.58,
+   "distances": [
+    10.9,
+    10.8,
+    15.1,
+    10.9,
+    10.9,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_201026520_steps.zip",
+   "steps": 201026520,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.56,
+   "distances": [
+    10.8,
+    15.1,
+    10.9,
+    10.9,
+    10.8,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_208026450_steps.zip",
+   "steps": 208026450,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.55,
+   "distances": [
+    10.8,
+    15.1,
+    10.8,
+    10.9,
+    10.9,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_213026400_steps.zip",
+   "steps": 213026400,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.54,
+   "distances": [
+    10.8,
+    10.8,
+    15.1,
+    10.8,
+    10.8,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_202026510_steps.zip",
+   "steps": 202026510,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.31,
+   "distances": [
+    4.9,
+    10.9,
+    15.1,
+    15.2,
+    10.9,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_206026470_steps.zip",
+   "steps": 206026470,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 11.24,
+   "distances": [
+    15.2,
+    10.9,
+    15.1,
+    10.9,
+    10.9,
+    4.5
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_197026560_steps.zip",
+   "steps": 197026560,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.97,
+   "distances": [
+    5.0,
+    8.0,
+    15.2,
+    4.7,
+    17.7,
+    15.2
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_204026490_steps.zip",
+   "steps": 204026490,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.94,
+   "distances": [
+    10.8,
+    10.8,
+    11.0,
+    4.6,
+    15.1,
+    13.3
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_211026420_steps.zip",
+   "steps": 211026420,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.86,
+   "distances": [
+    10.9,
+    10.9,
+    10.9,
+    10.9,
+    10.9,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_210026430_steps.zip",
+   "steps": 210026430,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.85,
+   "distances": [
+    10.9,
+    10.9,
+    10.9,
+    10.8,
+    10.8,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_201026520_steps.zip",
+   "steps": 201026520,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.58,
+   "distances": [
+    4.8,
+    10.9,
+    10.9,
+    10.9,
+    10.9,
+    15.1
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_202026510_steps.zip",
+   "steps": 202026510,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.56,
+   "distances": [
+    10.9,
+    4.5,
+    10.9,
+    10.9,
+    15.2,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_205026480_steps.zip",
+   "steps": 205026480,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.48,
+   "distances": [
+    4.6,
+    15.2,
+    10.8,
+    10.8,
+    10.8,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_213026400_steps.zip",
+   "steps": 213026400,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.47,
+   "distances": [
+    11.3,
+    10.9,
+    15.3,
+    10.9,
+    4.9,
+    9.5
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_214026390_steps.zip",
+   "steps": 214026390,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.42,
+   "distances": [
+    10.8,
+    10.8,
+    10.8,
+    10.8,
+    8.5,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_205026480_steps.zip",
+   "steps": 205026480,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.23,
+   "distances": [
+    5.3,
+    11.2,
+    3.6,
+    11.0,
+    15.2,
+    15.1
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed1/ckpt_206026470_steps.zip",
+   "steps": 206026470,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 10.05,
+   "distances": [
+    15.1,
+    2.8,
+    10.9,
+    5.4,
+    15.2,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_214026390_steps.zip",
+   "steps": 214026390,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 9.86,
+   "distances": [
+    15.1,
+    4.9,
+    5.2,
+    4.3,
+    15.0,
+    14.6
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_205026480_steps.zip",
+   "steps": 205026480,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 9.85,
+   "distances": [
+    8.8,
+    10.9,
+    6.6,
+    10.9,
+    11.0,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_211026420_steps.zip",
+   "steps": 211026420,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 9.75,
+   "distances": [
+    10.8,
+    10.8,
+    4.4,
+    10.8,
+    10.9,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_206026470_steps.zip",
+   "steps": 206026470,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 9.61,
+   "distances": [
+    10.9,
+    10.9,
+    10.9,
+    10.8,
+    3.3,
+    10.9
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_209026440_steps.zip",
+   "steps": 209026440,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 9.6,
+   "distances": [
+    10.8,
+    10.8,
+    10.8,
+    3.5,
+    10.8,
+    10.8
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_209026440_steps.zip",
+   "steps": 209026440,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 8.76,
+   "distances": [
+    5.2,
+    5.3,
+    10.9,
+    10.9,
+    5.3,
+    15.1
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed2/ckpt_207026460_steps.zip",
+   "steps": 207026460,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 8.64,
+   "distances": [
+    10.9,
+    3.1,
+    3.0,
+    4.6,
+    15.2,
+    15.1
+   ],
+   "goal_times": []
+  },
+  {
+   "checkpoint": "/cache/home/bpa29/rl_quadruped/obstacle_course/runs/course_c10_seed0/ckpt_212026410_steps.zip",
+   "steps": 212026410,
+   "goals": 0,
+   "layouts": 6,
+   "mean_distance": 7.76,
+   "distances": [
+    10.8,
+    2.7,
+    10.8,
+    10.8,
+    4.9,
+    6.5
+   ],
+   "goal_times": []
+  }
+ ]
+}

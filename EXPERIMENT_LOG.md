@@ -521,6 +521,22 @@ independent runs, not 3. It was left running (no-restart rule).
     0/36.
   - Milestone: `progress/milestones/c10_seed1_200M_bench05_2of6/`.
   - Note: C8 seed 1 final (210M) fell to 0/6 (late drift).
+- **At 205–214M review:** 0/18 (checkpoint variance).
+- **Sweep of 54 checkpoints (196–218M):** max 2/6 (6 checkpoints), 1/6 ×7, 0/6 ×41.
+  - Goals on every layout.
+  - Non-goal stops: ramp 127, stairs 106, rubble 48.
+  - Best checkpoints stop at the stairs (15.15 m): rear feet stub into the riser.
+
+### TOOL: Checkpoint sweep
+- `tools/checkpoint_sweep.py` + `amarel/sweep.slurm`: parallel benchmark evaluation of every k-th
+  checkpoint (32 cores, about 10 min for 54 checkpoints).
+- Use it to pick final policies (late drift and checkpoint variance make single reviews
+  unreliable).
+
+### C11: Feet-stumble penalty. RUNNING (Amarel job 63989827, from C10 seed 0 at 198M → 258M)
+- **Change (one idea):** `feet_stumble` −1.0 (feet with |F_xy| > 2 |F_z| and > 1 N).
+- Unit test: 0 on flat ground, 2 when front feet are pushed into the riser.
+- First version subtracted the number of feet without contact (bug); fixed before launch.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

@@ -143,6 +143,10 @@ DEFAULT_REWARD_WEIGHTS = dict(
                            #   the old foot_clearance only asks for >= 8 cm). E11 sets 1.0.
                            #   [LIMIT found in E12] the bell curve is ~0 once a foot is > 6 cm off, so
                            #   it gives no pull on a leg lifting 14-15 cm (FR) -> see swing_overshoot.
+    feet_stumble=0.0,      # [C11, opt-in] feet hitting vertical faces (stair risers, hurdle sides):
+                           #   count of feet whose contact force is mostly horizontal (|F_xy| > 2 |F_z|).
+                           #   Stairs trace (C10, 0.5): rear feet stubbed into the riser at 14.9 m
+                           #   instead of lifting over it. Standard legged_gym term. C11 sets -1.0.
     swing_overshoot=0.0,   # [E13, opt-in] quadratic penalty that keeps growing: sum over feet of
                            #   max(0, lift - (swing_height + 2 cm))^2. FR lifted 13-15 cm in E11/E12
                            #   while the others lifted ~8 cm. E13 sets -1000 (~1.25/s at 15 cm).
@@ -323,6 +327,22 @@ class QuadrupedCourseEnv(gym.Env):
         self.ring_theta += (a - self.ring_last_a + np.pi) % (2 * np.pi) - np.pi   # unwrap
         self.ring_last_a = a
         return float(self.ring_theta * course.RING_TRACK_RADIUS)
+
+    def _feet_stumble(self):
+        """[C11] number of feet pushing mostly sideways/forward into an obstacle face."""
+        d, m = self.data, self.model
+        f_world = np.zeros((4, 3))
+        frc = np.zeros(6)
+        for k in range(d.ncon):
+            c = d.contact[k]
+            for sign, g in ((1.0, c.geom1), (-1.0, c.geom2)):
+                hit = np.where(self.foot_geoms == g)[0]
+                if hit.size:
+                    mujoco.mj_contactForce(m, d, k, frc)
+                    f_world[hit[0]] += sign * (c.frame.reshape(3, 3).T @ frc[:3])
+        horiz = np.linalg.norm(f_world[:, :2], axis=1)
+        self._last_foot_forces = f_world
+        return float(np.sum((horiz > 2.0 * np.abs(f_world[:, 2])) & (horiz > 1.0)))
 
     def _section_results(self):
         """[C7] per course section: True = cleared, False = reached but not cleared this episode.
@@ -572,6 +592,7 @@ class QuadrupedCourseEnv(gym.Env):
         z_ref = self.swing_height * np.sin(np.pi * swing_prog)
         shape = float(np.sum(np.exp(-((lift - z_ref) ** 2) / 0.03 ** 2) * swing) / max(swing.sum(), 1))
         overshoot = float(np.sum(np.clip(lift - (self.swing_height + 0.02), 0, None) ** 2))
+        stumble = self._feet_stumble() if self.w.get("feet_stumble", 0.0) else 0.0
         # [E11] stance feet under the hips (as in the standing pose), and no hip splay
         rel = self._feet_rel_hips(d) - self.nominal_foot_rel
         placement = float(np.sum(np.sum(rel ** 2, axis=1) * foot_contact))
@@ -642,6 +663,7 @@ class QuadrupedCourseEnv(gym.Env):
             "hip_abduction": splay,
             "swing_shape": shape,
             "swing_overshoot": overshoot,
+            "feet_stumble": stumble,
             "track_following": (float(np.exp(-(np.linalg.norm(pos[:2] - np.array(course.RING_CENTER))
                                                - course.RING_TRACK_RADIUS) ** 2 / 0.25))
                                 if self.arena == "ring" else 0.0),

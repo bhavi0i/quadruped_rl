@@ -74,6 +74,46 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 37: 2026-11-17, checkpoint sweep: C10 tops out at 2 of 6; the stairs riser is the bottleneck → C11 (stumble penalty)
+
+### Reliability swings between checkpoints
+The 5M-step review of C10 (205–214M) got **0 of 18**, a few million steps after 3 of 18. To stop
+judging by whichever checkpoint a review lands on, I added a **checkpoint sweep**
+(`tools/checkpoint_sweep.py` + `amarel/sweep.slurm`). It evaluates every saved checkpoint on the
+fixed benchmark (all obstacles 0.5, 6 rubble layouts), in parallel on a 32-core Amarel node.
+
+**C10 sweep: 54 checkpoints (196–218M, 3 seeds).** Results: `progress/sweeps/sweep_c10_196-218M.json`
+
+| Goals out of 6 | Checkpoints |
+|---|---|
+| 2 / 6 | 6 (best: C10 seed 0 at 198M, mean 18.5 m, goals in 34.7 s and 49.7 s) |
+| 1 / 6 | 7 |
+| 0 / 6 | 41 |
+
+- Goals come from **all six layouts** (1–5 each), so there is no single bad rubble layout.
+- Where the non-goal runs stopped (all 54 checkpoints): **ramp 127, stairs 106**, rubble 48,
+  slalom 12, hurdles 9.
+- For the *best* checkpoints the stop is almost always the **stairs at x ≈ 15.15–15.2 m**.
+
+### Stairs trace (best checkpoint, benchmark 0.5)
+The **front feet** reach step 3 (15.2–15.3 m), but the **rear feet stay on step 1** (14.6–14.9 m) and
+never get past the next riser at 14.9 m. A leg part keeps touching the step edge and the body rocks
+±0.3 m/s. In this run it eventually got over after about 6 s of struggling. **The rear feet stub
+into the riser** instead of lifting over it.
+
+### Change: C11 (Amarel job 63989827, 3 seeds, from C10 seed 0 at 198M → 258M)
+- **`feet_stumble` −1.0**: counts feet whose contact force is mostly horizontal (|F_xy| > 2 |F_z|,
+  above 1 N), i.e. a toe pushing into a riser or hurdle face. This is a standard term in legged-robot
+  training (legged_gym).
+- Tested: 0 on flat ground; 2 feet flagged when the front feet are driven into the stair riser.
+- Everything else as C10 (weighted stairs/rubble practice, per-section curriculum, which starts at
+  C10 seed 0's levels: ramp 0.3, stairs 0.3).
+
+The final stage-2 policy will be chosen by a **sweep over all checkpoints** of the best line, not
+from a single review.
+
+---
+
 ## Report 36: 2026-11-17, C10 (weighted stairs and rubble practice) is the best line: 3 goals in 18 benchmark runs
 
 Benchmark: all obstacles 0.5, 6 rubble layouts.
