@@ -696,6 +696,25 @@ independent runs, not 3. It was left running (no-restart rule).
   - C15: seeds 0/1/2 3/6, 4/6, 4/6.
   - Training falls: C15 0.27–0.28, C16 0.39–0.47.
   - Validation job 64000968 (`results/validate_c15_c16.json`).
+- **Validation result:**
+  - C16 s1 281M **9/10/9**; C15 s2 239M 9/8/**12**; C16 s1 266M 9/11/8; C15 s0 248M 10/8/9
+    (of 12 at 0.5/0.75/1.0).
+  - **New course policy: C16 seed 1 at 281M** (`progress/milestones/STAGE2c_c16_seed1_281M_full_9of12/`).
+- **Path audit vs baseline (rubble):** 16.0 s vs 30.7 s; backing up 10 % vs 32 %; path ratio
+  1.36 vs 3.29.
+- **Not met:**
+  - per-section posture (hind-knee range ≤ 7°)
+  - hesitation on hurdles and stairs 30–40 %
+  - course gait: trot 0.72, crab 10.3°
+- **Conclusion:** relaxing the style terms reduced aimless shuffling (PARTIAL SUCCESS) but did
+  not by itself produce section-specific gaits.
+
+### METHOD: cross-platform non-determinism
+- The same checkpoint, layouts and seeds give different outcomes on Amarel (x86) vs the Mac
+  (ARM): C16 s1 281M 5/6 vs 2/6 on layouts 0–5.
+- Chaotic contact dynamics amplify floating-point differences.
+- **Rule:** success rates only from many episodes on Amarel; local runs for videos and path
+  shape.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

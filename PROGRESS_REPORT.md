@@ -74,6 +74,70 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 52: 2026-11-17, new course policy (C16 seed 1, 281M): 9 / 10 / 9 of 12, shuffling greatly reduced
+
+### 1. Validation (Amarel job 64000968; 6 runs, every 3rd checkpoint from 230M, 12 layouts × 3 difficulties)
+
+| Checkpoint | 0.5 | 0.75 | **1.0 (full)** |
+|---|---|---|---|
+| **C16 seed 1 at 281M (final), chosen** | 9 / 12 | **10 / 12** | **9 / 12** |
+| C15 seed 2 at 239M | 9 / 12 | 8 / 12 | **12 / 12** |
+| C16 seed 1 at 266M | 9 / 12 | 11 / 12 | 8 / 12 |
+| C15 seed 0 at 248M | 10 / 12 | 8 / 12 | 9 / 12 |
+| *previous course policy (C14 seed 0, 222M)* | *11 / 12* | *9 / 12* | *7 / 12* |
+| *before the stall fix (C11)* | *9 / 12* | *1 / 12* | *0 / 12* |
+
+Full-difficulty crossings rose from 7/12 to 8–12/12.
+
+### 2. Path audit of the top four at full difficulty (6 layouts; `progress/milestones/STAGE2c_c16_seed1_281M_full_9of12/audit/`)
+
+| | Baseline | C15 s2 239M | **C16 s1 281M** | C16 s1 266M | C15 s0 248M |
+|---|---|---|---|---|---|
+| rubble time / backing up / path ratio | 30.7 s / 32 % / 3.29 | 20.3 s / 24 % / 1.85 | **16.0 s / 10 % / 1.36** | 27.7 s / 20 % / 1.79 | 20.1 s / 18 % / 1.74 |
+| hurdles time / hesitating | 5.3 s / 32 % | 7.9 s / 37 % | 5.8 s / 34 % | **2.3 s / 6 %** | 7.3 s / 32 % |
+| stairs time / hesitating | 6.6 s / 36 % | 6.0 s / 21 % | 6.5 s / 44 % | 3.1 s / 10 % | **2.7 s / 9 %** |
+| ramp time | 3.6 s | 4.8 s | 4.5 s | 5.4 s | 4.1 s |
+| slalom wall touches | 0 % | 1.2 % | 0.7 % | **0 %** | 1.0 % |
+| hind-knee range across sections | 4° | 3° | 6° | 7° | 4° |
+
+**Why C16 seed 1 at 281M:**
+- It is the most consistent across difficulties.
+- It has the cleanest rubble crossing. The rubble used to take half of every run: time is now
+  roughly halved, backing up is down two-thirds, and the path is ~2.4× more direct.
+
+**What is still not met** (group goals from report 49):
+- **Per-section posture:** hind-knee bend still varies by only 6–7° across sections. There is no
+  clear crouch on the stairs or hind-leg push on the ramp yet. The ¼-weight relaxation
+  *allows* these gaits but does not *reward* them, so they appear only where they help progress.
+- **Hesitation:** still ~70 % of rubble time below 0.1 m/s (careful, slow forward stepping),
+  and 30–40 % on hurdles and stairs for most checkpoints.
+- **Gait checks on the course, benchmark 0.5:**
+  - trot 0.72, crab 10.3°, fore-aft 10 cm, step-height spread 0.66 (relaxed on obstacles by
+    design)
+  - level body (roll 2.1°, pitch 1.9°), feet under the hips (4.6 cm), real shin contact 0.5 %,
+    6/6 goals
+
+### 3. Method finding: results depend on the machine
+
+- **What happened:** the same checkpoint, layouts and start seeds gave different outcomes on
+  Amarel (Linux x86) and the Mac (Apple ARM).
+  - C16 s1 281M: 5 of 6 vs 2 of 6.
+  - C15 s2 239M: 6 of 6 vs 4 of 6.
+- **Cause:** contact physics is chaotic, so tiny floating-point differences change which runs
+  succeed. Each run is effectively a sample, which also explains the earlier review-vs-sweep
+  mismatches.
+- **Rules from now on:**
+  - Success rates are only quoted from many episodes, all computed on Amarel.
+  - Local runs are for videos and the path audit (behaviour shape, not success counts).
+
+### Milestone
+[`progress/milestones/STAGE2c_c16_seed1_281M_full_9of12/`](progress/milestones/STAGE2c_c16_seed1_281M_full_9of12): policy, config, `bench05/` evaluation, path audits, and a full-difficulty crossing
+video (layout 2, goal in 40.5 s):
+
+![](progress/milestones/STAGE2c_c16_seed1_281M_full_9of12/crossing_full_layout2.gif)
+
+---
+
 ## Report 51: 2026-11-17, C15 and C16 finished (282M): C16 seed 1 crosses 6 of 6 at the benchmark
 
 ### Review (benchmark 0.5, 6 layouts)

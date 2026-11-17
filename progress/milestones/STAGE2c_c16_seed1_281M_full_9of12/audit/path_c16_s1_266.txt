@@ -1,0 +1,8 @@
+2/6 goals at difficulty 1.0
+section   time s  hesit%  back%  wander  yawwig  wall% minwall stride cm strideCV hindknee foreknee slip cm/s
+start        1.6       0      0    1.02    0.71    0.0    1.18      29.0     0.69    -82.3   -110.4      86.0
+rubble      27.7      75     20    1.79    0.30    0.0    1.00      12.4     1.14    -79.1   -102.6      26.7
+hurdles      2.3       6      5    1.11    0.97    0.0    1.04      28.4     0.69    -84.2   -108.6      83.0
+ramp         5.4      34      9    1.10    0.63    0.0    0.80      22.4     0.73    -85.9   -106.6      53.0
+stairs       3.1      10      5    1.08    0.86    0.0    0.52      23.2     0.68    -82.4   -105.7      72.2
+slalom       3.2      10      3    1.61    1.27    0.0    0.21      25.2     0.69    -80.1   -109.6      82.8
