@@ -1,0 +1,125 @@
+{
+  "speed": 0.11096316296348009,
+  "trot_match": 0.7397,
+  "feet_down": 2.9148,
+  "body_contact_rate": 0.415,
+  "swing_lift_cm": 5.834996413684258,
+  "fall_rate": 0.0,
+  "track_error_m": null,
+  "speed_err": 0.4890368370365199,
+  "foot_splay_cm": 2.2068672963243046,
+  "foot_fore_aft_cm": 6.285187710730668,
+  "step_height_spread": 0.7654379145742121,
+  "step_height_per_leg_cm": [
+    8.2,
+    8.3,
+    7.7,
+    3.1
+  ],
+  "crab_angle_signed_deg": -5.243652065760312,
+  "crab_angle_deg": 5.243652065760312,
+  "roll_deg": 5.631914770703791,
+  "pitch_deg": 1.3104482897159213,
+  "sideways_speed": 0.0012196348814457747,
+  "goal_rate": 0.0,
+  "mean_progress_m": 10.55,
+  "course_progress": 0.448936170212766,
+  "course_runs": [
+    {
+      "max_x": 10.55,
+      "sections_cleared": [
+        "rubble",
+        "hurdles"
+      ],
+      "reached_goal": false,
+      "fell": false,
+      "time_s": 60.0,
+      "stopped_in": "ramp"
+    },
+    {
+      "max_x": 10.55,
+      "sections_cleared": [
+        "rubble",
+        "hurdles"
+      ],
+      "reached_goal": false,
+      "fell": false,
+      "time_s": 60.0,
+      "stopped_in": "ramp"
+    },
+    {
+      "max_x": 10.55,
+      "sections_cleared": [
+        "rubble",
+        "hurdles"
+      ],
+      "reached_goal": false,
+      "fell": false,
+      "time_s": 60.0,
+      "stopped_in": "ramp"
+    }
+  ],
+  "goals": {
+    "speed_err": {
+      "value": 0.489,
+      "goal": "<= 0.15",
+      "passed": false
+    },
+    "trot_match": {
+      "value": 0.74,
+      "goal": ">= 0.75",
+      "passed": false
+    },
+    "feet_down": {
+      "value": 2.915,
+      "goal": "between (1.6, 2.6)",
+      "passed": false
+    },
+    "body_contact_rate": {
+      "value": 0.415,
+      "goal": "<= 0.05",
+      "passed": false
+    },
+    "fall_rate": {
+      "value": 0.0,
+      "goal": "<= 0.05",
+      "passed": true
+    },
+    "crab_angle_deg": {
+      "value": 5.244,
+      "goal": "<= 10.0",
+      "passed": true
+    },
+    "roll_deg": {
+      "value": 5.632,
+      "goal": "<= 3.0",
+      "passed": false
+    },
+    "pitch_deg": {
+      "value": 1.31,
+      "goal": "<= 4.0",
+      "passed": true
+    },
+    "foot_splay_cm": {
+      "value": 2.207,
+      "goal": "<= 5.0",
+      "passed": true
+    },
+    "foot_fore_aft_cm": {
+      "value": 6.285,
+      "goal": "<= 8.0",
+      "passed": true
+    },
+    "step_height_spread": {
+      "value": 0.765,
+      "goal": "<= 0.2",
+      "passed": false
+    },
+    "goal_rate": {
+      "value": 0.0,
+      "goal": ">= 0.67",
+      "passed": false
+    }
+  },
+  "model": "/Users/bpa29/Downloads/OneDrive_1_10-30-2026/rl_quadruped/runs/_amarel_ppo/course_c2_seed1/ckpt_99021240_steps.zip"
+}

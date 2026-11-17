@@ -74,6 +74,41 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 24: 2026-11-17, curriculum rising (difficulty 0.3): obstacles grow, stairs now the hard part
+
+Course from the start, each run tested at its **own current curriculum difficulty**:
+
+| Run | Train difficulty | Furthest point (3 runs) | Goal | Shin contact |
+|---|---|---|---|---|
+| **C3 seed 1 (100M)** | 0.2–0.3 | 14.6 (fell) / 15.2 (fell) / **23.2 ✅** | **1/3** | 49 % |
+| C3 seed 0 (100M) | 0.3 | 10.3 / 10.7 / 10.3 | 0/3 | 62 % |
+| C3 seed 2 (100M) | 0.3 | 10.1 / 10.1 / 10.3 | 0/3 | 60 % |
+| C2 seeds 1–2 (99–105M) | 0.1 | 10.6 ×3 | 0/3 | 42 % |
+| C1 ×3, C2 seed 0 | 0.0 | 9.7–9.9 | 0/3 | 23–34 % |
+
+**What's working**
+- **The curriculum is advancing.** C3 is training at 0.3, so hurdles are about 5.4 cm, steps about
+  4.8 cm and the ramp about 8°. C2 is at 0.1.
+- C3 seed 1 still completes the bigger course in 1 of 3 runs. It clears hurdles and the ramp, then
+  **tips over at the first stair** in the other two runs.
+
+![](docs/media/review_90M_20261117_0232/course_c3_seed1/stairs_frames.png)
+Video: [course.mp4](docs/media/review_90M_20261117_0232/course_c3_seed1/course.mp4)
+
+**What's not working**
+- **Shin contact is rising** (49–62 % for C3): legs scrape the bigger obstacles.
+- Seeds 0 and 2 of C3 stall partway up the steeper ramp.
+- Training falls: 18–30 %.
+
+**Decision:** no change yet. Curriculum steps always cause a temporary dip. If stair falls and shin
+contact don't improve by the next review, the course-gait tweak is next: higher swing height on
+obstacles, or a stronger collision penalty only for shins hitting obstacle edges.
+
+Tooling fix: review videos for course runs now come from the run that gets furthest (it used to
+pick a run stuck at the ramp).
+
+---
+
 ## Report 23: 2026-11-17, 🏁 FIRST COURSE COMPLETION: start → goal, 3 out of 3 runs (difficulty 0)
 
 **C3 seed 1 at 90M** (4M steps after the exploration reset) crosses the whole obstacle course from

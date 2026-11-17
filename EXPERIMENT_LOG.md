@@ -395,6 +395,13 @@ independent runs, not 3. It was left running (no-restart rule).
   - Curriculum advanced to difficulty 0.2.
   - C1/C2 mostly still stuck (C2 seeds 1–2 reach 10.3–10.9 m).
   - **The exploration reset was decisive.**
+- **At 100M:**
+  - C3 curriculum at 0.3.
+  - C3 seed 1: goal 1/3 at its difficulty; it falls at the first stair in 2/3.
+  - Seeds 0 and 2 stall on the steeper ramp.
+  - Shin contact rising to 49–62 %; training falls 18–30 %.
+  - No change yet (curriculum dip). Candidate: course-gait tweak (obstacle swing height, or a
+    shin-edge collision penalty).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

@@ -119,7 +119,12 @@ def save_media(rows):
     score = lambda r: (sum(g["passed"] for g in rows[r]["goals"].values()),
                        rows[r]["goals"].get("wall_pass_rate", {}).get("value", 0))
     course_runs = [r for r in rows if r.startswith("course")]
-    best = max(course_runs or rows, key=score)   # stage 2: videos come from the course runs
+    # [FAILED] ranking course runs by gait goals passed picked a run stuck at the ramp for the videos
+    # [NEW] course runs: rank by goal rate, then distance reached from the start
+    def course_score(r):
+        m = json.load(open(os.path.join(pp.PROGRESS, "ppo_" + r, "eval", "metrics.json")))
+        return (m.get("goal_rate", 0), m.get("mean_progress_m", 0))
+    best = max(course_runs, key=course_score) if course_runs else max(rows, key=score)
     tag = f"review_{min(r['steps'] for r in rows.values()) // 1_000_000}M_{time.strftime('%Y%m%d_%H%M')}"
     out = os.path.join(ROOT, "docs", "media", tag)
     for run in rows:
