@@ -74,6 +74,40 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 36: 2026-11-17, C10 (weighted stairs and rubble practice) is the best line: 3 goals in 18 benchmark runs
+
+Benchmark: all obstacles 0.5, 6 rubble layouts.
+
+| Policy | Goals | Furthest points (layouts 0–5) |
+|---|---|---|
+| **C10 seed 1 (200M)** | **2 / 6 (55.2 s, 56.8 s)** | 15.2, **23.2, 23.2**, 20.1, 17.2 (fell), 2.9 |
+| **C10 seed 2 (206M)** | **1 / 6 (34.7 s, fastest yet)** | 10.9 (fell), **23.2**, 15.6 (fell), 4.8, 8.6 (fell), 15.1 |
+| C10 seed 0 (205M) | 0 / 6 | 5.1, 10.9, 15.1, 10.9, 10.9, 13.5 (fell) |
+| C8 seeds 0, 2 and seed 1 **final** | 0 / 18 | mostly the ramp crest or stairs |
+| C9 seeds 0–2 (211–215M) | 0 / 18 | almost all at the ramp crest |
+
+- **Working: weighted practice helps.** C10 has 3 goals in 18 benchmark runs after about 5–10M
+  steps; C8 and C9 together have 0 in 36. Training: falls 16–30 %, goal rate 11–14 %.
+- **Not working:**
+  - The stairs and rubble are still the most common stopping points.
+  - **C8 seed 1's final (210M) dropped to 0/6** (crest stalls), down from 2/6 at 193M. That is the
+    late-training drift again; milestones keep the good checkpoints.
+
+### Milestone: [`progress/milestones/c10_seed1_200M_bench05_2of6/`](progress/milestones/c10_seed1_200M_bench05_2of6) (C10 seed 1 at 200M)
+A full crossing of the benchmark course (layout 1, 55.2 s): start → rubble → hurdles → ramp →
+stairs → slalom → goal.
+![](progress/milestones/c10_seed1_200M_bench05_2of6/course_goal.gif)
+
+Video: [course_goal.mp4](progress/milestones/c10_seed1_200M_bench05_2of6/course_goal.mp4). Frames:
+![](progress/milestones/c10_seed1_200M_bench05_2of6/course_goal_frames.png)
+
+### Next
+- C10 continues to 255M; benchmark reviews every 5M.
+- The open goals for stage 2: reliability (≥ 4/6), then full difficulty (1.0), and course posture
+  (crab is creeping up on some policies).
+
+---
+
 ## Report 35: 2026-11-17, benchmark review: C8 seed 1 is the clear best; its gaps are the stairs and rubble → C10
 
 Benchmark: all obstacles 0.5, 6 rubble layouts.

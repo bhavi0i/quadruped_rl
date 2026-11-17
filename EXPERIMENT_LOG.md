@@ -516,6 +516,11 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Change (one idea):** `--section-weights {"stairs": 3, "rubble": 2}` (verified about 35 % stairs,
   20 % rubble spawns).
 - Start levels: C8 seed 1's {rubble 1, hurdles 1, ramp 0.65, stairs 0.55, slalom 1}.
+- **At 200–206M (5–10M in): WORKS (best line).**
+  - Benchmark: seed 1 2/6 (55.2, 56.8 s), seed 2 1/6 (34.7 s), seed 0 0/6 → 3/18. C8 and C9:
+    0/36.
+  - Milestone: `progress/milestones/c10_seed1_200M_bench05_2of6/`.
+  - Note: C8 seed 1 final (210M) fell to 0/6 (late drift).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
