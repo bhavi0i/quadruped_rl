@@ -43,6 +43,6 @@ export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONUNBUFFERED=1
 cd obstacle_course
 echo "host=$(hostname) job=$SLURM_JOB_ID seed=$SEED init=$INIT restart=${SLURM_RESTART_COUNT:-0}"
 $PY train.py --arena course --steps $STEPS --envs $ENVS --seed $SEED --out runs/course_${TAG}_seed${SEED} \
-    --init-from $INIT --torch-threads 2 --difficulty $DIFF --max-steps 3000 --curriculum-threshold $CURRIC \
+    --init-from $INIT --torch-threads 2 --difficulty "$DIFF" --max-steps 3000 --curriculum-threshold $CURRIC \
     --reward-weights "$WEIGHTS" \
     --turn-practice 0.25 --spawn-offset $OFFSET $EXPLORE $EXTRA

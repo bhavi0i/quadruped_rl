@@ -166,7 +166,8 @@ class QuadrupedCourseEnv(gym.Env):
                  reward_weights=None, injury=None, render_mode=None, course_seed=0,
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
-                 spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False):
+                 spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False,
+                 ramp_spawn=0.0):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -192,6 +193,7 @@ class QuadrupedCourseEnv(gym.Env):
         self.spawn_offset = spawn_offset     # course section spawns: section start + this (m)
         self.friction_model = friction_model # "pyramidal" (E1-E13, C1-C4: slippery) or "elliptic" (C5+)
         self.terrain_relative = terrain_relative  # [C6] orientation penalty relative to ground slope
+        self.ramp_spawn = ramp_spawn         # [C9] share of course spawns placed partway up the ramp
         # a number (all sections alike) or a dict per course section (C7 section curriculum)
         self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
         self.random_start = random_start
@@ -410,6 +412,23 @@ class QuadrupedCourseEnv(gym.Env):
                 yaw = a + self.np_random.uniform(-np.pi / 3, np.pi / 3)   # a = facing the wall
             self.ring_theta, self.ring_last_a = 0.0, a
         qpos[3:7] = [np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)]
+        # [C9, opt-in] start some course episodes partway up the ramp, up to and over the crest, so
+        #   cresting gets direct practice (C8: rubble ~7 s, hurdles ~15 s, then 40-100 s or stuck at
+        #   the 11 deg ramp crest). Body pitched to the slope, height set from the local ground.
+        if (self.arena == "course" and self.random_start and self.ramp_spawn > 0
+                and self.np_random.random() < self.ramp_spawn):
+            x = self.np_random.uniform(10.0, 11.4)
+            mujoco.mj_forward(self.model, self.data)
+            g = self._ground_height(x, 0.0)
+            pitch = np.arctan2(self._ground_height(x + 0.2, 0.0) - self._ground_height(x - 0.2, 0.0), 0.4)
+            qpos[0], qpos[1] = x, self.np_random.uniform(-0.3, 0.3)
+            qpos[2] = g + self.cfg["spawn_height"]
+            yaw = self.np_random.uniform(-0.3, 0.3)
+            q_yaw = np.array([np.cos(yaw / 2), 0, 0, np.sin(yaw / 2)])
+            q_pitch = np.array([np.cos(-pitch / 2), 0, np.sin(-pitch / 2), 0])   # nose up on an uphill
+            qpos[3:7] = np.array([q_yaw[0] * q_pitch[0], -q_yaw[3] * q_pitch[2], q_yaw[0] * q_pitch[2],
+                                  q_yaw[3] * q_pitch[0]])
+            start_x = x
         qpos[self.qadr] = self.default_q + self.np_random.uniform(-0.1, 0.1, 12)
         self.data.ctrl[self.act_ids] = self.default_q
         mujoco.mj_forward(self.model, self.data)

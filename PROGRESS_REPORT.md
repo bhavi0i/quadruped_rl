@@ -74,6 +74,40 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 33: 2026-11-17, ramp level won't settle → C9 (practise the crest directly)
+
+### C8 at 165–182M
+The ramp's curriculum level keeps swinging while every other obstacle stays at full size:
+
+| Run | Ramp level over training (every ~6 updates) |
+|---|---|
+| C8 seed 0 | 0.3 → 0.6 → 0.9 → **1.0** → 1.0 → 0.95 → 0.8 → 0.6 → **0.45** |
+| C8 seed 1 | 0.3 → 0.7 → 0.5 → 0.25 → **0.2** → 0.4 → 0.7 → **0.85** |
+| C8 seed 2 | 0.3 → 0.65 → 0.9 → 0.75 → 0.35 → **0.25** |
+
+Course from the start (6 layouts): no completions. Most runs stop at the **ramp crest
+(10.7–11.0 m)**. Seed 2 reached the stairs in 2 of 6. Crab stays ≤ 4.3° on seeds 0 and 2.
+
+**The trigger from report 32 is met** (the ramp is not stabilising). The skill seems to be
+learned, then forgotten. Every ramp attempt starts at the bottom, so the hard moment (getting
+over the crest) is practised rarely and late in each attempt.
+
+### Change: C9 (Amarel job 63988748, 3 seeds, from C8 seed 1 at 182M → 242M)
+- **`--ramp-spawn 0.25`:** 25 % of course episodes start partway up the ramp (10.0–11.4 m, up to and
+  over the crest), with the body pitched to the slope and the height set from the local ground.
+  Tested: the dog stands stably on the slope at normal height.
+- Mid-ramp starts don't count toward the ramp's curriculum score, so the ramp level still
+  measures full climbs from the bottom.
+- Starts from C8 seed 1's exact section levels: rubble, hurdles and slalom 1.0, ramp 0.85,
+  stairs 0.55.
+- Everything else as C8. C8 keeps running for comparison.
+
+Small fixes: the trainer accepts a per-section starting difficulty (JSON), and the job script
+quotes it. The first C9 launch exited because the JSON was split at its spaces; fixed and
+relaunched.
+
+---
+
 ## Report 32: 2026-11-17, fair 6-layout test: C8 reaches the slalom; the ramp crest is the bottleneck
 
 Course from the start, 6 rubble layouts each, at each run's section levels:

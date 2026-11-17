@@ -485,6 +485,15 @@ independent runs, not 3. It was left running (no-restart rule).
   - With 120 s: rubble about 7 s, hurdles about 15 s, then the ramp takes 40–100 s or never
     crests (11.0 m). The ramp crest (11° at level 0.6) is the bottleneck.
   - Candidate C9: mid-ramp spawns.
+- **At 165–182M:** the ramp level oscillates (e.g. seed 0: 0.3 → 1.0 → 0.45; seed 1: 0.7 → 0.2 →
+  0.85). Course runs mostly stop at the crest. This triggered C9.
+
+### C9: Mid-ramp spawns (crest practice). RUNNING (Amarel job 63988748, from C8 seed 1 at 182M → 242M)
+- **Change (one idea):** `--ramp-spawn 0.25`, 25 % of spawns at x ∈ [10.0, 11.4] on the ramp,
+  pitched to the slope. They are not counted as ramp attempts by the section curriculum.
+- **Start levels:** C8 seed 1's {rubble 1, hurdles 1, ramp 0.85, stairs 0.55, slalom 1}.
+- **Infra:** `--difficulty` accepts JSON; the job script quotes `$DIFF` (the first launch failed
+  on word-splitting).
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

@@ -40,7 +40,8 @@ def make_env(rank, args, difficulty):
                                  wall_spawn=args.wall_spawn, max_steps=args.max_steps,
                                  spawn_offset=args.spawn_offset, swing_height=args.swing_height,
                                  friction_model=args.friction_model,
-                                 terrain_relative=args.terrain_relative_tilt)
+                                 terrain_relative=args.terrain_relative_tilt,
+                                 ramp_spawn=args.ramp_spawn)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -145,7 +146,8 @@ def main():
     p.add_argument("--robot", choices=["go1", "custom"], default="go1")
     p.add_argument("--steps", type=float, default=30e6)
     p.add_argument("--envs", type=int, default=max(1, (os.cpu_count() or 2) - 1))
-    p.add_argument("--difficulty", type=float, default=0.0)
+    p.add_argument("--difficulty", type=lambda v: json.loads(v) if v.strip().startswith("{") else float(v),
+                   default=0.0, help='start difficulty: a number, or per section as JSON (section curriculum)')
     p.add_argument("--target-speed", type=float, default=0.6)
     p.add_argument("--injury", default=None, help='"random_leg", "random", or none')
     p.add_argument("--seed", type=int, default=0)
@@ -178,6 +180,8 @@ def main():
                    help="[C6] penalise body tilt relative to the ground slope, not gravity")
     p.add_argument("--section-curriculum", action="store_true",
                    help="[C7] separate difficulty per course section (+-0.05 by clear rate)")
+    p.add_argument("--ramp-spawn", type=float, default=0.0,
+                   help="[C9] share of course spawns placed partway up the ramp (crest practice)")
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
