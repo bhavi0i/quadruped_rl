@@ -397,6 +397,78 @@
    "speed": 0.06451359402477752,
    "trot_match": 0.7761443014705882,
    "body_contact_rate": 0.133171977124183
+  },
+  {
+   "timesteps": 83046180,
+   "time": "2026-11-17 01:54",
+   "difficulty": 0.0,
+   "distance": 3.2440812717773206,
+   "fall_rate": 0.095,
+   "goal_rate": 0.17,
+   "sections_or_laps": 2.695,
+   "speed": 0.06097689636979218,
+   "trot_match": 0.7732809690045488,
+   "body_contact_rate": 0.15291653443351316
+  },
+  {
+   "timesteps": 83534940,
+   "time": "2026-11-17 01:56",
+   "difficulty": 0.0,
+   "distance": 3.749744193224582,
+   "fall_rate": 0.145,
+   "goal_rate": 0.115,
+   "sections_or_laps": 2.515,
+   "speed": 0.06664380006392985,
+   "trot_match": 0.7785917423684426,
+   "body_contact_rate": 0.14620672722808742
+  },
+  {
+   "timesteps": 83963340,
+   "time": "2026-11-17 01:57",
+   "difficulty": 0.0,
+   "distance": 3.9651286211319974,
+   "fall_rate": 0.17,
+   "goal_rate": 0.175,
+   "sections_or_laps": 2.665,
+   "speed": 0.07017210941432878,
+   "trot_match": 0.7717641223155929,
+   "body_contact_rate": 0.17604575163398692
+  },
+  {
+   "timesteps": 84433200,
+   "time": "2026-11-17 01:59",
+   "difficulty": 0.0,
+   "distance": 3.497570264791511,
+   "fall_rate": 0.135,
+   "goal_rate": 0.17,
+   "sections_or_laps": 2.64,
+   "speed": 0.06859900348067817,
+   "trot_match": 0.7834312348359086,
+   "body_contact_rate": 0.13108372706763716
+  },
+  {
+   "timesteps": 84925530,
+   "time": "2026-11-17 02:01",
+   "difficulty": 0.0,
+   "distance": 3.661940589636395,
+   "fall_rate": 0.125,
+   "goal_rate": 0.11,
+   "sections_or_laps": 2.485,
+   "speed": 0.061796571837411676,
+   "trot_match": 0.7715069160928646,
+   "body_contact_rate": 0.17382446732882417
+  },
+  {
+   "timesteps": 85393530,
+   "time": "2026-11-17 02:03",
+   "difficulty": 0.0,
+   "distance": 3.765705298046872,
+   "fall_rate": 0.135,
+   "goal_rate": 0.165,
+   "sections_or_laps": 2.75,
+   "speed": 0.06722423608510938,
+   "trot_match": 0.7728915598290599,
+   "body_contact_rate": 0.1705491452991453
   }
  ]
 }

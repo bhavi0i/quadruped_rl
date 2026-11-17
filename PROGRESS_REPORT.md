@@ -74,6 +74,60 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 23: 2026-11-17, 🏁 FIRST COURSE COMPLETION: start → goal, 3 out of 3 runs (difficulty 0)
+
+**C3 seed 1 at 90M** (4M steps after the exploration reset) crosses the whole obstacle course from
+the start line to the goal pad: **3/3 runs, no falls, in 44.7 / 45.9 / 55.5 s**.
+
+![](progress/milestones/c3_seed1_90M_first_course_completion/course.gif)
+
+Full-run video for slides: [course.mp4](progress/milestones/c3_seed1_90M_first_course_completion/course.mp4). Saved as milestone
+[`progress/milestones/c3_seed1_90M_first_course_completion/`](progress/milestones/c3_seed1_90M_first_course_completion).
+
+The run frame by frame: start → rubble → hurdles → ramp up → ramp down → stairs → slalom → goal
+pad:
+![](progress/milestones/c3_seed1_90M_first_course_completion/course_frames.png)
+
+### All runs at this review (course from the start, difficulty 0)
+
+| Run | Furthest point | Goal | Note |
+|---|---|---|---|
+| **C3 seed 1 (90M)** | **23.2 m ×3** | ✅ **3/3** | full course |
+| C3 seed 2 (91M) | 11.7 m | 0/3 | onto the ramp; 20 % falls |
+| C3 seed 0 (91M) | 3.9 m | 0/3 | stopped in rubble (exploration noise is still settling) |
+| C2 seed 1 (91M) | 10.9 m | 0/3 | C2 also starting to get past the ramp foot |
+| C2 seed 2 (96M) | 10.3 m | 0/3 | |
+| C1 ×3, C2 seed 0 | 9.6–9.7 m | 0/3 | still stuck at the ramp foot |
+
+**The exploration reset was the key.** Policies with collapsed exploration (C1, most of C2) are
+still stuck at the ramp foot. C3 completed the course within 4M steps of the reset.
+
+### Gait while crossing the course (C3 seed 1)
+
+| Goal | Value | |
+|---|---|---|
+| body straight (crab) | 2.4° | ✅ |
+| level body (roll / pitch) | 1.5° / 0.2° | ✅ |
+| feet under the hips (sideways / fore-aft) | 3.6 / 7.8 cm | ✅ |
+| shins/knees touching ground or obstacles | **46 %** | ❌ |
+| step heights equal across legs | spread 93 % | ❌ |
+| pace on open ground | 0.18 m/s off target | ❌ |
+
+It crosses with a straight, level body, but it scrapes its shins (on obstacles and steps) and
+steps unevenly. Making the course crossing *look natural* is the next target, after it handles
+bigger obstacles.
+
+### Curriculum
+C3 seed 1 has raised the difficulty to **0.2** (obstacles 20 % of the way to full size). Training
+goal rate is 21 %. Full difficulty is 1.0.
+
+### Next
+- Keep training (no change). The curriculum grows the obstacles automatically.
+- Each review tests the course from the start at the current difficulty.
+- Then the course gait (shin contact, step evenness), and a final test at difficulty 1.0.
+
+---
+
 ## Report 22: 2026-11-17, C3 (exploration reset): first steps onto the ramp
 
 **C3 training** (3M steps since the exploration reset):

@@ -387,6 +387,14 @@ independent runs, not 3. It was left running (no-restart rule).
     episodes.
   - Course from the start: 9.8–10.1 m. It now steps onto the ramp (C1/C2 stuck at 9.6–9.7).
   - log std about −1.28 (holding).
+- **At 90M: FIRST COURSE COMPLETION.**
+  - C3 seed 1 reaches the goal from the start 3/3 (44.7–55.5 s, no falls) at difficulty 0.
+  - Milestone: `progress/milestones/c3_seed1_90M_first_course_completion/`.
+  - Gait on the course: crab 2.4°, roll/pitch ≤ 1.5°, feet under hips ✅. Shin contact 46 % and
+    step spread 93 % ❌.
+  - Curriculum advanced to difficulty 0.2.
+  - C1/C2 mostly still stuck (C2 seeds 1–2 reach 10.3–10.9 m).
+  - **The exploration reset was decisive.**
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
