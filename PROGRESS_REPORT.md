@@ -74,6 +74,31 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 42: 2026-11-17, C13 (terrain-aware foot lift): 4 of 6 at a regular review
+
+Benchmark 0.5, 6 layouts:
+
+| Run | Goals | Goal times |
+|---|---|---|
+| **C13 seed 0 (237M)** | **4 / 6** ✅ | 31.9, 46.9, 47.7, 51.3 s |
+| C13 seed 1 (237M) | 2 / 6 | 35.9, 39.3 s |
+| C13 seed 2 (235M) | 0 / 6 | stairs ×4, rubble ×2 |
+| C12 seed 2 (239M) | 3 / 6 | 31.4, 40.2, 44.4 s |
+| C12 seed 1 (236M) | 1 / 6 | 46.9 s |
+| C12 seed 0 (233M) | 0 / 6 | ramp crest ×5 |
+
+- **Working:** about 4M steps after the terrain-aware lift, C13 seed 0 meets the stage-2 target
+  (≥ 4/6) at a regular 5M review. Before, that only showed up in sweeps.
+- **Not working:** the stairs still stop some runs (C13 seed 2: 4 of 6).
+
+Milestone [`progress/milestones/c13_seed0_237M_bench05_4of6/`](progress/milestones/c13_seed0_237M_bench05_4of6) (benchmark video: layout 0, goal in 31.9 s):
+![](progress/milestones/c13_seed0_237M_bench05_4of6/course.gif)
+
+**Next:** let C13 train further, then **sweep its checkpoints at 0.5, 0.75 and 1.0**. The real test of
+the terrain-aware lift is whether the full-height stairs (0.75 and 1.0) start to clear.
+
+---
+
 ## Report 41: 2026-11-17, C12 holds the stage-2 skill; the stairs are the last wall → C13 (terrain-aware foot lift)
 
 ### C12 (learning rate 1e-4), benchmark 0.5, 6 layouts

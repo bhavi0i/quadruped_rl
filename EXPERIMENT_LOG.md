@@ -575,6 +575,10 @@ independent runs, not 3. It was left running (no-restart rule).
 - **Change (one idea):** `--terrain-aware-swing`. Swing lift = foot height − max(ground under foot,
   ground 12 cm ahead along the heading).
 - Learning rate 1e-4; otherwise as C12.
+- **At 235–237M (3–5M in):**
+  - Seed 0 **4/6** (31.9–51.3 s), seed 1 2/6, seed 2 0/6 (stairs ×4).
+  - Milestone: `progress/milestones/c13_seed0_237M_bench05_4of6/`. Sweep at 0.5/0.75/1.0
+    pending.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
