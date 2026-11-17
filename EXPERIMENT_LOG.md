@@ -506,6 +506,16 @@ independent runs, not 3. It was left running (no-restart rule).
   - Crest stalls were frontier/variance effects.
 - **C8 seed 1 at 193M on the benchmark:** goal 2/6 (39.6 s, 49.7 s); rubble stalls 3/6.
   Milestone `progress/milestones/c8_seed1_193M_bench05_2of6/`.
+
+### C9 result: no benefit
+- At about 193–195M on the benchmark: 0/6 on all seeds, mostly stalling at the ramp crest.
+- Mid-ramp spawns did not transfer to cresting from a full climb. FAILED (kept as an option).
+
+### C10: Weighted section practice. RUNNING (Amarel job 63989189, from C8 seed 1 at 195M → 255M)
+- **Why:** on the benchmark, C8 seed 1 stops at the stairs 3/6 and the rubble 1/6.
+- **Change (one idea):** `--section-weights {"stairs": 3, "rubble": 2}` (verified about 35 % stairs,
+  20 % rubble spawns).
+- Start levels: C8 seed 1's {rubble 1, hurdles 1, ramp 0.65, stairs 0.55, slalom 1}.
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

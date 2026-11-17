@@ -167,7 +167,7 @@ class QuadrupedCourseEnv(gym.Env):
                  robot="go1", gait_period=0.5, swing_height=0.08, arena="course",
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
                  spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False,
-                 ramp_spawn=0.0):
+                 ramp_spawn=0.0, section_weights=None):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -194,6 +194,7 @@ class QuadrupedCourseEnv(gym.Env):
         self.friction_model = friction_model # "pyramidal" (E1-E13, C1-C4: slippery) or "elliptic" (C5+)
         self.terrain_relative = terrain_relative  # [C6] orientation penalty relative to ground slope
         self.ramp_spawn = ramp_spawn         # [C9] share of course spawns placed partway up the ramp
+        self.section_weights = dict(section_weights or {})  # [C10] relative spawn weight per section
         # a number (all sections alike) or a dict per course section (C7 section curriculum)
         self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
         self.random_start = random_start
@@ -381,7 +382,10 @@ class QuadrupedCourseEnv(gym.Env):
             #   from flat ground was never practised - C1 stopped at the ramp foot in every run.
             # [C2, opt-in] spawn_offset 0.15 m: torso just past the section start, all four feet on
             #   the flat run-up before each obstacle.
-            start_x = self.np_random.choice(list(course.SECTION_STARTS.values())) + self.spawn_offset
+            # [C10, opt-in] weighted choice of section (e.g. more stairs/rubble practice)
+            names = list(course.SECTION_STARTS)
+            w = np.array([self.section_weights.get(n, 1.0) for n in names], float)
+            start_x = course.SECTION_STARTS[names[self.np_random.choice(len(names), p=w / w.sum())]] + self.spawn_offset
             start_x = min(start_x, 18.7 + 0.2)
         qpos = self.data.qpos
         qpos[0] = start_x

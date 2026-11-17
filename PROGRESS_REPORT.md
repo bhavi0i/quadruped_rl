@@ -74,6 +74,40 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 35: 2026-11-17, benchmark review: C8 seed 1 is the clear best; its gaps are the stairs and rubble → C10
+
+Benchmark: all obstacles 0.5, 6 rubble layouts.
+
+| Policy | Goals | Where runs stop |
+|---|---|---|
+| **C8 seed 1 (195M)** | **1 / 6 (42.8 s)** | **stairs ×3 (15.15 m)**, rubble ×1, past the ramp crest ×1 (12.2 m) |
+| C8 seed 0 (189M) | 0 / 6 | ramp crest ×5, rubble ×1 |
+| C8 seed 2 (176M) | 0 / 6 | ramp crest ×4, rubble ×2 |
+| C9 seeds 0–2 (193–195M) | 0 / 6 each | ramp crest ×4–5, rubble ×1–3; 1 stairs fall |
+
+(C8 seed 1 at 193M scored 2/6 in report 34; 1/6 at 195M is normal run-to-run variance.)
+
+- **Working:** C8 seed 1 is consistently the best. It gets over the ramp crest and reaches the
+  stairs, and occasionally the goal.
+- **Not working:**
+  - The other seeds and C9 mostly stall at the crest. **C9's mid-ramp spawns did not help.**
+  - Crab angle on the course has drifted up for several policies (C8 seed 1: 18.8°), so the
+    course posture needs work later.
+
+Video: [course.mp4](docs/media/review_176M_20261117_0745/course_c8_seed1/course.mp4)
+
+**Training spawns were spread evenly** over the 6 section starts, so the stairs got only about
+1/6 of practice despite being the main gap.
+
+### Change: C10 (Amarel job 63989189, 3 seeds, from C8 seed 1 at 195M → 255M, no restart)
+- **`--section-weights {"stairs": 3, "rubble": 2}`**: spawn practice weighted toward the weak
+  sections. Verified over 900 resets: stairs about 35 %, rubble about 20 %, others about 11 %.
+- Starts at C8 seed 1's section levels (rubble, hurdles, slalom 1.0; ramp 0.65; stairs 0.55).
+- No mid-ramp spawns. Everything else as C8.
+- C8 and C9 continue for comparison.
+
+---
+
 ## Report 34: 2026-11-17, measuring right: a fixed benchmark shows C8 completes 2 of 6; the rubble is the reliability gap
 
 ### Why course completions looked so rare

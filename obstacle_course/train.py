@@ -41,7 +41,7 @@ def make_env(rank, args, difficulty):
                                  spawn_offset=args.spawn_offset, swing_height=args.swing_height,
                                  friction_model=args.friction_model,
                                  terrain_relative=args.terrain_relative_tilt,
-                                 ramp_spawn=args.ramp_spawn)
+                                 ramp_spawn=args.ramp_spawn, section_weights=args.section_weights)
         env.reset(seed=args.seed * 1000 + rank)
         return env
     return _init
@@ -182,6 +182,8 @@ def main():
                    help="[C7] separate difficulty per course section (+-0.05 by clear rate)")
     p.add_argument("--ramp-spawn", type=float, default=0.0,
                    help="[C9] share of course spawns placed partway up the ramp (crest practice)")
+    p.add_argument("--section-weights", type=json.loads, default={},
+                   help='[C10] spawn weights per course section, e.g. {"stairs": 3, "rubble": 2}')
     p.add_argument("--device", default="auto", help="cpu / cuda / auto (see EXPERIMENT_LOG: hardware)")
     p.add_argument("--n-steps", type=int, default=1024, help="rollout length per env")
     p.add_argument("--ckpt-freq", type=float, default=1e6, help="env steps between checkpoints")
