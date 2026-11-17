@@ -184,11 +184,12 @@ Training writes these to `progress.json` in each run folder. Every 5M steps,
 - **Why:** in E7 the wall turning is unstable. Turning is only rewarded indirectly (heading +0.5)
   and only practised in 25 % of episodes.
 - **Change** (one idea plus more practice of it):
-  - new  reward, weight 1.0. When the dog faces more than 45° away from the route,
+  - new `turn_to_route` reward, weight 1.0. When the dog faces more than 45° away from the route,
     it earns clip(yaw rate × sign(heading error), −1, 1): positive for turning toward the route,
     negative for turning away.
   - turn-practice spawns 25 % → 40 %.
-- **How:** continue from the best E7 final policy (). No restart from scratch.
+- **How:** continue from the best E7 final policy (`train.py --init-from ... --reward-weights
+  '{"turn_to_route": 1.0}' --turn-practice 0.4`). No restart from scratch.
 - **Success:** wall pass rate ≥ 80 % with all walking goals still passing.
 
 ### H1: Hardware for RL training (CPU vs GPU on Amarel). DECIDED: keep 32 CPU cores

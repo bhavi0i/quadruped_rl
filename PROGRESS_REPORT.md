@@ -75,10 +75,10 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 **What changed since report 2**
 - No training changes (no restarts).
 - Tooling:
-  -  replays the wall test in the MuJoCo viewer.
+  - `play.py --wall-test` replays the wall test in the MuJoCo viewer.
   - Reviews now save media automatically.
-- **Prepared, not yet used:** E8. An opt-in  reward plus a 
-  spawn share (see EXPERIMENT_LOG). It is off by default, so the running jobs are unaffected.
+- **Prepared, not yet used:** E8. An opt-in `turn_to_route` reward plus a
+  `--turn-practice` spawn share (see EXPERIMENT_LOG). It is off by default, so the running jobs are unaffected.
 
 **What's working**
 - **Walking is essentially perfect on all 3 seeds:**
@@ -105,7 +105,7 @@ a head-on wall video (`.mp4` for presentations, `.gif` that plays here) for the 
 - E7 finishes at 40M steps (seeds 1 and 2 in about 25 min; seed 0 is on a slower node).
 - Then, per the decision rules (wall pass rate < 50 % for most seeds), run **E8 as a
   continuation** from the best E7 final policy:
-  -  = 1.0 (reward for turning toward the route when facing more than 45° away)
+  - `turn_to_route` = 1.0 (reward for turning toward the route when facing more than 45° away)
   - turn-practice spawns 25 % → 40 %
   - walking rewards unchanged
 
