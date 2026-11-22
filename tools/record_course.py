@@ -17,6 +17,9 @@ env = QuadrupedCourseEnv(arena="course", difficulty=diff, random_start=False, re
                          friction_model=cfg.get("friction_model", "elliptic"), max_steps=3000, course_seed=lay,
                          gait_period=cfg.get("gait_period") or 0.5, target_speed=cfg.get("target_speed") or 0.6,
                              foot_scan=bool(cfg.get("foot_scan")))
+from quadruped_env import pd_for
+if pd_for(cfg, pol):                                # [C18]
+    env.set_pd(*pd_for(cfg, pol))
 norm = VecNormalize.load(pol.replace(".zip", "_vecnormalize.pkl"), DummyVecEnv([lambda: env])); norm.training = False
 obs, _ = env.reset(seed=300 + lay)
 frames = []

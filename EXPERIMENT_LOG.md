@@ -735,6 +735,19 @@ independent runs, not 3. It was left running (no-restart rule).
   - hurdle stubs < 0.5/s, stair stubs < 5/s; hesitation and backing < 15 %
   - validation at 1.0 ≥ 9/12
 
+### C18: Soft, damped joints by schedule (+ all of C17b). RUNNING (Amarel job 64147596, from C16 seed 1 at 281M, foot-scan-expanded → 351M)
+- **Why:**
+  - The Menagerie Go1 actuators are kp 100, kd 0 (passive damping 1–2).
+  - Gain test on the course policy: touchdowns 12.7/s at kp 100 vs 9.5 at kp 50 and 6.5 at
+    kp 35, but the policy falls at kp ≤ 50 because it was trained stiff.
+  - Real Go1 walking controllers use kp 20–40, kd 0.5–1.
+- **Change:** `--pd-schedule 281e6,30e6,100,40,0,1.0`.
+  - `PDScheduleCallback` calls `env.set_pd()` each rollout.
+  - The gains survive model rebuilds.
+  - Randomization multiplies them ×0.9–1.1.
+- **Evaluation:** tools use `pd_for(cfg, checkpoint)` to apply the matching gains.
+- **Success test:** the C17 tests, plus touchdowns ≤ 7/s and visibly smoother legs in the viewer.
+
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.

@@ -41,6 +41,9 @@ def evaluate(job):
     for lay in range(layouts):
         env = QuadrupedCourseEnv(arena="course", difficulty=difficulty, random_start=False, max_steps=3000,
                                  friction_model=friction, course_seed=lay, **gait)
+        from quadruped_env import pd_for
+        if pd_for(cfg, ckpt):                         # [C18]
+            env.set_pd(*pd_for(cfg, ckpt))
         norm = VecNormalize.load(stats, DummyVecEnv([lambda: env]))
         norm.training = False
         obs, _ = env.reset(seed=300 + lay)

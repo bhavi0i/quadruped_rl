@@ -74,6 +74,73 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 54: 2026-11-22, simulated hardware: the joints were too stiff. C18 softens them gradually
+
+**Group instruction:** change sensors or hardware specs if needed. The walk must look natural.
+
+### 1. Audit of the simulated motors and control
+
+| Setting | This project (E1–C17, Menagerie Go1 default) | Typical for natural Go1 walking policies |
+|---|---|---|
+| joint stiffness kp | **100 Nm/rad** | 20–40 |
+| motor damping kd | **0** (only passive joint damping 1–2) | 0.5–1 |
+| action range per joint | 0.3 / 0.6 / 0.6 rad | ~0.25 |
+| control rate | 50 Hz | 50 Hz ✓ |
+| motor torque limits | 23.7 / 23.7 / 35.6 Nm | real Go1 values ✓ |
+
+**Test:** the current policy run with softer joints (difficulty 0.5, 3 layouts; tools: scratch script):
+
+| kp / kd | touchdowns/s | result |
+|---|---|---|
+| 100 / 0 (trained) | 12.3–13.0 | 3/3 cross |
+| 70 / 1.0 | 5.7–11.1 | 2/3 nearly cross |
+| 50 / 1.0 | 9.5–10.0 | 2/3 fall |
+| 35 / 0.8 | 5.8–8.4 | 3/3 fall at once |
+
+- **Diagnosis:** the stiff joints make the legs snap to each new target. That is a large part of
+  the "too many small, quick steps": softer joints alone cut tapping from ~13 to ~6–10
+  touchdowns/s.
+- **But** the policy was trained stiff and falls if the joints are softened suddenly.
+
+### 2. C18 (Amarel job 64147596, 3 seeds, from the course policy at 281M → 351M)
+
+Everything in C17b:
+- 0.7 s step cycle at 0.5 m/s (longer strides)
+- foot-level terrain sensing
+- robustness training (friction, payload, motor strength, shoves)
+
+**plus** `--pd-schedule 281e6,30e6,100,40,0,1.0`:
+- Joint stiffness is lowered linearly from kp 100 to **kp 40**, and motor damping raised from
+  0 to **kd 1.0**, over the first 30M steps.
+- Then 40M steps at the soft, realistic setting.
+- The per-section curriculum eases each obstacle automatically while the robot adapts.
+
+**Evaluation:** every script applies the gains each checkpoint was trained with (`pd_for()` in
+`quadruped_env.py`).
+
+### Running on Amarel (all CPU, `main` partition)
+
+| Run | Changes vs the course policy |
+|---|---|
+| C17a | longer strides + foot sensing |
+| C17b | C17a + robustness training |
+| C18 | C17b + soft, damped joints |
+
+Comparing the three isolates what each change adds to how natural the walk looks and how
+reliably the robot crosses.
+
+### Next lever if C18 still looks unnatural: imitate real dog motion
+
+- **Method:** adversarial motion priors (AMP; Peng et al., 2021). The standard method for
+  natural-looking legged robots. A discriminator learns "does this move like the reference dog
+  motion clips?" and its score becomes a style reward. It replaces our hand-written gait-style
+  terms (trot clock, foot placement and so on).
+- **Needs:** dog motion-capture clips retargeted to the Go1 (public clips exist from the
+  motion-imitation research line), plus a discriminator added to the PPO training loop.
+- **Effort:** a larger change, about one to two days of implementation and testing.
+
+---
+
 ## Report 53: 2026-11-22, group review #2: fewer, longer strides; sensing for the feet; robustness. C17 launched
 
 **Group feedback** (watching the C16 policy in the viewer):

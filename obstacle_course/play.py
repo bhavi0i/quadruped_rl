@@ -71,6 +71,9 @@ def main():
                              gait_period=cfg.get("gait_period") or 0.5,          # [C17]
                              target_speed=cfg.get("target_speed") or 0.6,
                              foot_scan=bool(cfg.get("foot_scan")))
+    from quadruped_env import pd_for
+    if a.model and pd_for(cfg, a.model):              # [C18]
+        env.set_pd(*pd_for(cfg, a.model))
 
     norm = None
     if a.model and not a.random:

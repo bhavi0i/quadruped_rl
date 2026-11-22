@@ -280,6 +280,9 @@ def main():
     gait = dict(gait_period=cfg.get("gait_period") or 0.5, target_speed=cfg.get("target_speed") or 0.6,
                 foot_scan=bool(cfg.get("foot_scan")))
     env, norm = make(dict(arena=a.arena, difficulty=a.difficulty, friction_model=fm, **gait), stats)
+    from quadruped_env import pd_for
+    if pd_for(cfg, a.model):                          # [C18] the joint gains this checkpoint was trained with
+        env.set_pd(*pd_for(cfg, a.model))
     walk, f_walk, v_walk = walk_test(model, norm, env)
     metrics = dict(walk)
     f_wall, v_wall = [], []

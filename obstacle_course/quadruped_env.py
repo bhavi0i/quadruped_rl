@@ -18,6 +18,7 @@ Injuries (for the damage-adaptation part of the project) weaken or disable motor
     injury="random_leg"       a random leg at 0-50 % strength every episode
     injury="random"           a random single joint at 0-50 % strength every episode
 """
+import os
 import numpy as np
 import mujoco
 import gymnasium as gym
@@ -31,7 +32,21 @@ SCAN_X = np.linspace(-0.2, 0.8, 11)   # height-scan grid in the robot's heading 
 SCAN_Y = np.linspace(-0.3, 0.3, 5)
 LIDAR_ANGLES = np.deg2rad([-90, -60, -40, -20, 0, 20, 40, 60, 90])   # horizontal range sensors
 LIDAR_RANGE = 3.0           # m
-FOOT_SCAN_DX = (0.05, 0.10, 0.15, 0.20)   # [C17] foot-centric terrain samples ahead of each foot (m)
+FOOT_SCAN_DX = (0.05, 0.10, 0.15, 0.20)
+
+
+def pd_for(cfg, model_path=""):
+    """[C18] joint gains (kp, kd) a policy was trained with at its checkpoint, from the run config's
+    pd_schedule ("start,length,kp0,kp1,kd0,kd1"); None for runs without a schedule (kp 100 default).
+    Checkpoints are named ckpt_<steps>_steps; other files (final.zip, milestones) get the final gains."""
+    sched = (cfg or {}).get("pd_schedule")
+    if not sched:
+        return None
+    import re as _re
+    start, length, kp0, kp1, kd0, kd1 = [float(x) for x in sched.split(",")]
+    m = _re.search(r"ckpt_(\d+)_steps", os.path.basename(model_path or ""))
+    f = 1.0 if not m else float(np.clip((int(m.group(1)) - start) / max(length, 1), 0, 1))
+    return kp0 + (kp1 - kp0) * f, kd0 + (kd1 - kd0) * f   # [C17] foot-centric terrain samples ahead of each foot (m)
 WALL_PREFIXES = ("wall_", "ring_wall_", "slalom_")   # vertical barriers to steer around, not step over
 LEG_NAMES = ("FR", "FL", "RR", "RL")
 TROT_OFFSET = {"FR": 0.0, "RL": 0.0, "FL": 0.5, "RR": 0.5}   # diagonal pairs move together
@@ -299,6 +314,8 @@ class QuadrupedCourseEnv(gym.Env):
         self.base_kp = m.actuator_gainprm[:, 0].copy()
         self.base_bias = m.actuator_biasprm[:, :3].copy()
         self.base_force = m.actuator_forcerange.copy()
+        if getattr(self, "pd", None):                 # [C18] keep the scheduled joint gains across rebuilds
+            self.set_pd(*self.pd)
         self._ray_geomid = np.zeros(1, np.int32)
         self._scan_group = np.array([1, 0, 0, 0, 0, 0], np.uint8)   # terrain only (geom group 0)
         self._renderer = None
@@ -324,6 +341,18 @@ class QuadrupedCourseEnv(gym.Env):
                                     else float(np.clip(difficulty, 0, 1)))
 
     # ---------------------------------------------------------------- injuries
+    def set_pd(self, kp, kd):
+        """[C18] joint PD gains of the simulated motors (Menagerie Go1 default: kp 100, kd 0 + passive
+        damping 1-2). Path audit + gain test 2026-11-22: with kp 100 the legs snap to each new target,
+        giving 12-15 touchdowns/s ("too many small steps"); the same policy taps 9.5/s at kp 50 and
+        6.5/s at kp 35, but falls there because it was trained stiff. Real Go1 walking controllers use
+        kp 20-40, kd 0.5-1. train.py --pd-schedule lowers the gains gradually so the policy adapts.
+        Takes effect at the next reset (injury/randomization are applied on top)."""
+        self.pd = (float(kp), float(kd))
+        self.base_kp[:] = kp
+        self.base_bias[:, 1] = -kp
+        self.base_bias[:, 2] = -kd
+
     def _foot_scan(self, yaw):
         """[C17] each foot's clearance above the terrain 5-20 cm ahead of it (m, clipped to +-0.3)."""
         c, s = np.cos(yaw), np.sin(yaw)

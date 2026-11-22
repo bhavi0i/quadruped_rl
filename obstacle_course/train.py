@@ -53,6 +53,26 @@ def make_env(rank, args, difficulty):
     return _init
 
 
+class PDScheduleCallback(BaseCallback):
+    """[C18] lower the joint PD gains linearly between two absolute step counts (survives resumes)."""
+    def __init__(self, start, length, kp0, kp1, kd0, kd1):
+        super().__init__()
+        self.s = (start, length, kp0, kp1, kd0, kd1)
+        self.last = None
+
+    def _on_rollout_start(self):
+        start, length, kp0, kp1, kd0, kd1 = self.s
+        f = float(np.clip((self.num_timesteps - start) / max(length, 1), 0, 1))
+        kp, kd = kp0 + (kp1 - kp0) * f, kd0 + (kd1 - kd0) * f
+        if self.last is None or abs(kp - self.last[0]) > 0.5:
+            self.training_env.env_method("set_pd", kp, kd)
+            self.last = (kp, kd)
+            print(f"PD gains: kp {kp:.1f}  kd {kd:.2f}  ({100 * f:.0f} % of schedule)", flush=True)
+
+    def _on_step(self):
+        return True
+
+
 class ProgressCallback(BaseCallback):
     """Tracks walking quality, writes progress.json and (course only) raises difficulty."""
 
@@ -159,6 +179,8 @@ def main():
                    help="[C17] 16 extra inputs: terrain height ahead of each foot (use tools/expand_obs.py to continue)")
     p.add_argument("--randomize", action="store_true",
                    help="[C17] per-episode friction / payload / motor-strength randomization + random shoves")
+    p.add_argument("--pd-schedule", default=None,
+                   help='[C18] "start_step,length,kp0,kp1,kd0,kd1": soften the joint PD gains gradually')
     p.add_argument("--gait-period", type=float, default=0.5,
                    help="[C17] trot cycle length (s). 0.5 = E1-C16; longer = slower cadence, longer strides")
     p.add_argument("--injury", default=None, help='"random_leg", "random", or none')
@@ -268,6 +290,8 @@ def main():
                                   section_curriculum=args.section_curriculum),
                  CheckpointCallback(save_freq=max(1, int(args.ckpt_freq) // args.envs), save_path=args.out,
                                     name_prefix="ckpt", save_vecnormalize=True)]
+    if args.pd_schedule:                              # [C18] "start,length,kp0,kp1,kd0,kd1"
+        callbacks.append(PDScheduleCallback(*[float(x) for x in args.pd_schedule.split(",")]))
     # [FAILED, never run] done = model.num_timesteps if ckpt else 0  and  reset_num_timesteps=not ckpt
     #   -> with --init-from the counter restarted at 0 and trained the full --steps again.
     # [NEW] a continuation (--init-from) or resume keeps the step count; --steps is the total.
