@@ -36,6 +36,8 @@ def make_env(rank, args, difficulty):
         env = QuadrupedCourseEnv(difficulty=difficulty, random_start=True, injury=args.injury,
                                  course_seed=rank, robot=args.robot, arena=args.arena,
                                  target_speed=args.target_speed, reward_weights=args.reward_weights,
+                                 gait_period=args.gait_period, foot_scan=args.foot_scan,
+                                 randomize=args.randomize,
                                  turn_practice=args.turn_practice, ring_lookahead=args.ring_lookahead,
                                  wall_spawn=args.wall_spawn, max_steps=args.max_steps,
                                  spawn_offset=args.spawn_offset, swing_height=args.swing_height,
@@ -153,6 +155,12 @@ def main():
     p.add_argument("--difficulty", type=lambda v: json.loads(v) if v.strip().startswith("{") else float(v),
                    default=0.0, help='start difficulty: a number, or per section as JSON (section curriculum)')
     p.add_argument("--target-speed", type=float, default=0.6)
+    p.add_argument("--foot-scan", action="store_true",
+                   help="[C17] 16 extra inputs: terrain height ahead of each foot (use tools/expand_obs.py to continue)")
+    p.add_argument("--randomize", action="store_true",
+                   help="[C17] per-episode friction / payload / motor-strength randomization + random shoves")
+    p.add_argument("--gait-period", type=float, default=0.5,
+                   help="[C17] trot cycle length (s). 0.5 = E1-C16; longer = slower cadence, longer strides")
     p.add_argument("--injury", default=None, help='"random_leg", "random", or none')
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", default="runs/ring_seed0")

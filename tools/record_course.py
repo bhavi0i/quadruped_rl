@@ -14,7 +14,9 @@ pol, diff, lay, out = sys.argv[1], float(sys.argv[2]), int(sys.argv[3]), sys.arg
 cfg = json.load(open(os.path.join(os.path.dirname(pol), "config.json")))
 model = PPO.load(pol, device="cpu")
 env = QuadrupedCourseEnv(arena="course", difficulty=diff, random_start=False, render_mode="rgb_array",
-                         friction_model=cfg.get("friction_model", "elliptic"), max_steps=3000, course_seed=lay)
+                         friction_model=cfg.get("friction_model", "elliptic"), max_steps=3000, course_seed=lay,
+                         gait_period=cfg.get("gait_period") or 0.5, target_speed=cfg.get("target_speed") or 0.6,
+                             foot_scan=bool(cfg.get("foot_scan")))
 norm = VecNormalize.load(pol.replace(".zip", "_vecnormalize.pkl"), DummyVecEnv([lambda: env])); norm.training = False
 obs, _ = env.reset(seed=300 + lay)
 frames = []

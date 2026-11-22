@@ -13,7 +13,9 @@ sec = lambda x: next(n for n, a in SEC if x > a)
 hits, steps = collections.Counter(), collections.Counter()
 for lay in range(L):
     env = QuadrupedCourseEnv(arena="course", difficulty=d, random_start=False, max_steps=3000,
-                             friction_model=cfg["friction_model"], course_seed=lay)
+                             friction_model=cfg["friction_model"], course_seed=lay,
+                             gait_period=cfg.get("gait_period") or 0.5, target_speed=cfg.get("target_speed") or 0.6,
+                             foot_scan=bool(cfg.get("foot_scan")))
     norm = VecNormalize.load(M + "/policy_vecnormalize.pkl", DummyVecEnv([lambda: env])); norm.training = False
     obs, _ = env.reset(seed=300 + lay)
     for t in range(3000):

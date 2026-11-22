@@ -33,10 +33,14 @@ def evaluate(job):
 
     stats = ckpt.replace("ckpt_", "ckpt_vecnormalize_").replace(".zip", ".pkl")
     model = PPO.load(ckpt, device="cpu")
+    cfg_f = os.path.join(os.path.dirname(ckpt), "config.json")        # [C17] run's gait rhythm / speed
+    cfg = json.load(open(cfg_f)) if os.path.exists(cfg_f) else {}
+    gait = dict(gait_period=cfg.get("gait_period") or 0.5, target_speed=cfg.get("target_speed") or 0.6,
+                foot_scan=bool(cfg.get("foot_scan")))
     goals, dists, times = 0, [], []
     for lay in range(layouts):
         env = QuadrupedCourseEnv(arena="course", difficulty=difficulty, random_start=False, max_steps=3000,
-                                 friction_model=friction, course_seed=lay)
+                                 friction_model=friction, course_seed=lay, **gait)
         norm = VecNormalize.load(stats, DummyVecEnv([lambda: env]))
         norm.training = False
         obs, _ = env.reset(seed=300 + lay)

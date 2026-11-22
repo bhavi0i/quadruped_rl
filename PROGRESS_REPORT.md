@@ -74,6 +74,65 @@ not leaning or crabbing. Every review now also measures:
 
 ---
 
+## Report 53: 2026-11-22, group review #2: fewer, longer strides; sensing for the feet; robustness. C17 launched
+
+**Group feedback** (watching the C16 policy in the viewer):
+- Too many small, quick steps. A dog would walk slower with longer strides, and would then simply
+  step over the red bars instead of stumbling until it gets over.
+- It should use its sensors to avoid bumping into things and navigate, not step aimlessly.
+- Fix any other major issues as well.
+
+### 1. Measured (`tools/path_audit.py`, now also counting foot touchdowns and stubs; C16 seed 1 at 281M, full difficulty)
+
+| Section | stride | touchdowns/s (4 feet) | foot stubs/s |
+|---|---|---|---|
+| flat start | 33 cm | 11.9 | 0 |
+| rubble | 10 cm | 5.5 | 4.7 |
+| hurdles | 20 cm | **14.8** | **2.2** |
+| ramp | 29 cm | 10.8 | 2.3 |
+| stairs | 13 cm | 8.7 | **27.2** |
+
+- **Steps:** the 0.5 s trot cycle alone gives 8 touchdowns/s. The measured 12–15/s means extra
+  taps and re-plants: the short, hurried stepping the group saw. On obstacles the strides shrink
+  to 10–20 cm.
+- **Stubbing:** the feet push into the step edges almost constantly on the stairs, and into the
+  bars at the hurdles.
+- **Sensing:**
+  - The robot had a 9-ray wall lidar (rays deliberately pass above the 11 cm bars) and a
+    body-centred height map (−0.2…0.8 m, 10 × 15 cm spacing).
+  - That map tells it *that* something is ahead, not *where each foot is* relative to an edge.
+- **Robustness:** outcomes flip on tiny numerical differences between machines (report 52), so
+  the policy is brittle. Training never varied friction, mass or motor strength, and never shoved
+  the robot.
+
+### 2. C17 (Amarel jobs 64147223 = C17a, 64147224 = C17b; 3 seeds each; from the course policy C16 seed 1 at 281M → 341M)
+
+| Change | Purpose |
+|---|---|
+| step cycle **0.5 s → 0.7 s** (`--gait-period 0.7`) | slower cadence: ~5.7 instead of 8 touchdowns/s |
+| target pace **0.6 → 0.5 m/s** (`--target-speed 0.5`) | slower, dog-like walk; stride per cycle 0.30 → 0.35 m, enough to step over a 10 cm-deep bar |
+| **foot-level terrain sensing** (`--foot-scan`): each foot's height above the ground 5/10/15/20 cm ahead of it, 16 new inputs | see the next bar edge, step edge or block before the foot hits it |
+| **C17b only: robustness training** (`--randomize`), per episode: friction ×0.7–1.3, payload −0.5…+1.5 kg, motor strength ×0.9–1.1, a 0.3 m/s shove every 3–6 s | a policy that works on every layout, not by luck; prepares for the injury phase |
+
+- **Unchanged:** all C16 course rewards (time cost, no backing up, stub penalty −3, earlier wall
+  avoidance, relaxed flat-ground style on obstacles).
+- **Comparison:** C17a vs C17b isolates the effect of robustness training.
+- **Continuation, not a restart:**
+  - `tools/expand_obs.py` adds the 16 new inputs to the trained network with zero weights.
+  - Checked: identical actions at the start (difference 6e-7), and the expanded policy still
+    crosses layout 2 at full difficulty.
+- **Evaluation consistency:** every evaluation and viewer script now takes the run's step cycle,
+  target pace and sensing from its `config.json`. All earlier runs used 0.5 s / 0.6 m/s, so past
+  results are unaffected.
+
+**Success test** (path audit + 12-layout validation on Amarel):
+- touchdowns ≤ 7/s on flat ground, strides ≥ 30 cm on flat ground and ≥ 25 cm at the hurdles
+- hurdle stubs < 0.5/s, stair stubs < 5/s
+- hesitation and backing up < 15 % per section
+- full-difficulty crossings ≥ 9/12, trot and posture goals kept
+
+---
+
 ## Report 52: 2026-11-17, new course policy (C16 seed 1, 281M): 9 / 10 / 9 of 12, shuffling greatly reduced
 
 ### 1. Validation (Amarel job 64000968; 6 runs, every 3rd checkpoint from 230M, 12 layouts × 3 difficulties)

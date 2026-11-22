@@ -17,7 +17,9 @@ S = collections.defaultdict(lambda: collections.defaultdict(list))
 goals = 0
 for lay in range(L):
     env = QuadrupedCourseEnv(arena="course", difficulty=d, random_start=False, max_steps=3000,
-                             friction_model=cfg["friction_model"], course_seed=lay)
+                             friction_model=cfg["friction_model"], course_seed=lay,
+                             gait_period=cfg.get("gait_period") or 0.5, target_speed=cfg.get("target_speed") or 0.6,
+                             foot_scan=bool(cfg.get("foot_scan")))
     norm = VecNormalize.load(M + "/policy_vecnormalize.pkl", DummyVecEnv([lambda: env])); norm.training = False
     obs, _ = env.reset(seed=300 + lay)
     knee = [env.qadr[i] for i in range(12) if i % 3 == 2]          # calf joints FR FL RR RL
@@ -38,7 +40,9 @@ for lay in range(L):
                 fp = env.data.geom_xpos[env.foot_geoms[i]][:2].copy()
                 if i in last_td: R["stride"].append(np.linalg.norm(fp - last_td[i]))
                 last_td[i] = fp
+                R["touchdowns"].append(1)
         prev_c = c.copy()
+        R["stumble"].append(env._feet_stumble())          # feet pushing into a vertical face (bar, riser)
         for i in range(4):                       # stance-foot sliding speed (slipperiness)
             if c[i]:
                 import mujoco; vel = np.zeros(6)
@@ -47,7 +51,7 @@ for lay in range(L):
         if term or trunc: break
     goals += int(info["reached_goal"])
 print(f"{goals}/{L} goals at difficulty {d}")
-hdr = f"{'section':8s} {'time s':>7s} {'hesit%':>7s} {'back%':>6s} {'wander':>7s} {'yawwig':>7s} {'wall%':>6s} {'minwall':>7s} {'stride cm':>9s} {'strideCV':>8s} {'hindknee':>8s} {'foreknee':>8s} {'slip cm/s':>9s}"
+hdr = f"{'section':8s} {'time s':>7s} {'hesit%':>7s} {'back%':>6s} {'wander':>7s} {'yawwig':>7s} {'wall%':>6s} {'minwall':>7s} {'stride cm':>9s} {'strideCV':>8s} {'hindknee':>8s} {'foreknee':>8s} {'slip cm/s':>9s} {'steps/s':>7s} {'stub/s':>6s}"
 print(hdr)
 for s in [n for n, _ in SEC][::-1]:
     R = S[s]
@@ -56,4 +60,4 @@ for s in [n for n, _ in SEC][::-1]:
     print(f"{s:8s} {len(R['n'])*0.02/L:7.1f} {100*np.mean(v<0.1):7.0f} {100*np.mean(v<-0.05):6.0f} "
           f"{sum(R['dl'])/max(sum(R['dx']),1e-3):7.2f} {np.std(R['yawrate']):7.2f} {100*np.mean(R['wall']):6.1f} "
           f"{np.min(R['minwall']):7.2f} {100*np.nanmean(st):9.1f} {np.nanstd(st)/np.nanmean(st):8.2f} "
-          f"{np.mean(R['hindknee']):8.1f} {np.mean(R['foreknee']):8.1f} {100*np.mean(R['slip']):9.1f}")
+          f"{np.mean(R['hindknee']):8.1f} {np.mean(R['foreknee']):8.1f} {100*np.mean(R['slip']):9.1f} {len(R['touchdowns'])/(len(R['n'])*0.02):7.1f} {sum(R['stumble'])/(len(R['n'])*0.02):6.2f}")

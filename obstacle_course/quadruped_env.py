@@ -31,6 +31,7 @@ SCAN_X = np.linspace(-0.2, 0.8, 11)   # height-scan grid in the robot's heading 
 SCAN_Y = np.linspace(-0.3, 0.3, 5)
 LIDAR_ANGLES = np.deg2rad([-90, -60, -40, -20, 0, 20, 40, 60, 90])   # horizontal range sensors
 LIDAR_RANGE = 3.0           # m
+FOOT_SCAN_DX = (0.05, 0.10, 0.15, 0.20)   # [C17] foot-centric terrain samples ahead of each foot (m)
 WALL_PREFIXES = ("wall_", "ring_wall_", "slalom_")   # vertical barriers to steer around, not step over
 LEG_NAMES = ("FR", "FL", "RR", "RL")
 TROT_OFFSET = {"FR": 0.0, "RL": 0.0, "FL": 0.5, "RR": 0.5}   # diagonal pairs move together
@@ -175,7 +176,8 @@ class QuadrupedCourseEnv(gym.Env):
                  turn_practice=0.25, ring_lookahead=0.6, wall_spawn=0.0, max_steps=MAX_STEPS,
                  spawn_offset=0.8, friction_model="pyramidal", terrain_relative=False,
                  ramp_spawn=0.0, section_weights=None, terrain_aware_swing=False,
-                 motion_gate=0.0, foot_graze_radius=0.0, obstacle_style=1.0):
+                 motion_gate=0.0, foot_graze_radius=0.0, obstacle_style=1.0, foot_scan=False,
+                 randomize=False):
         """
         difficulty   : 0..1, scales obstacle size (use for a curriculum)
         random_start : spawn at the start of a random course section (faster learning)
@@ -227,6 +229,20 @@ class QuadrupedCourseEnv(gym.Env):
         #   2026-11-17: hind-knee bend identical on every section (-80..-84 deg), rubble 70-79 % hesitation.
         #   Flat sections (start, slalom, goal) keep the full natural-trot terms for the demo look.
         self.obstacle_style = obstacle_style
+        # [C17] foot-level terrain sensing. The body-centred height scan (11 x 5 points, 10 x 15 cm
+        #   spacing, -0.2..0.8 m) shows that an obstacle is ahead but not where each foot is relative
+        #   to a bar or step edge. Path audit 2026-11-22: 27 foot stubs/s on the stairs, 2.2/s at the
+        #   hurdles, 4.7/s in rubble. With foot_scan=True the observation gains 16 values: for each
+        #   foot, its height above the terrain 5/10/15/20 cm ahead along the heading (a standard
+        #   foot-centric scan). Changes the observation size: continue with tools/expand_obs.py.
+        self.foot_scan = foot_scan
+        # [C17] domain randomization, per episode: ground/foot friction x U(0.7, 1.3), torso payload
+        #   U(-0.5, +1.5) kg, motor strength x U(0.9, 1.1), plus a random 0.3 m/s sideways/forward shove
+        #   every 3-6 s. Why: course outcomes flip on floating-point differences between machines
+        #   (report 52), so the policy is brittle; randomization is the standard remedy and prepares
+        #   for the injury phase.
+        self.randomize = randomize
+        self._next_push = 0
         self.shin_contacts = 0                       # true shin/thigh/torso contacts (> 4 cm from a foot)
         # a number (all sections alike) or a dict per course section (C7 section curriculum)
         self.difficulty = dict(difficulty) if isinstance(difficulty, dict) else float(difficulty)
@@ -243,6 +259,8 @@ class QuadrupedCourseEnv(gym.Env):
         self._build(self.difficulty)
 
         n_obs = 3 + 3 + 3 + 1 + 12 + 12 + 12 + 2 + 1 + 2 + len(LIDAR_ANGLES) + 1 + len(SCAN_X) * len(SCAN_Y)
+        if getattr(self, "foot_scan", False):
+            n_obs += 4 * len(FOOT_SCAN_DX)                 # [C17]
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(n_obs,), dtype=np.float32)
         self.action_space = spaces.Box(-1.0, 1.0, shape=(12,), dtype=np.float32)
         self._renderer = None
@@ -306,6 +324,31 @@ class QuadrupedCourseEnv(gym.Env):
                                     else float(np.clip(difficulty, 0, 1)))
 
     # ---------------------------------------------------------------- injuries
+    def _foot_scan(self, yaw):
+        """[C17] each foot's clearance above the terrain 5-20 cm ahead of it (m, clipped to +-0.3)."""
+        c, s = np.cos(yaw), np.sin(yaw)
+        out = []
+        for g in self.foot_geoms:
+            fx, fy, fz = self.data.geom_xpos[g]
+            for dx in FOOT_SCAN_DX:
+                out.append(fz - self.cfg["foot_radius"] - self._ground_height(fx + c * dx, fy + s * dx))
+        return np.clip(np.array(out), -0.3, 0.3)
+
+    def _randomize_dynamics(self):
+        """[C17] per-episode friction / payload / motor-strength randomization (see __init__)."""
+        m, r = self.model, self.np_random
+        if getattr(self, "_dr_model", None) is not m:        # model rebuilt (new difficulty/layout)
+            self._dr_model = m
+            self._base_friction = m.geom_friction[:, 0].copy()
+            self._base_torso_mass = float(m.body_mass[self.torso_id])
+        m.geom_friction[:, 0] = self._base_friction * r.uniform(0.7, 1.3)
+        m.body_mass[self.torso_id] = self._base_torso_mass + r.uniform(-0.5, 1.5)
+        k = r.uniform(0.9, 1.1)
+        m.actuator_gainprm[:, 0] *= k
+        m.actuator_biasprm[:, 1] *= k
+        m.actuator_forcerange[:] *= k
+        self._next_push = int(r.uniform(150, 300))
+
     def _apply_injury(self):
         m = self.model
         m.actuator_gainprm[:, 0] = self.base_kp
@@ -423,6 +466,8 @@ class QuadrupedCourseEnv(gym.Env):
             self._build(self.difficulty)
         mujoco.mj_resetData(self.model, self.data)
         self._apply_injury()
+        if self.randomize:
+            self._randomize_dynamics()                 # [C17]
 
         start_x = 0.8
         if self.random_start:
@@ -504,6 +549,10 @@ class QuadrupedCourseEnv(gym.Env):
     def step(self, action):
         action = np.clip(np.asarray(action, dtype=np.float64), -1, 1)
         self.data.ctrl[self.act_ids] = self.default_q + self.action_scale * action
+        if self.randomize and self.steps == self._next_push:          # [C17] random shove
+            ang = self.np_random.uniform(-np.pi, np.pi)
+            self.data.qvel[0:2] += 0.3 * np.array([np.cos(ang), np.sin(ang)])
+            self._next_push = self.steps + int(self.np_random.uniform(150, 300))
         mujoco.mj_step(self.model, self.data, nstep=FRAME_SKIP)
         self.steps += 1
 
@@ -556,7 +605,7 @@ class QuadrupedCourseEnv(gym.Env):
             [np.sin(ph), np.cos(ph)],
             self._lidar(pos, yaw) / LIDAR_RANGE, [float(self.wall_hits > 0)],
             np.clip(scan.ravel() - self.cfg["base_height"], -1.0, 1.0),
-        ])
+        ] + ([self._foot_scan(yaw)] if self.foot_scan else []))
         return obs.astype(np.float32)
 
     # ---------------------------------------------------------------- reward

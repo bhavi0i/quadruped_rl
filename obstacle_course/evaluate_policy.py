@@ -273,7 +273,13 @@ def main():
     if fm is None:
         cfg_f = os.path.join(os.path.dirname(a.model), "config.json")
         fm = json.load(open(cfg_f)).get("friction_model", "pyramidal") if os.path.exists(cfg_f) else "pyramidal"
-    env, norm = make(dict(arena=a.arena, difficulty=a.difficulty, friction_model=fm), stats)
+    # [NEW 2026-11-22] also take the run's gait rhythm and target speed (C17 changes both; before C17
+    #   every run used the defaults 0.5 s / 0.6 m/s, so earlier evaluations are unaffected)
+    cfg_f = os.path.join(os.path.dirname(a.model), "config.json")
+    cfg = json.load(open(cfg_f)) if os.path.exists(cfg_f) else {}
+    gait = dict(gait_period=cfg.get("gait_period") or 0.5, target_speed=cfg.get("target_speed") or 0.6,
+                foot_scan=bool(cfg.get("foot_scan")))
+    env, norm = make(dict(arena=a.arena, difficulty=a.difficulty, friction_model=fm, **gait), stats)
     walk, f_walk, v_walk = walk_test(model, norm, env)
     metrics = dict(walk)
     f_wall, v_wall = [], []

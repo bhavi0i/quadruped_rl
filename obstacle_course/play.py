@@ -67,7 +67,10 @@ def main():
     env = QuadrupedCourseEnv(difficulty=a.difficulty, random_start=False, injury=injury,
                              render_mode=mode, arena=a.arena, robot=a.robot,
                              friction_model=cfg.get("friction_model", "pyramidal"),
-                             max_steps=cfg.get("max_steps") or MAX_STEPS)
+                             max_steps=cfg.get("max_steps") or MAX_STEPS,
+                             gait_period=cfg.get("gait_period") or 0.5,          # [C17]
+                             target_speed=cfg.get("target_speed") or 0.6,
+                             foot_scan=bool(cfg.get("foot_scan")))
 
     norm = None
     if a.model and not a.random:

@@ -715,6 +715,26 @@ independent runs, not 3. It was left running (no-restart rule).
 - Chaotic contact dynamics amplify floating-point differences.
 - **Rule:** success rates only from many episodes on Amarel; local runs for videos and path
   shape.
+
+### C17a / C17b: slower, longer stride + foot-level sensing (+ robustness in C17b). RUNNING (Amarel jobs 64147223 / 64147224, from C16 seed 1 at 281M → 341M)
+- **Why (group review 2026-11-22 + path audit with cadence/stub counts):**
+  - 12–15 touchdowns/s vs 8 expected; strides 10–20 cm on obstacles.
+  - Foot stubs: 27/s on stairs, 2.2/s at hurdles.
+  - The body-centred height scan cannot locate the feet relative to edges.
+  - Brittle outcomes (report 52); no domain randomization.
+- **Changes:**
+  - `--gait-period 0.7` (was 0.5), `--target-speed 0.5` (was 0.6).
+  - `--foot-scan`: +16 obs; network expanded with zero-weight columns by `tools/expand_obs.py`,
+    actions identical at start.
+  - C17b adds `--randomize`: friction ×U(0.7, 1.3), torso payload U(−0.5, 1.5) kg, motor
+    strength ×U(0.9, 1.1), 0.3 m/s shove every 150–300 steps.
+  - Otherwise C16 settings.
+- **Evaluation tools** now read `gait_period`, `target_speed` and `foot_scan` from the run config.
+- **Success test:**
+  - flat touchdowns ≤ 7/s; strides ≥ 30 cm on flat ground, ≥ 25 cm at hurdles
+  - hurdle stubs < 0.5/s, stair stubs < 5/s; hesitation and backing < 15 %
+  - validation at 1.0 ≥ 9/12
+
 - **Group instruction:** start at the beginning of the course and learn to reach the end
   checkpoint.
 - **Baseline:** the ring policy at the course start (difficulty 0) moves 0.1 m and falls 3/3.
